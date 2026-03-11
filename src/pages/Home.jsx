@@ -16,7 +16,7 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <section className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem', textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <h1 style={{ fontSize: '4.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #ffffff 0%, #f3e5ab 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-1px' }}>
+        <h1 style={{ fontSize: '4.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-1px' }}>
           Redefine Your Living Space
         </h1>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.25rem', maxWidth: '650px', margin: '0 auto 3rem', lineHeight: '1.6' }}>

@@ -54,7 +54,7 @@ export default function Projects() {
     <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
       <header style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', gap: '2rem' }}>
         <div>
-          <h1 style={{ fontSize: '3rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #ffffff, #f3e5ab)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: '3rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #ffffff, #60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Design Gallery
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem' }}>Find inspirations for your dream spaces.</p>
