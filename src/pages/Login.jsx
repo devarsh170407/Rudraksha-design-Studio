@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Phone } from 'lucide-react';
+import { db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
@@ -44,9 +47,19 @@ export default function Login() {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Save additional user info to Firestore
+        await setDoc(doc(db, 'users', user.uid), {
+          email: user.email,
+          phone: phone,
+          createdAt: new Date().toISOString(),
+          role: 'user'
+        });
       }
       setConfirmPassword('');
+      setPhone('');
       navigate('/projects');
     } catch (err) {
       let msg = err.message;
@@ -180,6 +193,39 @@ export default function Login() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+            {/* Phone Number — only on Sign Up */}
+            {!isLogin && (
+              <div>
+                <label style={{ display: 'block', color: '#a1a1aa', fontSize: '0.78rem', fontWeight: 500, marginBottom: '0.4rem', letterSpacing: '0.03em' }}>
+                  Phone Number
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <Phone size={15} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#52525b', pointerEvents: 'none' }} />
+                  <input
+                    type="tel"
+                    required={!isLogin}
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    placeholder="+91 XXXXX XXXXX"
+                    style={{
+                      width: '100%', boxSizing: 'border-box',
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.09)',
+                      color: 'white',
+                      padding: '0.75rem 1rem 0.75rem 2.4rem',
+                      borderRadius: '9px',
+                      fontSize: '0.88rem',
+                      outline: 'none',
+                      fontFamily: "'Outfit', sans-serif",
+                      transition: 'border-color 0.2s'
+                    }}
+                    onFocus={e => e.target.style.borderColor = '#2563eb'}
+                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.09)'}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Email */}
             <div>

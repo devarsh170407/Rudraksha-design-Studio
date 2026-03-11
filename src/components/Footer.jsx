@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout } from 'lucide-react';
+import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout, MessageCircle } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -126,11 +126,25 @@ export default function Footer() {
           )}
 
           {step === 3 && (
-            <div style={styles.stepContainer}>
+            <div style={{ ...styles.stepContainer, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={styles.successIcon}>✓</div>
               <h2 style={styles.stepTitle}>Estimate <span style={{ color: 'var(--color-accent-primary)' }}>Request Sent!</span></h2>
-              <p style={styles.estimateSubtitle}>Thank you! Our design team will analyze your preferences and contact you within 24 hours with a personalized quote.</p>
-              <button onClick={() => { setStep(0); setSelectedRooms([]); setSelectedStyle(null); }} style={styles.estimateBtn}>Calculate Another</button>
+              <p style={{ ...styles.estimateSubtitle, margin: '0 auto 3rem' }}>Thank you! Our design team will analyze your preferences and contact you within 24 hours with a personalized quote.</p>
+              
+              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => {
+                    const roomsText = selectedRooms.map(r => rooms.find(room => room.id === r)?.label).join(', ');
+                    const styleText = styles_list.find(s => s.id === selectedStyle)?.label;
+                    const message = encodeURIComponent(`Hi Rudraksha Design Studio! I'm interested in an interior estimate.\n\nRooms: ${roomsText}\nStyle: ${styleText}`);
+                    window.open(`https://wa.me/919898384133?text=${message}`, '_blank');
+                  }}
+                  style={{ ...styles.estimateBtn, background: '#25D366', color: '#fff' }}
+                >
+                  <MessageCircle size={20} /> Talk on WhatsApp
+                </button>
+                <button onClick={() => { setStep(0); setSelectedRooms([]); setSelectedStyle(null); }} style={styles.estimateBtn}>Calculate Another</button>
+              </div>
             </div>
           )}
         </div>
@@ -176,6 +190,20 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
+        {/* WhatsApp Floating Icon */}
+        <a 
+          href="https://wa.me/919898384133" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={styles.whatsappFloat}
+          title="Chat on WhatsApp"
+        >
+          <div style={{ position: 'relative' }}>
+            <div style={styles.whatsappPulse}></div>
+            <MessageCircle size={28} />
+          </div>
+        </a>
       </section>
     </footer>
   );
@@ -432,5 +460,30 @@ const styles = {
     color: 'rgba(255,255,255,0.4)',
     textDecoration: 'none',
     fontSize: '0.88rem',
+  },
+  whatsappFloat: {
+    position: 'fixed',
+    bottom: '2rem',
+    right: '2rem',
+    width: '60px',
+    height: '60px',
+    background: '#25D366',
+    color: 'white',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
+    zIndex: 1000,
+    transition: 'all 0.3s ease',
+    cursor: 'pointer',
+  },
+  whatsappPulse: {
+    position: 'absolute',
+    inset: '-10px',
+    border: '2px solid #25D366',
+    borderRadius: '50%',
+    animation: 'pulse 2s infinite',
+    opacity: 0,
   }
 };
