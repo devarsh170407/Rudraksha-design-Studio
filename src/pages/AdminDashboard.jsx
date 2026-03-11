@@ -354,31 +354,34 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.2)' }}>
-                  <label style={styles.label}>Project Images Gallery (Required)</label>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>Select multiple images. Click an image to set as Primary Thumbnail.</p>
-                  <input type="file" required multiple accept="image/*" onChange={handleImagesChange} style={{ color: 'var(--color-text-primary)' }} />
+                <div className="file-upload-zone">
+                  <div className="file-upload-icon">📸</div>
+                  <label className="file-upload-text">
+                    <span>Project Images Gallery</span> (Required)
+                    <p style={{ marginTop: '0.4rem', fontSize: '0.8rem' }}>Drop images here or click to browse</p>
+                  </label>
+                  <input type="file" required multiple accept="image/*" onChange={handleImagesChange} />
                   
                   {images.length > 0 && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '0.8rem', marginTop: '1rem', width: '100%', pointerEvents: 'auto' }}>
                       {images.map((img, idx) => (
                         <div 
                           key={idx} 
-                          onClick={() => setThumbnailIndex(idx)}
+                          onClick={(e) => { e.stopPropagation(); setThumbnailIndex(idx); }}
                           style={{ 
-                            height: '100px', 
+                            height: '80px', 
                             backgroundImage: `url(${URL.createObjectURL(img)})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             borderRadius: '8px',
                             cursor: 'pointer',
-                            border: thumbnailIndex === idx ? '3px solid var(--color-accent-primary)' : '3px solid transparent',
-                            transition: 'border 0.2s ease',
+                            border: thumbnailIndex === idx ? '3px solid var(--color-accent-primary)' : '2px solid rgba(255,255,255,0.1)',
+                            transition: 'all 0.2s',
                             position: 'relative'
                           }}
                         >
                           {thumbnailIndex === idx && (
-                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--color-accent-primary)', color: 'var(--color-bg-primary)', fontSize: '0.7rem', textAlign: 'center', fontWeight: 'bold' }}>THUMBNAIL</div>
+                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--color-accent-primary)', color: 'var(--color-bg-primary)', fontSize: '0.6rem', textAlign: 'center', fontWeight: 'bold', padding: '2px 0' }}>PRIMARY</div>
                           )}
                         </div>
                       ))}
@@ -386,14 +389,21 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-                  <div>
-                    <label style={styles.label}>3D Design Video (Optional)</label>
-                    <input type="file" accept="video/*" onChange={handleThreeDVideoChange} style={{ color: 'var(--color-text-primary)' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div className="file-upload-zone" style={{ padding: '1.5rem' }}>
+                    <div className="file-upload-icon" style={{ fontSize: '1.5rem' }}>🎥</div>
+                    <label className="file-upload-text" style={{ fontSize: '0.85rem' }}>
+                      3D Design Video <span>(Optional)</span>
+                    </label>
+                    <input type="file" accept="video/*" onChange={handleThreeDVideoChange} />
                   </div>
-                  <div>
-                    <label style={styles.label}>Completed Project Video (Optional)</label>
-                    <input type="file" accept="video/*" onChange={handleCompletedVideoChange} style={{ color: 'var(--color-text-primary)' }} />
+                  
+                  <div className="file-upload-zone" style={{ padding: '1.5rem' }}>
+                    <div className="file-upload-icon" style={{ fontSize: '1.5rem' }}>🎬</div>
+                    <label className="file-upload-text" style={{ fontSize: '0.85rem' }}>
+                      Completed Video <span>(Optional)</span>
+                    </label>
+                    <input type="file" accept="video/*" onChange={handleCompletedVideoChange} />
                   </div>
                 </div>
 
