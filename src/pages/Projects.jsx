@@ -127,63 +127,98 @@ export default function Projects() {
           No projects found matching the current filters.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
-          {filteredProjects.map((project, i) => (
-            <div 
-              key={project.id} 
-              onClick={() => handleProjectClick(project.id)}
-              style={{ 
-                position: 'relative',
-                height: '280px', 
-                borderRadius: '16px',
-                overflow: 'hidden', 
-                cursor: 'pointer', 
-                transition: 'all var(--transition-smooth)',
-                animation: `fadeInUp 0.5s ease ${i * 0.1}s forwards`,
-                opacity: 0,
-                transform: 'translateY(20px)'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-8px)';
-                e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              {/* Full Bleed Image Background */}
-              <div 
-                style={{ 
-                  position: 'absolute',
-                  top: 0, left: 0, right: 0, bottom: 0,
-                  backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  transition: 'transform 0.6s ease'
-                }}
-                className="project-img-bg"
-              />
-              
-              {/* Gradient Overlay for Text Visibility */}
-              <div style={{
-                position: 'absolute',
-                bottom: 0, left: 0, right: 0,
-                padding: '2.5rem 1.5rem 1.5rem',
-                background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                pointerEvents: 'none'
-              }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.2rem' }}>
-                  {project.title}
-                </h3>
-                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
-                  {project.style}
-                </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+          {Object.entries(
+            filteredProjects.reduce((acc, project) => {
+              if (!acc[project.category]) acc[project.category] = [];
+              acc[project.category].push(project);
+              return acc;
+            }, {})
+          ).map(([category, catProjects]) => (
+            <section key={category}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{category} Designs</h2>
+                <button 
+                  onClick={() => setFilterRoom(category)}
+                  style={{ color: 'var(--color-accent-secondary)', fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+                >
+                  See All
+                </button>
               </div>
-            </div>
+              
+              {/* Horizontal Scroll Layout for Categories */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '1.5rem', 
+                overflowX: 'auto', 
+                paddingBottom: '1rem',
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch' 
+              }} className="hide-scrollbar">
+                
+                {catProjects.map((project, i) => (
+                  <div 
+                    key={project.id} 
+                    onClick={() => handleProjectClick(project.id)}
+                    style={{ 
+                      minWidth: '320px',
+                      maxWidth: '400px',
+                      flex: '0 0 auto',
+                      scrollSnapAlign: 'start',
+                      position: 'relative',
+                      height: '240px', 
+                      borderRadius: '12px',
+                      overflow: 'hidden', 
+                      cursor: 'pointer', 
+                      transition: 'all var(--transition-smooth)',
+                      animation: `fadeInUp 0.5s ease ${i * 0.1}s forwards`,
+                      opacity: 0,
+                      transform: 'translateY(20px)'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-6px)';
+                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.4)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    {/* Full Bleed Image Background */}
+                    <div 
+                      style={{ 
+                        position: 'absolute',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        transition: 'transform 0.6s ease'
+                      }}
+                      className="project-img-bg"
+                    />
+                    
+                    {/* Gradient Overlay for Text Visibility */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 0, left: 0, right: 0,
+                      padding: '2rem 1.5rem 1.2rem',
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                      pointerEvents: 'none'
+                    }}>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.2rem' }}>
+                        {project.title}
+                      </h3>
+                      <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
+                        {project.style}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       )}
@@ -196,6 +231,13 @@ export default function Projects() {
         }
         .project-img-bg:hover {
           transform: scale(1.05);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>
