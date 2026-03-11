@@ -173,7 +173,7 @@ export default function AdminDashboard() {
       
       await addDoc(collection(db, 'projects'), newProject);
 
-      setMessage({ text: 'Project published successfully to Firebase!', type: 'success' });
+      setMessage({ text: 'Project published! Metadata saved to Firestore and files to GitHub.', type: 'success' });
       
       // Reset
       setTimeout(() => {
@@ -188,8 +188,11 @@ export default function AdminDashboard() {
       }, 800);
       
     } catch (error) {
-      console.error("Firebase upload error", error);
-      setMessage({ text: 'Error uploading to Firebase. Check console and Firebase rules.', type: 'error' });
+      console.error("Project upload error:", error);
+      setMessage({ 
+        text: `Error: ${error.message}. Check browser console and Vercel logs for details.`, 
+        type: 'error' 
+      });
       setUploading(false);
     }
   };
