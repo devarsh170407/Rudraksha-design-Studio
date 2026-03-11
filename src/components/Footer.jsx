@@ -10,13 +10,13 @@ export default function Footer() {
       {/* ── GET ESTIMATE SECTION ── */}
       <section style={styles.estimateSection}>
         <div style={styles.container}>
-          <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: '#ff4d4d' }}>Home.</span></h2>
+          <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
           <p style={styles.estimateSubtitle}>Calculate the cost of doing up your home interiors now.</p>
           
           <div style={styles.cardGrid}>
-            <div style={styles.estimateCard}>
+            <div className="glass-panel" style={styles.estimateCard}>
               <div style={styles.iconContainer}>
-                <Home size={40} color="#333" />
+                <Home size={40} color="var(--color-accent-primary)" />
                 <div style={styles.plusOverlay}>＋</div>
               </div>
               <h3 style={styles.cardTitle}>Full Home Interiors</h3>
@@ -24,9 +24,9 @@ export default function Footer() {
               <button style={styles.estimateBtn}>Get Free Estimate</button>
             </div>
 
-            <div style={styles.estimateCard}>
+            <div className="glass-panel" style={styles.estimateCard}>
               <div style={styles.iconContainer}>
-                <Coffee size={40} color="#333" />
+                <Coffee size={40} color="var(--color-accent-primary)" />
                 <div style={styles.plusOverlay}>＋</div>
               </div>
               <h3 style={styles.cardTitle}>Kitchen</h3>
@@ -88,83 +88,85 @@ const styles = {
     background: '#fff',
   },
   estimateSection: {
-    padding: '4rem 2rem',
-    background: '#fafafa',
+    padding: '8rem 2rem',
+    background: 'var(--color-bg-primary)',
     textAlign: 'center',
-    borderTop: '1px solid #eee',
+    position: 'relative',
+    overflow: 'hidden',
   },
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
+    position: 'relative',
+    zIndex: 1,
   },
   estimateTitle: {
-    fontSize: '2rem',
+    fontSize: '3rem',
     fontWeight: 700,
-    color: '#333',
-    marginBottom: '0.5rem',
+    color: '#fff',
+    marginBottom: '1rem',
+    letterSpacing: '-0.02em',
   },
   estimateSubtitle: {
-    color: '#666',
-    fontSize: '1rem',
-    marginBottom: '3rem',
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: '1.1rem',
+    marginBottom: '4rem',
+    fontWeight: 500,
   },
   cardGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '2rem',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gap: '3rem',
     justifyContent: 'center',
+    maxWidth: '900px',
+    margin: '0 auto',
   },
   estimateCard: {
-    background: '#fff',
-    padding: '2.5rem',
-    borderRadius: '12px',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+    padding: '3rem 2.5rem',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start',
-    textAlign: 'left',
-    border: '1px solid #f0f0f0',
-    transition: 'transform 0.3s ease',
+    alignItems: 'center',
+    textAlign: 'center',
   },
   iconContainer: {
     position: 'relative',
-    marginBottom: '1.5rem',
-    padding: '1rem',
-    background: '#f8f8f8',
-    borderRadius: '12px',
+    marginBottom: '2rem',
+    padding: '1.5rem',
+    background: 'rgba(212,175,55,0.05)',
+    borderRadius: '20px',
+    border: '1px solid rgba(212,175,55,0.1)',
   },
   plusOverlay: {
     position: 'absolute',
-    top: '0',
-    right: '-5px',
-    fontSize: '1.5rem',
-    color: '#ddd',
-    fontWeight: 300,
+    top: '5px',
+    right: '5px',
+    fontSize: '1.2rem',
+    color: 'rgba(212,175,55,0.3)',
   },
   cardTitle: {
-    fontSize: '1.25rem',
+    fontSize: '1.5rem',
     fontWeight: 600,
-    color: '#333',
-    marginBottom: '0.8rem',
+    color: '#fff',
+    marginBottom: '1rem',
   },
   cardDesc: {
-    color: '#777',
-    fontSize: '0.95rem',
-    marginBottom: '2rem',
-    lineHeight: 1.5,
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: '1rem',
+    marginBottom: '2.5rem',
+    lineHeight: 1.6,
   },
   estimateBtn: {
-    background: '#ff4d4d',
-    color: 'white',
+    background: 'var(--color-accent-primary)',
+    color: '#000',
     border: 'none',
-    padding: '0.8rem 1.5rem',
-    borderRadius: '6px',
-    fontWeight: 600,
+    padding: '1rem 2rem',
+    borderRadius: '8px',
+    fontWeight: 700,
     cursor: 'pointer',
-    fontSize: '0.9rem',
+    fontSize: '0.95rem',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    transition: 'background 0.3s ease',
+    letterSpacing: '1px',
+    transition: 'all 0.3s ease',
   },
   mainFooter: {
     background: 'var(--color-bg-primary)',
