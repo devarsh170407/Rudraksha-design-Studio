@@ -17,20 +17,113 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem', textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <h1 style={{ fontSize: '4.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-1px' }}>
-          Redefine Your Living Space
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.25rem', maxWidth: '650px', margin: '0 auto 3rem', lineHeight: '1.6' }}>
-          Discover curated interior designs tailored to your lifestyle. From elegant modular kitchens to luxurious living rooms, explore premium concepts that inspire.
-        </p>
-        
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <button className="btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }} onClick={() => navigate('/projects')}>
-            Explore Designs
-          </button>
+      {/* ── HERO BANNER (full-width photo + text overlay) ── */}
+      <section style={{
+        width: '100%',
+        position: 'relative',
+        height: 'clamp(420px, 60vh, 680px)',
+        overflow: 'hidden',
+        marginTop: '0',
+      }}>
+        {/* Background Image */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'url("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=85")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 40%',
+          transform: 'scale(1.03)',
+          transition: 'transform 8s ease',
+        }} />
+
+        {/* Gradient overlay — left side darker for text readability */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(90deg, rgba(5,5,20,0.80) 0%, rgba(5,5,20,0.45) 55%, rgba(5,5,20,0.05) 100%)',
+        }} />
+
+        {/* Text Content */}
+        <div style={{
+          position: 'relative', zIndex: 1,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '0 4rem',
+          maxWidth: '700px',
+        }}>
+          {/* Small tag */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            background: 'rgba(212,175,55,0.15)',
+            border: '1px solid rgba(212,175,55,0.4)',
+            borderRadius: '50px',
+            padding: '0.3rem 0.9rem',
+            marginBottom: '1.25rem',
+            width: 'fit-content'
+          }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d4af37' }} />
+            <span style={{ color: '#d4af37', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
+              PREMIUM INTERIOR DESIGN
+            </span>
+          </div>
+
+          <h1 style={{
+            fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+            fontWeight: 700,
+            color: 'white',
+            lineHeight: 1.2,
+            marginBottom: '0.75rem',
+            letterSpacing: '-0.02em',
+          }}>
+            Interiors you'll<br />
+            <span style={{ color: '#d4af37' }}>absolutely love.</span>
+          </h1>
+
+          <p style={{
+            color: 'rgba(255,255,255,0.75)',
+            fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
+            lineHeight: 1.65,
+            marginBottom: '2rem',
+            maxWidth: '480px',
+          }}>
+            From modular kitchens to luxury living rooms — we craft spaces that reflect your lifestyle. Without the stress.
+          </p>
+
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <button
+              className="btn-primary"
+              style={{ padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px' }}
+              onClick={() => navigate('/projects')}
+            >
+              Explore Designs
+            </button>
+            <button
+              style={{
+                padding: '0.85rem 2rem',
+                fontSize: '0.95rem',
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                background: 'rgba(255,255,255,0.07)',
+                backdropFilter: 'blur(8px)',
+                fontFamily: "'Outfit', sans-serif",
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+              onClick={() => navigate('/login')}
+            >
+              Get Started Free
+            </button>
+          </div>
         </div>
+
+        {/* Bottom fade into page */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '80px',
+          background: 'linear-gradient(to bottom, transparent, var(--color-bg-primary))',
+        }} />
       </section>
 
       {/* Category Section */}
