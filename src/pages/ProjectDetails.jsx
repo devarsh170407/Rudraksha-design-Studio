@@ -95,15 +95,10 @@ export default function ProjectDetails() {
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem 0' }}>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.3rem' }}>Budget</p>
-                <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>₹{project.budget?.toLocaleString()}</p>
-              </div>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.3rem' }}>Size</p>
-                <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>{project.size} sqft</p>
-              </div>
+            <div style={{ marginBottom: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem 0' }}>
+              <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                Experience the perfect blend of aesthetics and functionality tailored just for your lifestyle with our premium {project.style} {project.category} designs.
+              </p>
             </div>
 
             <button className="btn-primary" style={{ width: '100%', marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>

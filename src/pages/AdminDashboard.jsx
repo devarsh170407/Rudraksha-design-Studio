@@ -7,9 +7,7 @@ export default function AdminDashboard() {
   const [formData, setFormData] = useState({
     title: '',
     category: 'Home Interiors',
-    budget: '',
-    style: 'Modern',
-    size: ''
+    style: 'Modern'
   });
   
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -51,9 +49,7 @@ export default function AdminDashboard() {
           id: Date.now().toString(),
           title: formData.title,
           category: formData.category,
-          budget: Number(formData.budget),
           style: formData.style,
-          size: Number(formData.size),
           thumbnailUrl: base64Image,
           createdAt: Date.now()
         };
@@ -66,7 +62,7 @@ export default function AdminDashboard() {
         
         // Reset
         setTimeout(() => {
-          setFormData({ title: '', category: 'Home Interiors', budget: '', style: 'Modern', size: '' });
+          setFormData({ title: '', category: 'Home Interiors', style: 'Modern' });
           setThumbnailFile(null);
           setProgress(0);
           setUploading(false);
@@ -154,14 +150,6 @@ export default function AdminDashboard() {
                   <option>Classic</option>
                   <option>Minimalist</option>
                 </select>
-              </div>
-              <div>
-                <label style={styles.label}>Budget (₹)</label>
-                <input name="budget" type="number" className="input-field" placeholder="e.g. 500000" value={formData.budget} onChange={handleChange} />
-              </div>
-              <div>
-                <label style={styles.label}>Size (sqft)</label>
-                <input name="size" type="number" className="input-field" placeholder="e.g. 1200" value={formData.size} onChange={handleChange} />
               </div>
             </div>
 
