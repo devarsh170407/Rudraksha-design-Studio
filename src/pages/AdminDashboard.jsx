@@ -281,6 +281,18 @@ export default function AdminDashboard() {
             </li>
             <li>
               <button 
+                onClick={() => setActiveTab('manage')}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
+                  background: activeTab === 'manage' ? 'var(--color-accent-primary)' : 'transparent',
+                  color: activeTab === 'manage' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
+                  border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
+                }}>
+                📁 Manage Existing Designs
+              </button>
+            </li>
+            <li>
+              <button 
                 onClick={() => setActiveTab('leads')}
                 style={{
                   width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
