@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { Clock, Shield, IndianRupee, Paintbrush } from 'lucide-react';
+import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle } from 'lucide-react';
 
 const CATEGORIES = [
   { name: 'All',                    image: '' },
@@ -211,43 +211,45 @@ export default function Home() {
         }} />
       </section>
 
-      {/* ── WHY CHOOSE US FLOATING BAR ── */}
+      {/* ── WHY CHOOSE US MINIMALIST GRID ── */}
       <section style={{ 
-        marginTop: '-6rem', padding: '0 4rem', position: 'relative', zIndex: 10,
-        marginBottom: '6rem'
+        padding: '6rem 4rem', background: 'var(--color-bg-primary)', position: 'relative'
       }}>
-        <div className="glass-panel" style={{ 
-          maxWidth: '1100px', margin: '0 auto', padding: '3rem 2rem',
-          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem',
-          boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.7)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(10, 10, 10, 0.95))',
-          backdropFilter: 'blur(24px)',
-          borderRadius: '24px'
-        }}>
-          {[
-            { icon: <Clock size={28} />, label: "Quick Turnaround", sub: "Fresh Energy, Fast Results" },
-            { icon: <Shield size={28} />, label: "Modern Quality", sub: "Latest Trends & Standards" },
-            { icon: <IndianRupee size={28} />, label: "Honest Pricing", sub: "No Hidden Surprises" },
-            { icon: <Paintbrush size={28} />, label: "Personal Care", sub: "Your Vision, Our Priority" }
-          ].map((item, idx) => (
-            <div key={idx} className="feature-item" style={{ 
-              textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' 
-            }}>
-              <div style={{ 
-                color: '#d4af37', background: 'rgba(212,175,55,0.1)', 
-                width: '60px', height: '60px', borderRadius: '15px', 
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.3s'
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '4rem', letterSpacing: '-0.02em' }}>
+            Why Choose <span style={{ color: '#d4af37' }}>Rudraksha</span>
+          </h2>
+          
+          <div style={{ 
+            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4rem 2rem',
+          }}>
+            {[
+              { icon: <Heart size={32} />, label: "Personalized Design" },
+              { icon: <Shield size={32} />, label: "Quality Materials" },
+              { icon: <IndianRupee size={32} />, label: "Honest Pricing" },
+              { icon: <Sparkles size={32} />, label: "Modern Aesthetics" },
+              { icon: <Clock size={32} />, label: "Timely Delivery" },
+              { icon: <Layers size={32} />, label: "3D Visuals" },
+              { icon: <Paintbrush size={32} />, label: "Expert Execution" },
+              { icon: <CheckCircle size={32} />, label: "Genuine Care" }
+            ].map((item, idx) => (
+              <div key={idx} className="feature-item" style={{ 
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem' 
               }}>
-                {item.icon}
+                <div style={{ 
+                  color: '#d4af37', transition: 'transform 0.3s ease'
+                }}>
+                  {item.icon}
+                </div>
+                <h4 style={{ 
+                  color: 'white', fontSize: '1rem', fontWeight: 500, margin: 0, 
+                  letterSpacing: '0.01em', opacity: 0.9 
+                }}>
+                  {item.label}
+                </h4>
               </div>
-              <div>
-                <h4 style={{ color: 'white', fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.4rem', letterSpacing: '0.01em' }}>{item.label}</h4>
-                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.03em', lineHeight: 1.4 }}>{item.sub}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
@@ -322,8 +324,8 @@ export default function Home() {
       <style>{`
         .projects-page { min-height: 60vh; width: 100%; max-width: 100%; }
         .feature-item { transition: transform 0.3s ease; }
-        .feature-item:hover { transform: translateY(-5px); }
-        .feature-item:hover > div:first-child { background: rgba(212,175,55,0.2); border-radius: 50%; }
+        .feature-item:hover { transform: translateY(-8px); }
+        .feature-item:hover > div:first-child { transform: scale(1.1); color: white; }
         
         .project-card {
           min-width: 320px; max-width: 400px; flex: 0 0 auto;
