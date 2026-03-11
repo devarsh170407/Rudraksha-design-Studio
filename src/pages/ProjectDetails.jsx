@@ -86,7 +86,7 @@ export default function ProjectDetails() {
             <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', lineHeight: 1.2 }}>{project.title}</h1>
             
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-              <span style={{ padding: '0.3rem 0.8rem', background: 'rgba(79, 70, 229, 0.2)', color: 'var(--color-accent-secondary)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>
+              <span style={{ padding: '0.3rem 0.8rem', background: 'var(--color-accent-primary)', color: 'var(--color-bg-primary)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>
                 {project.category}
               </span>
               <span style={{ padding: '0.3rem 0.8rem', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>

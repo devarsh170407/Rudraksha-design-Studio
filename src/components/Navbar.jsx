@@ -22,7 +22,7 @@ export default function Navbar() {
     <nav style={styles.nav} className="glass-panel">
       <div style={styles.logoContainer}>
         <Link to="/" style={styles.logo}>
-          Rudraksha<span style={styles.logoAccent}>Studio</span>
+          Rudraksha <span style={styles.logoAccent}>Design Studio</span>
         </Link>
       </div>
       

@@ -91,7 +91,7 @@ export default function AdminDashboard() {
         {/* Sidebar Nav */}
         <aside className="glass-panel" style={{ padding: '1.5rem', height: 'fit-content', position: 'sticky', top: '100px' }}>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <li style={{ color: 'var(--color-accent-primary)', fontWeight: 600, padding: '0.5rem', background: 'rgba(79, 70, 229, 0.1)', borderRadius: '8px' }}>+ Add New Project</li>
+            <li style={{ color: 'var(--color-bg-primary)', backgroundColor: 'var(--color-accent-primary)', fontWeight: 600, padding: '0.5rem', borderRadius: '8px' }}>+ Add New Project</li>
           </ul>
         </aside>
 

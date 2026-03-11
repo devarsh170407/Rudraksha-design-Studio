@@ -2,13 +2,13 @@
 
 :root {
   /* Color Palette - Premium & Modern */
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #141414;
+  --color-bg-primary: #001233; /* Deep Blue */
+  --color-bg-secondary: #001f54; /* Slightly lighter Blue */
   --color-text-primary: #ffffff;
-  --color-text-secondary: #a1a1aa;
+  --color-text-secondary: #b0c4de; /* Light Steel Blue */
   
-  --color-accent-primary: #4f46e5; /* Indigo */
-  --color-accent-secondary: #818cf8;
+  --color-accent-primary: #d4af37; /* Metallic Gold */
+  --color-accent-secondary: #f3e5ab; /* Light Vanilla Gold */
   --color-error: #ef4444;
   --color-success: #22c55e;
   
