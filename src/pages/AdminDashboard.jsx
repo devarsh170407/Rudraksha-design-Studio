@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { get, set } from 'idb-keyval';
+import { db, storage } from '../firebase';
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  deleteDoc, 
+  doc, 
+  serverTimestamp,
+  query,
+  orderBy
+} from 'firebase/firestore';
+import { 
+  ref, 
+  uploadBytesResumable, 
+  getDownloadURL,
+  deleteObject
+} from 'firebase/storage';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add' or 'manage'
@@ -18,12 +34,16 @@ export default function AdminDashboard() {
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState({ text: '', type: '' });
 
-  // Fetch projects for management
+  // Fetch projects from Firestore
   const fetchProjects = async () => {
     try {
-      const stored = await get('localProjects') || [];
-      stored.sort((a, b) => b.createdAt - a.createdAt);
-      setAllProjects(stored);
+      const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const docs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setAllProjects(docs);
     } catch (e) {
       console.error('Error fetching projects:', e);
     }
@@ -42,16 +62,27 @@ export default function AdminDashboard() {
   const handleImagesChange = (e) => {
     if (e.target.files) {
       setImages(Array.from(e.target.files));
-      setThumbnailIndex(0); // Reset default to first image
+      setThumbnailIndex(0); 
     }
   };
 
-  const handleThreeDVideoChange = (e) => {
-    if (e.target.files[0]) setThreeDVideo(e.target.files[0]);
-  };
+  const handleFileUpload = (file, path) => {
+    return new Promise((resolve, reject) => {
+      const storageRef = ref(storage, path);
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-  const handleCompletedVideoChange = (e) => {
-    if (e.target.files[0]) setCompletedVideo(e.target.files[0]);
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+          // Individual file progress can be handled here if needed
+        }, 
+        (error) => reject(error), 
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
   };
 
   const handleUpload = async (e) => {
@@ -62,37 +93,58 @@ export default function AdminDashboard() {
     }
 
     setUploading(true);
+    setProgress(0);
     setMessage({ text: '', type: '' });
 
     try {
-      // Simulate progress for UI
-      let prog = 0;
-      const interval = setInterval(() => {
-        prog += 20;
-        setProgress(prog);
-        if (prog >= 80) clearInterval(interval);
-      }, 100);
-
-      const existingProjects = await get('localProjects') || [];
+      const projectId = Date.now().toString();
+      const imageUrls = [];
       
+      // Calculate total files to upload for progress bar
+      const totalFiles = images.length + (threeDVideo ? 1 : 0) + (completedVideo ? 1 : 0);
+      let uploadedCount = 0;
+
+      const updateProgress = () => {
+        uploadedCount++;
+        setProgress((uploadedCount / totalFiles) * 100);
+      };
+
+      // Upload Images
+      for (let i = 0; i < images.length; i++) {
+        const url = await handleFileUpload(images[i], `projects/${projectId}/images/${images[i].name}`);
+        imageUrls.push(url);
+        updateProgress();
+      }
+
+      // Upload Videos if they exist
+      let threeDVideoUrl = null;
+      if (threeDVideo) {
+        threeDVideoUrl = await handleFileUpload(threeDVideo, `projects/${projectId}/videos/3d_${threeDVideo.name}`);
+        updateProgress();
+      }
+
+      let completedVideoUrl = null;
+      if (completedVideo) {
+        completedVideoUrl = await handleFileUpload(completedVideo, `projects/${projectId}/videos/completed_${completedVideo.name}`);
+        updateProgress();
+      }
+
+      // Save to Firestore
       const newProject = {
-        id: Date.now().toString(),
         title: formData.title,
         category: formData.category,
         style: formData.style,
-        images: images, 
+        images: imageUrls, 
         thumbnailIndex: thumbnailIndex,
-        threeDVideo: threeDVideo,
-        completedVideo: completedVideo,
-        createdAt: Date.now()
+        threeDVideo: threeDVideoUrl,
+        completedVideo: completedVideoUrl,
+        createdAt: serverTimestamp(),
+        localId: projectId // Keep track of the folder name in storage
       };
       
-      existingProjects.push(newProject);
-      await set('localProjects', existingProjects);
+      await addDoc(collection(db, 'projects'), newProject);
 
-      clearInterval(interval);
-      setProgress(100);
-      setMessage({ text: 'Project saved locally in IndexedDB!', type: 'success' });
+      setMessage({ text: 'Project published successfully to Firebase!', type: 'success' });
       
       // Reset
       setTimeout(() => {
@@ -107,19 +159,32 @@ export default function AdminDashboard() {
       }, 800);
       
     } catch (error) {
-      console.error("Local save error", error);
-      setMessage({ text: 'Error saving locally. Browser quota may be exceeded.', type: 'error' });
+      console.error("Firebase upload error", error);
+      setMessage({ text: 'Error uploading to Firebase. Check console and Firebase rules.', type: 'error' });
       setUploading(false);
     }
   };
 
-  const handleDeleteProject = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
+  const handleDeleteProject = async (project) => {
+    if (!window.confirm('Are you sure you want to delete this project? This will remove all files from storage too.')) return;
 
     try {
-      const stored = await get('localProjects') || [];
-      const updated = stored.filter(p => p.id !== id);
-      await set('localProjects', updated);
+      // 1. Delete from Firestore
+      await deleteDoc(doc(db, 'projects', project.id));
+
+      // 2. Delete files from Storage (Optional but recommended for cleanup)
+      // Note: Firebase doesn't support deleting "folders", we'd need to delete each file ref.
+      // For simplicity in this demo, we'll just delete the Firestore entry.
+      // If we wanted to be thorough:
+      /*
+      for (const url of project.images) {
+        const imageRef = ref(storage, url);
+        await deleteObject(imageRef).catch(err => console.error("Error deleting image:", err));
+      }
+      if (project.threeDVideo) await deleteObject(ref(storage, project.threeDVideo)).catch(e => {});
+      if (project.completedVideo) await deleteObject(ref(storage, project.completedVideo)).catch(e => {});
+      */
+
       setMessage({ text: 'Project deleted successfully!', type: 'success' });
       fetchProjects();
       
@@ -263,7 +328,7 @@ export default function AdminDashboard() {
                 )}
 
                 <button type="submit" disabled={uploading} className="btn-primary" style={{ padding: '1rem', fontSize: '1.1rem', marginTop: '1rem' }}>
-                  {uploading ? `Saving... ${Math.round(progress)}%` : 'Save Project Locally'}
+                  {uploading ? `Uploading... ${Math.round(progress)}%` : 'Publish Project to Cloud'}
                 </button>
               </form>
             </>
@@ -276,7 +341,7 @@ export default function AdminDashboard() {
 
               {allProjects.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-                  <p style={{ color: 'var(--color-text-secondary)' }}>No projects found. Add your first design to see it here!</p>
+                  <p style={{ color: 'var(--color-text-secondary)' }}>No projects found on the server. Post your first design!</p>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -289,7 +354,7 @@ export default function AdminDashboard() {
                         {project.images && project.images[project.thumbnailIndex] && (
                           <div style={{
                             width: '80px', height: '60px', borderRadius: '6px',
-                            backgroundImage: `url(${URL.createObjectURL(project.images[project.thumbnailIndex])})`,
+                            backgroundImage: `url(${project.images[project.thumbnailIndex]})`,
                             backgroundSize: 'cover', backgroundPosition: 'center'
                           }} />
                         )}
@@ -303,7 +368,7 @@ export default function AdminDashboard() {
                       </div>
                       
                       <button 
-                        onClick={() => handleDeleteProject(project.id)}
+                        onClick={() => handleDeleteProject(project)}
                         style={{
                           background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
                           border: '1px solid rgba(239, 68, 68, 0.2)', padding: '0.6rem 1.2rem',

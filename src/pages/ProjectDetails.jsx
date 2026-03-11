@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { get } from 'idb-keyval';
-import { Heart, ArrowLeft, Maximize } from 'lucide-react';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { Heart, ArrowLeft } from 'lucide-react';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -9,46 +10,26 @@ export default function ProjectDetails() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [objectUrls, setObjectUrls] = useState({ images: [], threeDVideo: null, completedVideo: null });
-
   useEffect(() => {
-    let urlsToRevoke = { images: [], threeDVideo: null, completedVideo: null };
-
     const fetchProject = async () => {
       try {
-        const storedProjects = await get('localProjects') || [];
-        const foundProject = storedProjects.find(p => p.id === id);
+        const docRef = doc(db, 'projects', id);
+        const docSnap = await getDoc(docRef);
         
-        if (foundProject) {
-          setProject(foundProject);
-          
-          const newUrls = {
-            images: foundProject.images ? foundProject.images.map(f => URL.createObjectURL(f)) : [],
-            threeDVideo: foundProject.threeDVideo ? URL.createObjectURL(foundProject.threeDVideo) : null,
-            completedVideo: foundProject.completedVideo ? URL.createObjectURL(foundProject.completedVideo) : null
-          };
-          
-          setObjectUrls(newUrls);
-          urlsToRevoke = newUrls; // save reference for cleanup
+        if (docSnap.exists()) {
+          setProject({ id: docSnap.id, ...docSnap.data() });
         } else {
-          console.log("No such project in local storage!");
+          console.log("No such project in Firestore!");
           navigate('/projects');
         }
       } catch (error) {
-        console.error("Error fetching local project:", error);
+        console.error("Error fetching Firestore project:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProject();
-
-    return () => {
-      // Cleanup Object URLs to prevent memory leaks
-      urlsToRevoke.images.forEach(u => URL.revokeObjectURL(u));
-      if (urlsToRevoke.threeDVideo) URL.revokeObjectURL(urlsToRevoke.threeDVideo);
-      if (urlsToRevoke.completedVideo) URL.revokeObjectURL(urlsToRevoke.completedVideo);
-    }
   }, [id, navigate]);
 
   if (loading) {
@@ -70,28 +51,27 @@ export default function ProjectDetails() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.5fr) 1fr', gap: '3rem' }}>
         
         {/* Left Column: Media */}
-        {/* Left Column: Media */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           {/* Completed Project Video */}
-          {objectUrls.completedVideo && (
+          {project.completedVideo && (
             <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', background: '#000' }}>
-              <video src={objectUrls.completedVideo} controls autoPlay muted style={{ width: '100%', display: 'block', maxHeight: '500px' }} />
+              <video src={project.completedVideo} controls autoPlay muted style={{ width: '100%', display: 'block', maxHeight: '500px' }} />
             </div>
           )}
 
           {/* 3D Design Video */}
-          {objectUrls.threeDVideo && (
+          {project.threeDVideo && (
             <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', background: '#000' }}>
               <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', textAlign: 'center', fontWeight: 600 }}>3D Design Walkthrough</div>
-              <video src={objectUrls.threeDVideo} controls loop muted style={{ width: '100%', display: 'block', maxHeight: '500px' }} />
+              <video src={project.threeDVideo} controls loop muted style={{ width: '100%', display: 'block', maxHeight: '500px' }} />
             </div>
           )}
 
           {/* Image Gallery */}
-          {objectUrls.images && objectUrls.images.length > 0 ? (
+          {project.images && project.images.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-              {objectUrls.images.map((src, i) => (
+              {project.images.map((src, i) => (
                 <div key={i} style={{ borderRadius: '12px', overflow: 'hidden', height: '250px', border: '1px solid rgba(255,255,255,0.05)' }}>
                   <img src={src} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
@@ -118,7 +98,6 @@ export default function ProjectDetails() {
               </span>
             </div>
 
-            {/* Generic description removed to prioritize images/video */}
             <div style={{ marginBottom: '2.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem' }}></div>
 
             <button className="btn-primary" style={{ width: '100%', marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>

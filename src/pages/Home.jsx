@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { get } from 'idb-keyval';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { db } from '../firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 const CATEGORIES = [
   { name: 'All',                    image: '' },
@@ -34,13 +35,14 @@ export default function Home() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const stored = await get('localProjects') || [];
-        stored.sort((a, b) => b.createdAt - a.createdAt);
-        const withThumbs = stored.map(p => {
-          const f = p.images && p.images[p.thumbnailIndex] ? p.images[p.thumbnailIndex] : null;
-          return { ...p, displayThumbnail: f ? URL.createObjectURL(f) : null };
-        });
-        setProjects(withThumbs);
+        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const docs = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          displayThumbnail: doc.data().images[doc.data().thumbnailIndex]
+        }));
+        setProjects(docs);
       } catch (e) {
         console.error('Error fetching projects:', e);
       } finally {
@@ -48,7 +50,6 @@ export default function Home() {
       }
     };
     fetchProjects();
-    return () => projects.forEach(p => { if (p.displayThumbnail) URL.revokeObjectURL(p.displayThumbnail); });
   }, []);
 
   const filteredProjects = projects.filter(p => {
