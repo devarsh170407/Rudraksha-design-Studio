@@ -125,3 +125,36 @@ button {
   margin: 0 auto;
   padding: 0 1.5rem;
 }
+
+/* Login Split Layout */
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-primary);
+}
+
+.login-image-pane {
+  display: none;
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  padding: 4rem;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .login-image-pane {
+    display: flex;
+  }
+}
+
+.login-form-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
