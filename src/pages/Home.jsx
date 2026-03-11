@@ -248,7 +248,7 @@ export default function Home() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem',
                     minWidth: '240px'
                   }}>
-                    <div style={{ color: item.color, transition: 'transform 0.3s ease' }}>{item.icon}</div>
+                    <div style={{ color: item.color }}>{item.icon}</div>
                     <h4 style={{ 
                       color: 'white', fontSize: '1rem', fontWeight: 500, margin: 0, 
                       letterSpacing: '0.02em', whiteSpace: 'nowrap'
@@ -333,7 +333,6 @@ export default function Home() {
 
       <style>{`
         .projects-page { min-height: 60vh; width: 100%; max-width: 100%; }
-        .feature-item-slider:hover > div:first-child { transform: scale(1.2); }
         
         @keyframes scroll {
           from { transform: translateX(0); }
