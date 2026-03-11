@@ -9,11 +9,14 @@ export default function Footer() {
   const [selectedStyle, setSelectedStyle] = useState(null);
 
   const rooms = [
+    { id: 'interiors', label: 'Home Interiors', icon: <Home size={20} /> },
+    { id: 'kitchen', label: 'Modular Kitchen', icon: <Coffee size={20} /> },
     { id: 'living', label: 'Living Room', icon: <Layout size={20} /> },
     { id: 'bedroom', label: 'Bedroom', icon: <Box size={20} /> },
-    { id: 'kitchen', label: 'Kitchen', icon: <Coffee size={20} /> },
-    { id: 'bathroom', label: 'Bathroom', icon: <Sparkles size={20} /> },
-    { id: 'dining', label: 'Dining Area', icon: <Layout size={20} /> }
+    { id: 'wardrobe', label: 'Wardrobe', icon: <Layout size={20} /> },
+    { id: 'furniture', label: 'Space Saving', icon: <Sparkles size={20} /> },
+    { id: 'office', label: 'Home Office', icon: <Layout size={20} /> },
+    { id: 'bathroom', label: 'Bathroom', icon: <Sparkles size={20} /> }
   ];
 
   const styles_list = [
@@ -228,9 +231,9 @@ const styles = {
     position: 'relative',
     marginBottom: '2rem',
     padding: '1.5rem',
-    background: 'rgba(212,175,55,0.05)',
-    borderRadius: '20px',
-    border: '1px solid rgba(212,175,55,0.1)',
+    background: 'rgba(212,175,55,0.08)',
+    borderRadius: '8px',
+    border: '1px solid rgba(212,175,55,0.2)',
   },
   plusOverlay: {
     position: 'absolute',
@@ -255,8 +258,8 @@ const styles = {
     background: 'var(--color-accent-primary)',
     color: '#000',
     border: 'none',
-    padding: '1rem 2rem',
-    borderRadius: '8px',
+    padding: '1rem 2.5rem',
+    borderRadius: '4px',
     fontWeight: 700,
     cursor: 'pointer',
     fontSize: '0.95rem',
@@ -281,18 +284,21 @@ const styles = {
   },
   optionGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '1.5rem',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '1rem',
     marginBottom: '3rem',
   },
   optionCard: {
-    padding: '1.5rem',
+    padding: '1.2rem',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     gap: '1rem',
     transition: 'all 0.2s ease',
     textAlign: 'left',
+    borderRadius: '4px',
+    background: 'rgba(255,255,255,0.05)',
+    backdropFilter: 'blur(10px)',
   },
   styleGrid: {
     display: 'grid',
@@ -304,6 +310,9 @@ const styles = {
     padding: '1.5rem',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    borderRadius: '4px',
+    background: 'rgba(255,255,255,0.05)',
+    backdropFilter: 'blur(10px)',
   },
   navBtns: {
     display: 'flex',
@@ -326,7 +335,7 @@ const styles = {
     width: '80px',
     height: '80px',
     background: 'var(--color-accent-primary)',
-    borderRadius: '50%',
+    borderRadius: '4px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
