@@ -74,6 +74,14 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleThreeDVideoChange = (e) => {
+    if (e.target.files[0]) setThreeDVideo(e.target.files[0]);
+  };
+
+  const handleCompletedVideoChange = (e) => {
+    if (e.target.files[0]) setCompletedVideo(e.target.files[0]);
+  };
+
   const handleFileUpload = (file, path) => {
     return new Promise((resolve, reject) => {
       const storageRef = ref(storage, path);
