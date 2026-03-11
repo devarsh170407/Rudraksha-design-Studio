@@ -175,7 +175,7 @@ export default function Home() {
               <div style={{ width: '40px', height: '1px', background: '#d4af37' }} />
               <span style={{ color: '#d4af37', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.2em' }}>OUR STORY</span>
             </div>
-            <h2 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '2rem', lineHeight: 1.1 }}>
+            <h2 style={{ fontSize: '3.5rem', fontWeight: 700, marginBottom: '2.5rem', lineHeight: 1, letterSpacing: '-0.02em' }}>
               Designing spaces that <span style={{ color: '#d4af37' }}>tell your story.</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2.5rem' }}>
@@ -213,16 +213,17 @@ export default function Home() {
 
       {/* ── WHY CHOOSE US FLOATING BAR ── */}
       <section style={{ 
-        marginTop: '-4rem', padding: '0 4rem', position: 'relative', zIndex: 10,
+        marginTop: '-6rem', padding: '0 4rem', position: 'relative', zIndex: 10,
         marginBottom: '6rem'
       }}>
         <div className="glass-panel" style={{ 
-          maxWidth: '1100px', margin: '0 auto', padding: '2.5rem 2rem',
+          maxWidth: '1100px', margin: '0 auto', padding: '3rem 2rem',
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          background: 'rgba(15, 23, 42, 0.8)',
-          backdropFilter: 'blur(16px)'
+          boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.7)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(10, 10, 10, 0.95))',
+          backdropFilter: 'blur(24px)',
+          borderRadius: '24px'
         }}>
           {[
             { icon: <Clock size={28} />, label: "45-Day Delivery", sub: "Speed Meets Precision" },
@@ -242,8 +243,8 @@ export default function Home() {
                 {item.icon}
               </div>
               <div>
-                <h4 style={{ color: 'white', fontSize: '1rem', fontWeight: 600, marginBottom: '0.2rem' }}>{item.label}</h4>
-                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontWeight: 500, letterSpacing: '0.02em' }}>{item.sub}</p>
+                <h4 style={{ color: 'white', fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.4rem', letterSpacing: '0.01em' }}>{item.label}</h4>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.03em', lineHeight: 1.4 }}>{item.sub}</p>
               </div>
             </div>
           ))}
