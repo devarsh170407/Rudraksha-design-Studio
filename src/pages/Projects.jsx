@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { get } from 'idb-keyval';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 
@@ -10,9 +10,19 @@ export default function Projects() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  
   // Filters state
-  const [filterRoom, setFilterRoom] = useState('All');
+  const [filterRoom, setFilterRoom] = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
+
+  // Listen to URL changes if navigating from home page again
+  useEffect(() => {
+    const cat = searchParams.get('category');
+    if (cat) {
+      setFilterRoom(cat);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -121,9 +131,11 @@ export default function Projects() {
           {filteredProjects.map((project, i) => (
             <div 
               key={project.id} 
-              className="glass-panel" 
               onClick={() => handleProjectClick(project.id)}
               style={{ 
+                position: 'relative',
+                height: '280px', 
+                borderRadius: '16px',
                 overflow: 'hidden', 
                 cursor: 'pointer', 
                 transition: 'all var(--transition-smooth)',
@@ -140,23 +152,36 @@ export default function Projects() {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
+              {/* Full Bleed Image Background */}
               <div 
                 style={{ 
-                  height: '240px', 
+                  position: 'absolute',
+                  top: 0, left: 0, right: 0, bottom: 0,
                   backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
-                  borderBottom: '1px solid rgba(255,255,255,0.05)'
+                  transition: 'transform 0.6s ease'
                 }}
+                className="project-img-bg"
               />
-              <div style={{ padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', fontWeight: 600 }}>{project.title}</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>{project.category} • {project.style}</p>
-                  <span style={{ color: 'var(--color-accent-secondary)', fontSize: '0.8rem', fontWeight: 500 }}>
-                    {!currentUser ? 'Login to view' : 'View Details'}
-                  </span>
-                </div>
+              
+              {/* Gradient Overlay for Text Visibility */}
+              <div style={{
+                position: 'absolute',
+                bottom: 0, left: 0, right: 0,
+                padding: '2.5rem 1.5rem 1.5rem',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                pointerEvents: 'none'
+              }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.2rem' }}>
+                  {project.title}
+                </h3>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
+                  {project.style}
+                </p>
               </div>
             </div>
           ))}
@@ -168,6 +193,9 @@ export default function Projects() {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+        .project-img-bg:hover {
+          transform: scale(1.05);
         }
       `}</style>
     </div>

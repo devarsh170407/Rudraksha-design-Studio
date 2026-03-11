@@ -46,7 +46,7 @@ export default function Home() {
             <div 
               key={cat.name} 
               className="category-card"
-              onClick={() => navigate('/projects')}
+              onClick={() => navigate('/projects?category=' + encodeURIComponent(cat.name))}
               style={{
                 position: 'relative',
                 height: '300px', // slightly smaller to fit more categories nicely
