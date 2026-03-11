@@ -151,75 +151,8 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Category visual cards */}
-        <section style={{ padding: '2rem 3%' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#a1a1aa', letterSpacing: '0.08em', marginBottom: '1.25rem' }}>
-            BROWSE BY CATEGORY
-          </h3>
-          <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }} className="hide-scrollbar">
-            {CATEGORIES.map(cat => {
-              const active = filterRoom === cat.name;
-              return (
-                <button
-                  key={cat.name}
-                  onClick={() => setFilterRoom(cat.name)}
-                  style={{
-                    flex: '0 0 auto', position: 'relative',
-                    width: cat.name === 'All' ? '80px' : '130px', height: '90px',
-                    borderRadius: '12px', overflow: 'hidden',
-                    border: active ? '2.5px solid #d4af37' : '2px solid rgba(255,255,255,0.08)',
-                    cursor: 'pointer',
-                    background: cat.name === 'All' ? 'linear-gradient(135deg, #1e3a8a, #2563eb)' : 'transparent',
-                    transition: 'border-color 0.2s, transform 0.2s',
-                    transform: active ? 'scale(1.05)' : 'scale(1)',
-                  }}
-                >
-                  {cat.image && (
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      backgroundImage: `url(${cat.image})`,
-                      backgroundSize: 'cover', backgroundPosition: 'center',
-                    }} />
-                  )}
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    background: active
-                      ? 'linear-gradient(to top, rgba(212,175,55,0.6), rgba(0,0,0,0.4))'
-                      : 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2))',
-                  }} />
-                  <span style={{
-                    position: 'absolute', bottom: '8px', left: 0, right: 0,
-                    textAlign: 'center', fontSize: '0.7rem', fontWeight: 600,
-                    color: 'white', padding: '0 4px', lineHeight: 1.3,
-                  }}>
-                    {cat.name}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
 
-          {/* Style filter pills */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
-            {STYLES.map(s => (
-              <button
-                key={s}
-                onClick={() => setFilterStyle(s)}
-                style={{
-                  padding: '0.4rem 1rem', borderRadius: '50px',
-                  fontSize: '0.82rem', fontWeight: 500,
-                  fontFamily: "'Outfit', sans-serif", cursor: 'pointer',
-                  background: filterStyle === s ? '#2563eb' : 'rgba(255,255,255,0.05)',
-                  color: filterStyle === s ? 'white' : '#a1a1aa',
-                  border: filterStyle === s ? '1px solid #2563eb' : '1px solid rgba(255,255,255,0.09)',
-                  transition: 'all 0.2s',
-                }}
-              >
-                {s === 'All' ? 'All Styles' : s}
-              </button>
-            ))}
-          </div>
-        </section>
+
 
         {/* Projects */}
         <section style={{ padding: '0 3% 4rem' }}>
