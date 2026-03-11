@@ -140,78 +140,81 @@ export default function Projects() {
       {/* ── BROWSE BY CATEGORY + GALLERY ── */}
       <div id="explore-gallery" style={{ padding: '2.5rem 3% 4rem' }}>
 
-        {/* Category visual cards */}
-        <div style={{ marginBottom: '2rem' }}>
+        {/* Dropdown filters */}
+        <div style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#a1a1aa', letterSpacing: '0.08em', marginBottom: '1.25rem' }}>
             BROWSE BY CATEGORY
           </h2>
-          <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }} className="hide-scrollbar">
-            {CATEGORIES.map(cat => {
-              const active = filterRoom === cat.name;
-              return (
-                <button
-                  key={cat.name}
-                  onClick={() => setFilterRoom(cat.name)}
-                  style={{
-                    flex: '0 0 auto', position: 'relative',
-                    width: cat.name === 'All' ? '80px' : '130px', height: '90px',
-                    borderRadius: '12px', overflow: 'hidden',
-                    border: active ? '2.5px solid #d4af37' : '2px solid rgba(255,255,255,0.08)',
-                    cursor: 'pointer',
-                    background: cat.name === 'All' ? 'linear-gradient(135deg, #1e3a8a, #2563eb)' : 'transparent',
-                    transition: 'border-color 0.2s, transform 0.2s',
-                    transform: active ? 'scale(1.05)' : 'scale(1)',
-                  }}
-                >
-                  {cat.image && (
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      backgroundImage: `url(${cat.image})`,
-                      backgroundSize: 'cover', backgroundPosition: 'center',
-                    }} />
-                  )}
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    background: active
-                      ? 'linear-gradient(to top, rgba(212,175,55,0.6), rgba(0,0,0,0.4))'
-                      : 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2))',
-                  }} />
-                  <span style={{
-                    position: 'absolute', bottom: '8px', left: 0, right: 0,
-                    textAlign: 'center', fontSize: '0.7rem', fontWeight: 600,
-                    color: 'white', padding: '0 4px', lineHeight: 1.3,
-                  }}>
-                    {cat.name}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Style filter pills */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
-            {STYLES.map(s => (
-              <button
-                key={s}
-                onClick={() => setFilterStyle(s)}
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            {/* Category dropdown */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500 }}>Room Type</label>
+              <select
+                value={filterRoom}
+                onChange={e => setFilterRoom(e.target.value)}
                 style={{
-                  padding: '0.4rem 1rem', borderRadius: '50px',
-                  fontSize: '0.82rem', fontWeight: 500,
-                  fontFamily: "'Outfit', sans-serif", cursor: 'pointer',
-                  background: filterStyle === s ? '#2563eb' : 'rgba(255,255,255,0.05)',
-                  color: filterStyle === s ? 'white' : '#a1a1aa',
-                  border: filterStyle === s ? '1px solid #2563eb' : '1px solid rgba(255,255,255,0.09)',
-                  transition: 'all 0.2s',
+                  padding: '0.65rem 2.5rem 0.65rem 1rem',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  color: filterRoom === 'All' ? '#a1a1aa' : '#fff',
+                  fontSize: '0.9rem',
+                  fontFamily: "'Outfit', sans-serif",
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '200px',
+                  appearance: 'none',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 0.85rem center',
                 }}
               >
-                {s === 'All' ? 'All Styles' : s}
-              </button>
-            ))}
+                <option value="All" style={{ background: '#0f172a' }}>All Categories</option>
+                {CATEGORIES.filter(c => c.name !== 'All').map(cat => (
+                  <option key={cat.name} value={cat.name} style={{ background: '#0f172a' }}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Style dropdown */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500 }}>Style</label>
+              <select
+                value={filterStyle}
+                onChange={e => setFilterStyle(e.target.value)}
+                style={{
+                  padding: '0.65rem 2.5rem 0.65rem 1rem',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  color: filterStyle === 'All' ? '#a1a1aa' : '#fff',
+                  fontSize: '0.9rem',
+                  fontFamily: "'Outfit', sans-serif",
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '160px',
+                  appearance: 'none',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 0.85rem center',
+                }}
+              >
+                {STYLES.map(s => (
+                  <option key={s} value={s} style={{ background: '#0f172a' }}>{s === 'All' ? 'All Styles' : s}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Projects */}
-        {loading ? (
+        {filterRoom === 'All' ? (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--color-text-secondary)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.08)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏠</div>
+            <p style={{ fontSize: '1.05rem', marginBottom: '0.5rem', color: '#fff' }}>Select a category to explore designs</p>
+            <p style={{ fontSize: '0.88rem' }}>Use the dropdown above to filter by room type or style.</p>
+          </div>
+        ) : loading ? (
           <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)' }}>
             Loading breathtaking designs...
           </div>
@@ -220,6 +223,7 @@ export default function Projects() {
             No projects found for this category yet.
           </div>
         ) : (
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
             {Object.entries(
               filteredProjects.reduce((acc, p) => {
