@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { Clock, Shield, IndianRupee, Paintbrush } from 'lucide-react';
 
 const CATEGORIES = [
   { name: 'All',                    image: '' },
@@ -210,6 +211,45 @@ export default function Home() {
         }} />
       </section>
 
+      {/* ── WHY CHOOSE US FLOATING BAR ── */}
+      <section style={{ 
+        marginTop: '-4rem', padding: '0 4rem', position: 'relative', zIndex: 10,
+        marginBottom: '6rem'
+      }}>
+        <div className="glass-panel" style={{ 
+          maxWidth: '1100px', margin: '0 auto', padding: '2.5rem 2rem',
+          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'rgba(15, 23, 42, 0.8)',
+          backdropFilter: 'blur(16px)'
+        }}>
+          {[
+            { icon: <Clock size={28} />, label: "45-Day Delivery", sub: "Speed Meets Precision" },
+            { icon: <Shield size={28} />, label: "10-Year Warranty", sub: "Built to Last" },
+            { icon: <IndianRupee size={28} />, label: "No Hidden Costs", sub: "Transparent Pricing" },
+            { icon: <Paintbrush size={28} />, label: "Expert Designers", sub: "Award-Winning Team" }
+          ].map((item, idx) => (
+            <div key={idx} className="feature-item" style={{ 
+              textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' 
+            }}>
+              <div style={{ 
+                color: '#d4af37', background: 'rgba(212,175,55,0.1)', 
+                width: '60px', height: '60px', borderRadius: '15px', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.3s'
+              }}>
+                {item.icon}
+              </div>
+              <div>
+                <h4 style={{ color: 'white', fontSize: '1rem', fontWeight: 600, marginBottom: '0.2rem' }}>{item.label}</h4>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontWeight: 500, letterSpacing: '0.02em' }}>{item.sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── GALLERY SECTION ── */}
       <div id="gallery" className="projects-page">
 
@@ -280,6 +320,10 @@ export default function Home() {
 
       <style>{`
         .projects-page { min-height: 60vh; width: 100%; max-width: 100%; }
+        .feature-item { transition: transform 0.3s ease; }
+        .feature-item:hover { transform: translateY(-5px); }
+        .feature-item:hover > div:first-child { background: rgba(212,175,55,0.2); border-radius: 50%; }
+        
         .project-card {
           min-width: 320px; max-width: 400px; flex: 0 0 auto;
           scroll-snap-align: start; position: relative;
