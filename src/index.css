@@ -119,6 +119,13 @@ button {
   border-color: var(--color-accent-primary);
 }
 
+/* Explicit styling for select options to ensure visibility in dark mode */
+select.input-field option {
+  background-color: #1a1a1a;
+  color: white;
+  padding: 10px;
+}
+
 /* Base Layout Container */
 .container {
   max-width: 1200px;
