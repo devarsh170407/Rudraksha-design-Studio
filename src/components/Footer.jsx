@@ -1,39 +1,135 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [step, setStep] = useState(0); // 0: Intro, 1: Rooms, 2: Styles, 3: Success
+  const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedStyle, setSelectedStyle] = useState(null);
+
+  const rooms = [
+    { id: 'living', label: 'Living Room', icon: <Layout size={20} /> },
+    { id: 'bedroom', label: 'Bedroom', icon: <Box size={20} /> },
+    { id: 'kitchen', label: 'Kitchen', icon: <Coffee size={20} /> },
+    { id: 'bathroom', label: 'Bathroom', icon: <Sparkles size={20} /> },
+    { id: 'dining', label: 'Dining Area', icon: <Layout size={20} /> }
+  ];
+
+  const styles_list = [
+    { id: 'modern', label: 'Modern', desc: 'Clean lines & bold colors' },
+    { id: 'classic', label: 'Classic', desc: 'Timeless & elegant' },
+    { id: 'minimalist', label: 'Minimalist', desc: 'Simple & functional' },
+    { id: 'luxury', label: 'Luxury', desc: 'Opulent & detailed' }
+  ];
+
+  const toggleRoom = (id) => {
+    setSelectedRooms(prev => 
+      prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id]
+    );
+  };
 
   return (
     <footer style={styles.footer}>
       {/* ── GET ESTIMATE SECTION ── */}
       <section style={styles.estimateSection}>
         <div style={styles.container}>
-          <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
-          <p style={styles.estimateSubtitle}>Calculate the cost of doing up your home interiors now.</p>
-          
-          <div style={styles.cardGrid}>
-            <div className="glass-panel" style={styles.estimateCard}>
-              <div style={styles.iconContainer}>
-                <Home size={40} color="var(--color-accent-primary)" />
-                <div style={styles.plusOverlay}>＋</div>
+          {step === 0 && (
+            <>
+              <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
+              <p style={styles.estimateSubtitle}>Professional interior cost calculator for your dream space.</p>
+              
+              <div style={styles.cardGrid}>
+                <div className="glass-panel" style={{ ...styles.estimateCard, maxWidth: '500px', margin: '0 auto' }}>
+                  <div style={styles.iconContainer}>
+                    <Home size={40} color="var(--color-accent-primary)" />
+                    <div style={styles.plusOverlay}>＋</div>
+                  </div>
+                  <h3 style={styles.cardTitle}>Full Home Interiors</h3>
+                  <p style={styles.cardDesc}>Select your rooms and style to get a personalized cost estimate.</p>
+                  <button onClick={() => setStep(1)} style={styles.estimateBtn}>Start Calculation</button>
+                </div>
               </div>
-              <h3 style={styles.cardTitle}>Full Home Interiors</h3>
-              <p style={styles.cardDesc}>Get the estimate price for your full home interiors.</p>
-              <button style={styles.estimateBtn}>Get Free Estimate</button>
-            </div>
+            </>
+          )}
 
-            <div className="glass-panel" style={styles.estimateCard}>
-              <div style={styles.iconContainer}>
-                <Coffee size={40} color="var(--color-accent-primary)" />
-                <div style={styles.plusOverlay}>＋</div>
+          {step === 1 && (
+            <div style={styles.stepContainer}>
+              <h2 style={styles.stepTitle}>Which <span style={{ color: 'var(--color-accent-primary)' }}>Rooms</span> are we designing?</h2>
+              <div style={styles.optionGrid}>
+                {rooms.map(room => (
+                  <div 
+                    key={room.id}
+                    onClick={() => toggleRoom(room.id)}
+                    className="glass-panel"
+                    style={{
+                      ...styles.optionCard,
+                      border: selectedRooms.includes(room.id) ? '2px solid var(--color-accent-primary)' : '1px solid rgba(255,255,255,0.1)',
+                      background: selectedRooms.includes(room.id) ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)'
+                    }}
+                  >
+                    <div style={{ color: selectedRooms.includes(room.id) ? 'var(--color-accent-primary)' : 'rgba(255,255,255,0.4)' }}>
+                      {room.icon}
+                    </div>
+                    <span>{room.label}</span>
+                    {selectedRooms.includes(room.id) && <Check size={16} color="var(--color-accent-primary)" />}
+                  </div>
+                ))}
               </div>
-              <h3 style={styles.cardTitle}>Kitchen</h3>
-              <p style={styles.cardDesc}>Get costing for your kitchen interiors.</p>
-              <button style={styles.estimateBtn}>Get Free Estimate</button>
+              <div style={styles.navBtns}>
+                <button onClick={() => setStep(0)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
+                <button 
+                  disabled={selectedRooms.length === 0} 
+                  onClick={() => setStep(2)} 
+                  style={{ ...styles.estimateBtn, opacity: selectedRooms.length === 0 ? 0.5 : 1 }}
+                >
+                  Next Step <ChevronRight size={18} />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {step === 2 && (
+            <div style={styles.stepContainer}>
+              <h2 style={styles.stepTitle}>Choose your <span style={{ color: 'var(--color-accent-primary)' }}>Style</span> preference</h2>
+              <div style={styles.styleGrid}>
+                {styles_list.map(s => (
+                  <div 
+                    key={s.id}
+                    onClick={() => setSelectedStyle(s.id)}
+                    className="glass-panel"
+                    style={{
+                      ...styles.styleCard,
+                      border: selectedStyle === s.id ? '2px solid var(--color-accent-primary)' : '1px solid rgba(255,255,255,0.1)',
+                      background: selectedStyle === s.id ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)'
+                    }}
+                  >
+                    <h4 style={{ color: selectedStyle === s.id ? 'var(--color-accent-primary)' : '#fff', marginBottom: '0.4rem' }}>{s.label}</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>{s.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={styles.navBtns}>
+                <button onClick={() => setStep(1)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
+                <button 
+                  disabled={!selectedStyle} 
+                  onClick={() => setStep(3)} 
+                  style={{ ...styles.estimateBtn, opacity: !selectedStyle ? 0.5 : 1 }}
+                >
+                  Generate Estimate <Sparkles size={18} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div style={styles.stepContainer}>
+              <div style={styles.successIcon}>✓</div>
+              <h2 style={styles.stepTitle}>Estimate <span style={{ color: 'var(--color-accent-primary)' }}>Request Sent!</span></h2>
+              <p style={styles.estimateSubtitle}>Thank you! Our design team will analyze your preferences and contact you within 24 hours with a personalized quote.</p>
+              <button onClick={() => { setStep(0); setSelectedRooms([]); setSelectedStyle(null); }} style={styles.estimateBtn}>Calculate Another</button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -167,6 +263,76 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '1px',
     transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  stepContainer: {
+    maxWidth: '800px',
+    margin: '0 auto',
+    animation: 'fadeIn 0.5s ease',
+  },
+  stepTitle: {
+    fontSize: '2.5rem',
+    fontWeight: 700,
+    color: '#fff',
+    marginBottom: '3rem',
+    letterSpacing: '-0.02em',
+  },
+  optionGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '1.5rem',
+    marginBottom: '3rem',
+  },
+  optionCard: {
+    padding: '1.5rem',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+    transition: 'all 0.2s ease',
+    textAlign: 'left',
+  },
+  styleGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gap: '1.5rem',
+    marginBottom: '3rem',
+  },
+  styleCard: {
+    padding: '1.5rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  navBtns: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '2rem',
+    alignItems: 'center',
+  },
+  backBtn: {
+    background: 'none',
+    border: 'none',
+    color: 'rgba(255,255,255,0.4)',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    transition: 'color 0.3s',
+  },
+  successIcon: {
+    width: '80px',
+    height: '80px',
+    background: 'var(--color-accent-primary)',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '2.5rem',
+    color: '#000',
+    margin: '0 auto 2rem',
   },
   mainFooter: {
     background: 'var(--color-bg-primary)',
