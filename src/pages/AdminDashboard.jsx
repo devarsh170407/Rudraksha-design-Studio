@@ -396,8 +396,6 @@ export default function AdminDashboard() {
                 </button>
               </form>
             </>
-          ) : (
-            </>
           ) : activeTab === 'manage' ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -509,7 +507,8 @@ export default function AdminDashboard() {
                               {est.createdAt?.toDate ? est.createdAt.toDate().toLocaleString() : 'Just now'}
                             </td>
                           </tr>
-                        </tbody>
+                        ))}
+                      </tbody>
                     </table>
                   </div>
                 </div>
