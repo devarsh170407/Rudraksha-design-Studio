@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout, MessageCircle } from 'lucide-react';
+import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout, MessageCircle, Loader2 } from 'lucide-react';
+import { db } from '../firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [step, setStep] = useState(0); // 0: Intro, 1: Rooms, 2: Styles, 3: Success
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedStyle, setSelectedStyle] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const rooms = [
     { id: 'interiors', label: 'Home Interiors', icon: <Home size={20} /> },
@@ -30,6 +33,30 @@ export default function Footer() {
     setSelectedRooms(prev => 
       prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id]
     );
+  };
+
+  const handleGenerateEstimate = async () => {
+    setIsSubmitting(true);
+    try {
+      const roomsText = selectedRooms.map(r => rooms.find(room => room.id === r)?.label).join(', ');
+      const styleText = styles_list.find(s => s.id === selectedStyle)?.label;
+      
+      await addDoc(collection(db, 'estimates'), {
+        rooms: selectedRooms,
+        roomsFormatted: roomsText,
+        style: selectedStyle,
+        styleFormatted: styleText,
+        createdAt: serverTimestamp(),
+        status: 'new'
+      });
+      
+      setStep(3);
+    } catch (error) {
+      console.error("Error saving estimate:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -115,11 +142,11 @@ export default function Footer() {
               <div style={styles.navBtns}>
                 <button onClick={() => setStep(1)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
                 <button 
-                  disabled={!selectedStyle} 
-                  onClick={() => setStep(3)} 
-                  style={{ ...styles.estimateBtn, opacity: !selectedStyle ? 0.5 : 1 }}
+                  disabled={!selectedStyle || isSubmitting} 
+                  onClick={handleGenerateEstimate} 
+                  style={{ ...styles.estimateBtn, opacity: (!selectedStyle || isSubmitting) ? 0.5 : 1 }}
                 >
-                  Generate Estimate <Sparkles size={18} />
+                  {isSubmitting ? <><Loader2 size={18} className="spin-animation" /> Saving...</> : <>Generate Estimate <Sparkles size={18} /></>}
                 </button>
               </div>
             </div>
