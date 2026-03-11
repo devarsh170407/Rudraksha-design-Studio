@@ -31,11 +31,13 @@ export default function AdminDashboard() {
   const [threeDVideo, setThreeDVideo] = useState(null);
   const [completedVideo, setCompletedVideo] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState({ text: '', type: '' });
 
   // Fetch projects from Firestore
   const fetchProjects = async () => {
+    setFetching(true);
     try {
       const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
       const querySnapshot = await getDocs(q);
@@ -46,6 +48,12 @@ export default function AdminDashboard() {
       setAllProjects(docs);
     } catch (e) {
       console.error('Error fetching projects:', e);
+      setMessage({ 
+        text: `Fetch Error: ${e.message}. Please check if Firestore is enabled and rules allow reading.`, 
+        type: 'error' 
+      });
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -339,7 +347,12 @@ export default function AdminDashboard() {
                 <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{allProjects.length} Projects Total</span>
               </div>
 
-              {allProjects.length === 0 ? (
+              {fetching ? (
+                <div style={{ textAlign: 'center', padding: '5rem' }}>
+                  <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
+                  <p style={{ color: 'var(--color-text-secondary)' }}>Syncing with cloud database...</p>
+                </div>
+              ) : allProjects.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
                   <p style={{ color: 'var(--color-text-secondary)' }}>No projects found on the server. Post your first design!</p>
                 </div>
