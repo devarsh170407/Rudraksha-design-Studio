@@ -9,13 +9,14 @@ import Projects from './pages/Projects';
 import ProjectDetails from './pages/ProjectDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Navbar />
-        <main>
+        <main style={{ minHeight: '80vh' }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -47,6 +48,7 @@ function App() {
             />
           </Routes>
         </main>
+        <Footer />
       </Router>
     </AuthProvider>
   );
