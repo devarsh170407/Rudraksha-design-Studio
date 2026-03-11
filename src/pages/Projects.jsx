@@ -1,7 +1,4 @@
-import React, { useState, useEffect } from 'react';
-// import { db } from '../firebase';
-// import { collection, getDocs, query, orderBy } from 'firebase/storage'; 
-// import { collection as fsCollection, getDocs as fsGetDocs, query as fsQuery, orderBy as fsOrderBy } from 'firebase/firestore';
+import { get } from 'idb-keyval';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,12 +14,23 @@ export default function Projects() {
   const [filterStyle, setFilterStyle] = useState('All');
 
   useEffect(() => {
-    const fetchProjects = () => {
+    const fetchProjects = async () => {
       try {
-        const storedProjects = JSON.parse(localStorage.getItem('localProjects') || '[]');
+        const storedProjects = await get('localProjects') || [];
+        
         // Sort descending by created time
         storedProjects.sort((a, b) => b.createdAt - a.createdAt);
-        setProjects(storedProjects);
+        
+        // Prepare Object URLs for the thumbnails so we don't recreate them every render
+        const projectsWithThumbnails = storedProjects.map(p => {
+          const thumbFile = p.images && p.images[p.thumbnailIndex] ? p.images[p.thumbnailIndex] : null;
+          return {
+            ...p,
+            displayThumbnail: thumbFile ? URL.createObjectURL(thumbFile) : null
+          };
+        });
+        
+        setProjects(projectsWithThumbnails);
       } catch (error) {
         console.error("Error fetching local projects:", error);
       } finally {
@@ -30,8 +38,14 @@ export default function Projects() {
       }
     };
 
-    // Add a slight delay just to simulate loading for smooth UI
-    setTimeout(fetchProjects, 500);
+    fetchProjects();
+    
+    // Cleanup ObjectURLs on unmount
+    return () => {
+      projects.forEach(p => {
+        if (p.displayThumbnail) URL.revokeObjectURL(p.displayThumbnail);
+      });
+    }
   }, []);
 
   const filteredProjects = projects.filter(p => {
@@ -128,7 +142,7 @@ export default function Projects() {
               <div 
                 style={{ 
                   height: '240px', 
-                  backgroundImage: `url(${project.thumbnailUrl || 'https://via.placeholder.com/400x300?text=No+Image'})`,
+                  backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   borderBottom: '1px solid rgba(255,255,255,0.05)'

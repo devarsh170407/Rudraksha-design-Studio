@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// import { db } from '../firebase';
-// import { doc, getDoc } from 'firebase/firestore';
+import { get } from 'idb-keyval';
 import { Heart, ArrowLeft, Maximize } from 'lucide-react';
 
 export default function ProjectDetails() {
@@ -10,14 +9,27 @@ export default function ProjectDetails() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [objectUrls, setObjectUrls] = useState({ images: [], threeDVideo: null, completedVideo: null });
+
   useEffect(() => {
-    const fetchProject = () => {
+    let urlsToRevoke = { images: [], threeDVideo: null, completedVideo: null };
+
+    const fetchProject = async () => {
       try {
-        const storedProjects = JSON.parse(localStorage.getItem('localProjects') || '[]');
+        const storedProjects = await get('localProjects') || [];
         const foundProject = storedProjects.find(p => p.id === id);
         
         if (foundProject) {
           setProject(foundProject);
+          
+          const newUrls = {
+            images: foundProject.images ? foundProject.images.map(f => URL.createObjectURL(f)) : [],
+            threeDVideo: foundProject.threeDVideo ? URL.createObjectURL(foundProject.threeDVideo) : null,
+            completedVideo: foundProject.completedVideo ? URL.createObjectURL(foundProject.completedVideo) : null
+          };
+          
+          setObjectUrls(newUrls);
+          urlsToRevoke = newUrls; // save reference for cleanup
         } else {
           console.log("No such project in local storage!");
           navigate('/projects');
@@ -29,8 +41,14 @@ export default function ProjectDetails() {
       }
     };
 
-    // Slight delay for smooth UI transition
-    setTimeout(fetchProject, 300);
+    fetchProject();
+
+    return () => {
+      // Cleanup Object URLs to prevent memory leaks
+      urlsToRevoke.images.forEach(u => URL.revokeObjectURL(u));
+      if (urlsToRevoke.threeDVideo) URL.revokeObjectURL(urlsToRevoke.threeDVideo);
+      if (urlsToRevoke.completedVideo) URL.revokeObjectURL(urlsToRevoke.completedVideo);
+    }
   }, [id, navigate]);
 
   if (loading) {
@@ -52,33 +70,38 @@ export default function ProjectDetails() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.5fr) 1fr', gap: '3rem' }}>
         
         {/* Left Column: Media */}
-        <div>
-          {/* Main Thumbnail View */}
-          <div style={{ 
-            width: '100%', 
-            height: '500px', 
-            borderRadius: '16px', 
-            overflow: 'hidden', 
-            marginBottom: '1rem',
-            position: 'relative'
-          }}>
-            <img 
-              src={project.thumbnailUrl} 
-              alt={project.title} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-            />
-          </div>
+        {/* Left Column: Media */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
-          {/* Gallery placeholder (future expansion for multiple images/3D) */}
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', flex: 1, textAlign: 'center' }}>
-              <Maximize size={24} style={{ marginBottom: '0.5rem', color: 'var(--color-text-secondary)' }} />
-              <p style={{ fontSize: '0.9rem' }}>3D View (Coming Soon)</p>
+          {/* Completed Project Video */}
+          {objectUrls.completedVideo && (
+            <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', background: '#000' }}>
+              <video src={objectUrls.completedVideo} controls autoPlay muted style={{ width: '100%', display: 'block', maxHeight: '500px' }} />
             </div>
-            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', flex: 1, textAlign: 'center' }}>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>More images will appear here</p>
+          )}
+
+          {/* 3D Design Video */}
+          {objectUrls.threeDVideo && (
+            <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', background: '#000' }}>
+              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', textAlign: 'center', fontWeight: 600 }}>3D Design Walkthrough</div>
+              <video src={objectUrls.threeDVideo} controls loop muted style={{ width: '100%', display: 'block', maxHeight: '500px' }} />
             </div>
-          </div>
+          )}
+
+          {/* Image Gallery */}
+          {objectUrls.images && objectUrls.images.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+              {objectUrls.images.map((src, i) => (
+                <div key={i} style={{ borderRadius: '12px', overflow: 'hidden', height: '250px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <img src={src} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: '3rem', background: 'rgba(255,255,255,0.02)', textAlign: 'center', borderRadius: '12px' }}>
+              <p style={{ color: 'var(--color-text-secondary)' }}>No images uploaded for this project.</p>
+            </div>
+          )}
         </div>
 
         {/* Right Column: Details */}
@@ -95,11 +118,8 @@ export default function ProjectDetails() {
               </span>
             </div>
 
-            <div style={{ marginBottom: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem 0' }}>
-              <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-                Experience the perfect blend of aesthetics and functionality tailored just for your lifestyle with our premium {project.style} {project.category} designs.
-              </p>
-            </div>
+            {/* Generic description removed to prioritize images/video */}
+            <div style={{ marginBottom: '2.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem' }}></div>
 
             <button className="btn-primary" style={{ width: '100%', marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
               <Heart size={18} /> Save to Wishlist
