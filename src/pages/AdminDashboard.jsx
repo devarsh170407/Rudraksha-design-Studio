@@ -12,8 +12,10 @@ import {
 } from 'firebase/firestore';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('add'); // 'add' or 'manage'
+  const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
   const [allProjects, setAllProjects] = useState([]);
+  const [leads, setLeads] = useState([]);
+  const [estimates, setEstimates] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     category: 'Home Interiors',
@@ -51,9 +53,39 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchLeads = async () => {
+    setFetching(true);
+    try {
+      const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (e) {
+      console.error('Error fetching leads:', e);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const fetchEstimates = async () => {
+    setFetching(true);
+    try {
+      const q = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      setEstimates(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (e) {
+      console.error('Error fetching estimates:', e);
+    } finally {
+      setFetching(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'manage') {
       fetchProjects();
+    }
+    if (activeTab === 'leads') {
+      fetchLeads();
+      fetchEstimates();
     }
   }, [activeTab]);
 
@@ -249,14 +281,14 @@ export default function AdminDashboard() {
             </li>
             <li>
               <button 
-                onClick={() => setActiveTab('manage')}
+                onClick={() => setActiveTab('leads')}
                 style={{
                   width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
-                  background: activeTab === 'manage' ? 'var(--color-accent-primary)' : 'transparent',
-                  color: activeTab === 'manage' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
+                  background: activeTab === 'leads' ? 'var(--color-accent-primary)' : 'transparent',
+                  color: activeTab === 'leads' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
                   border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
                 }}>
-                📁 Manage Projects
+                📊 Leads & Estimates
               </button>
             </li>
           </ul>
@@ -365,6 +397,8 @@ export default function AdminDashboard() {
               </form>
             </>
           ) : (
+            </>
+          ) : activeTab === 'manage' ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h2 style={{ fontSize: '1.8rem' }}>Manage Existing Designs</h2>
@@ -421,6 +455,65 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
+            </>
+          ) : (
+            <>
+              <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>Business Leads & Estimates</h2>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                {/* Users Section */}
+                <div>
+                  <h3 style={{ marginBottom: '1rem', color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Registered Users</h3>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <th style={{ padding: '1rem' }}>Email</th>
+                          <th style={{ padding: '1rem' }}>Phone</th>
+                          <th style={{ padding: '1rem' }}>Joined Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leads.map(lead => (
+                          <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                            <td style={{ padding: '1rem' }}>{lead.email}</td>
+                            <td style={{ padding: '1rem' }}>{lead.phone || 'N/A'}</td>
+                            <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                              {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Estimates Section */}
+                <div>
+                  <h3 style={{ marginBottom: '1rem', color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Recent Estimate Requests</h3>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <th style={{ padding: '1rem' }}>Rooms Selected</th>
+                          <th style={{ padding: '1rem' }}>Style</th>
+                          <th style={{ padding: '1rem' }}>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {estimates.map(est => (
+                          <tr key={est.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                            <td style={{ padding: '1rem' }}>{est.roomsFormatted}</td>
+                            <td style={{ padding: '1rem' }}>{est.styleFormatted}</td>
+                            <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                              {est.createdAt?.toDate ? est.createdAt.toDate().toLocaleString() : 'Just now'}
+                            </td>
+                          </tr>
+                        </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </main>
