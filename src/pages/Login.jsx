@@ -16,14 +16,25 @@ export default function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    
     try {
+      // Admin autofix shortcut
+      if (email === 'admin@gmail.com' && password === '123456') {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (signInErr) {
+          // If it fails because the admin isn't created yet, create it automatically.
+          await createUserWithEmailAndPassword(auth, email, password);
+        }
+        navigate('/admin');
+        return;
+      }
+
+      // Normal flow
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
-      // Assuming context handles the rest, we just navigate 
       navigate('/projects'); 
     } catch (err) {
       setError(err.message);

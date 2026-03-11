@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // TODO: Let user customize this via env or later
-  const ADMIN_EMAIL = 'admin@rudraksha.com'; 
+  const ADMIN_EMAIL = 'admin@gmail.com'; 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
