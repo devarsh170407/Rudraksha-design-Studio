@@ -30,6 +30,14 @@ export default function Home() {
   useEffect(() => {
     const cat = searchParams.get('category');
     if (cat) setFilterRoom(cat);
+    
+    const scroll = searchParams.get('scroll');
+    if (scroll === 'about') {
+      setTimeout(() => {
+        const el = document.getElementById('about');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -135,6 +143,70 @@ export default function Home() {
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: '80px',
           background: 'linear-gradient(to bottom, transparent, var(--color-bg-primary))',
+        }} />
+      </section>
+
+      {/* ── ABOUT US SECTION ── */}
+      <section id="about" style={{ padding: '8rem 4rem', background: 'var(--color-bg-primary)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '4rem', alignItems: 'center' }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              width: '100%', height: '500px', borderRadius: '20px', overflow: 'hidden',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)'
+            }}>
+              <img 
+                src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                alt="Studio Interior" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+            <div className="glass-panel" style={{
+              position: 'absolute', bottom: '-2rem', right: '-2rem', padding: '2rem',
+              maxWidth: '220px', textAlign: 'center', border: '1px solid rgba(212,175,55,0.3)'
+            }}>
+              <h3 style={{ fontSize: '2.5rem', color: '#d4af37', fontWeight: 700, marginBottom: '0.2rem' }}>10+</h3>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 500, letterSpacing: '0.05em' }}>YEARS OF CRAFTING DREAMS</p>
+            </div>
+          </div>
+
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              <div style={{ width: '40px', height: '1px', background: '#d4af37' }} />
+              <span style={{ color: '#d4af37', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.2em' }}>OUR STORY</span>
+            </div>
+            <h2 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '2rem', lineHeight: 1.1 }}>
+              Designing spaces that <span style={{ color: '#d4af37' }}>tell your story.</span>
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2.5rem' }}>
+              At Rudraksha Design Studio, we believe that an interior is not just a collection of furniture, but a reflection of the soul. Since our inception, we have been dedicated to blending high-end aesthetics with functional brilliance. 
+              <br /><br />
+              Whether it's a cozy minimalist bedroom or a grand modular kitchen, our team of expert designers works closely with you to transform your vision into a living masterpiece that stands the test of time.
+            </p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ color: '#d4af37', fontSize: '1.5rem' }}>✦</div>
+                <div>
+                  <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '0.4rem' }}>Exquisite Detail</h4>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Every corner is curated with precision and premium materials.</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ color: '#d4af37', fontSize: '1.5rem' }}>✦</div>
+                <div>
+                  <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '0.4rem' }}>Timely Delivery</h4>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Your dream space, completed on schedule, without compromises.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Background Accent */}
+        <div style={{ 
+          position: 'absolute', top: '10%', right: '-10%', width: '400px', height: '400px', 
+          background: 'radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)',
+          filter: 'blur(60px)', zIndex: 0
         }} />
       </section>
 

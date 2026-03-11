@@ -28,6 +28,19 @@ export default function Navbar() {
       
       <div style={styles.links}>
         <Link to="/" style={styles.link}><Home size={18} /> Home</Link>
+        <button 
+          onClick={() => {
+            if (window.location.pathname !== '/') {
+              navigate('/?scroll=about');
+            } else {
+              const el = document.getElementById('about');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }} 
+          style={styles.link}
+        >
+          <Compass size={18} style={{ transform: 'rotate(90deg)' }} /> About
+        </button>
         <Link to="/projects" style={styles.link}><Compass size={18} /> Explore</Link>
         
         {currentUser ? (
