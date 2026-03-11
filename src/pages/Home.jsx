@@ -139,17 +139,7 @@ export default function Home() {
 
       {/* ── GALLERY SECTION ── */}
       <div id="gallery" className="projects-page">
-        <header style={{ padding: '3rem 3% 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <h2 style={{
-            fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', fontWeight: 700,
-            background: 'linear-gradient(to right, #ffffff, #60a5fa)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            marginBottom: '0.4rem',
-          }}>Design Gallery</h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem' }}>
-            Browse inspiring spaces crafted by Rudraksha Design Studio.
-          </p>
-        </header>
+
 
 
 
