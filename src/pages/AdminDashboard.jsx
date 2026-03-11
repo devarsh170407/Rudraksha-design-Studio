@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, storage } from '../firebase';
+import { db } from '../firebase';
 import { 
   collection, 
   addDoc, 
@@ -10,12 +10,6 @@ import {
   query,
   orderBy
 } from 'firebase/firestore';
-import { 
-  ref, 
-  uploadBytesResumable, 
-  getDownloadURL,
-  deleteObject
-} from 'firebase/storage';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add' or 'manage'
@@ -82,23 +76,42 @@ export default function AdminDashboard() {
     if (e.target.files[0]) setCompletedVideo(e.target.files[0]);
   };
 
-  const handleFileUpload = (file, path) => {
+  const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, path);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on('state_changed', 
-        (snapshot) => {
-          // Individual file progress can be handled here if needed
-        }, 
-        (error) => reject(error), 
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            resolve(downloadURL);
-          });
-        }
-      );
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64 = reader.result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = (error) => reject(error);
     });
+  };
+
+  const handleFileUpload = async (file, path) => {
+    try {
+      const base64Content = await fileToBase64(file);
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: `${Date.now()}_${file.name.replace(/\s+/g, '_')}`,
+          content: base64Content,
+          path: path
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'GitHub upload failed');
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
   };
 
   const handleUpload = async (e) => {
@@ -127,7 +140,7 @@ export default function AdminDashboard() {
 
       // Upload Images
       for (let i = 0; i < images.length; i++) {
-        const url = await handleFileUpload(images[i], `projects/${projectId}/images/${images[i].name}`);
+        const url = await handleFileUpload(images[i], `public/uploads/${projectId}/images`);
         imageUrls.push(url);
         updateProgress();
       }
@@ -135,13 +148,13 @@ export default function AdminDashboard() {
       // Upload Videos if they exist
       let threeDVideoUrl = null;
       if (threeDVideo) {
-        threeDVideoUrl = await handleFileUpload(threeDVideo, `projects/${projectId}/videos/3d_${threeDVideo.name}`);
+        threeDVideoUrl = await handleFileUpload(threeDVideo, `public/uploads/${projectId}/videos`);
         updateProgress();
       }
 
       let completedVideoUrl = null;
       if (completedVideo) {
-        completedVideoUrl = await handleFileUpload(completedVideo, `projects/${projectId}/videos/completed_${completedVideo.name}`);
+        completedVideoUrl = await handleFileUpload(completedVideo, `public/uploads/${projectId}/videos`);
         updateProgress();
       }
 
