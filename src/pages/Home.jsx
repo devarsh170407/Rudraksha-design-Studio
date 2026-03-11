@@ -226,10 +226,10 @@ export default function Home() {
           borderRadius: '24px'
         }}>
           {[
-            { icon: <Clock size={28} />, label: "45-Day Delivery", sub: "Speed Meets Precision" },
-            { icon: <Shield size={28} />, label: "10-Year Warranty", sub: "Built to Last" },
-            { icon: <IndianRupee size={28} />, label: "No Hidden Costs", sub: "Transparent Pricing" },
-            { icon: <Paintbrush size={28} />, label: "Expert Designers", sub: "Award-Winning Team" }
+            { icon: <Clock size={28} />, label: "Quick Turnaround", sub: "Fresh Energy, Fast Results" },
+            { icon: <Shield size={28} />, label: "Modern Quality", sub: "Latest Trends & Standards" },
+            { icon: <IndianRupee size={28} />, label: "Honest Pricing", sub: "No Hidden Surprises" },
+            { icon: <Paintbrush size={28} />, label: "Personal Care", sub: "Your Vision, Our Priority" }
           ].map((item, idx) => (
             <div key={idx} className="feature-item" style={{ 
               textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' 
