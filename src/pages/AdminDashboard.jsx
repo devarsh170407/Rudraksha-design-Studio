@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { db, storage } from '../firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+// import { db, storage } from '../firebase';
+// import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+// import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
@@ -38,47 +38,62 @@ export default function AdminDashboard() {
     setMessage({ text: '', type: '' });
 
     try {
-      // 1. Upload Thumbnail to Storage
-      const storageRef = ref(storage, `thumbnails/${Date.now()}_${thumbnailFile.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, thumbnailFile);
+      // Convert image to base64 Data URL for local storage
+      const reader = new FileReader();
+      
+      reader.onloadend = () => {
+        const base64Image = reader.result;
+        
+        // Save to LocalStorage
+        const existingProjects = JSON.parse(localStorage.getItem('localProjects') || '[]');
+        
+        const newProject = {
+          id: Date.now().toString(),
+          title: formData.title,
+          category: formData.category,
+          budget: Number(formData.budget),
+          style: formData.style,
+          size: Number(formData.size),
+          thumbnailUrl: base64Image,
+          createdAt: Date.now()
+        };
+        
+        existingProjects.push(newProject);
+        localStorage.setItem('localProjects', JSON.stringify(existingProjects));
 
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(prog);
-        },
-        (error) => {
-          console.error("Storage upload error", error);
-          setMessage({ text: 'Image upload failed. Check CORS or rules.', type: 'error' });
-          setUploading(false);
-        },
-        async () => {
-          // 2. Get Download URL
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          
-          // 3. Save to Firestore
-          await addDoc(collection(db, 'projects'), {
-            title: formData.title,
-            category: formData.category,
-            budget: Number(formData.budget),
-            style: formData.style,
-            size: Number(formData.size),
-            thumbnailUrl: downloadURL,
-            createdAt: serverTimestamp()
-          });
-
-          setMessage({ text: 'Project uploaded successfully!', type: 'success' });
+        setProgress(100);
+        setMessage({ text: 'Project saved locally in your browser!', type: 'success' });
+        
+        // Reset
+        setTimeout(() => {
           setFormData({ title: '', category: 'Home Interiors', budget: '', style: 'Modern', size: '' });
           setThumbnailFile(null);
           setProgress(0);
           setUploading(false);
           e.target.reset();
-        }
-      );
+        }, 800);
+      };
+
+      // Handle file reading error
+      reader.onerror = () => {
+        setMessage({ text: 'Failed to read image file.', type: 'error' });
+        setUploading(false);
+      }
+
+      // Start reading
+      reader.readAsDataURL(thumbnailFile);
+      
+      // Simulate progress for UI
+      let prog = 0;
+      const interval = setInterval(() => {
+        prog += 20;
+        setProgress(prog);
+        if (prog >= 80) clearInterval(interval);
+      }, 100);
+      
     } catch (error) {
-      console.error("Firestore error", error);
-      setMessage({ text: 'Database error occurred.', type: 'error' });
+      console.error("Local save error", error);
+      setMessage({ text: 'Error saving locally.', type: 'error' });
       setUploading(false);
     }
   };
@@ -163,7 +178,7 @@ export default function AdminDashboard() {
             )}
 
             <button type="submit" disabled={uploading} className="btn-primary" style={{ padding: '1rem', fontSize: '1.1rem', marginTop: '1rem' }}>
-              {uploading ? `Uploading... ${Math.round(progress)}%` : 'Upload Project to Database'}
+              {uploading ? `Saving... ${Math.round(progress)}%` : 'Save Project Locally'}
             </button>
           </form>
         </main>

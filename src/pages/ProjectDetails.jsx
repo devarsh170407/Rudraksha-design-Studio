@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { doc, getDoc } from 'firebase/firestore';
 import { Heart, ArrowLeft, Maximize } from 'lucide-react';
 
 export default function ProjectDetails() {
@@ -11,25 +11,26 @@ export default function ProjectDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchProject = () => {
       try {
-        const docRef = doc(db, 'projects', id);
-        const docSnap = await getDoc(docRef);
+        const storedProjects = JSON.parse(localStorage.getItem('localProjects') || '[]');
+        const foundProject = storedProjects.find(p => p.id === id);
         
-        if (docSnap.exists()) {
-          setProject(docSnap.data());
+        if (foundProject) {
+          setProject(foundProject);
         } else {
-          console.log("No such document!");
+          console.log("No such project in local storage!");
           navigate('/projects');
         }
       } catch (error) {
-        console.error("Error fetching project:", error);
+        console.error("Error fetching local project:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProject();
+    // Slight delay for smooth UI transition
+    setTimeout(fetchProject, 300);
   }, [id, navigate]);
 
   if (loading) {

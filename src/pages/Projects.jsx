@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/storage'; // Note: query from firestore
-import { collection as fsCollection, getDocs as fsGetDocs, query as fsQuery, orderBy as fsOrderBy } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { collection, getDocs, query, orderBy } from 'firebase/storage'; 
+// import { collection as fsCollection, getDocs as fsGetDocs, query as fsQuery, orderBy as fsOrderBy } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,23 +17,21 @@ export default function Projects() {
   const [filterStyle, setFilterStyle] = useState('All');
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchProjects = () => {
       try {
-        const q = fsQuery(fsCollection(db, 'projects'), fsOrderBy('createdAt', 'desc'));
-        const querySnapshot = await fsGetDocs(q);
-        const projectsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setProjects(projectsData);
+        const storedProjects = JSON.parse(localStorage.getItem('localProjects') || '[]');
+        // Sort descending by created time
+        storedProjects.sort((a, b) => b.createdAt - a.createdAt);
+        setProjects(storedProjects);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching local projects:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProjects();
+    // Add a slight delay just to simulate loading for smooth UI
+    setTimeout(fetchProjects, 500);
   }, []);
 
   const filteredProjects = projects.filter(p => {
