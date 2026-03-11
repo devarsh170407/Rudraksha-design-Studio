@@ -74,21 +74,20 @@ export default function Projects() {
   };
 
   return (
-    <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
-      <header style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', gap: '2rem' }}>
-        <div>
-          <h1 style={{ fontSize: '3rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #ffffff, #60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+    <div className="projects-page">
+      <header className="projects-header">
+        <div className="projects-header-text">
+          <h1 className="projects-title">
             Design Gallery
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem' }}>Find inspirations for your dream spaces.</p>
+          <p className="projects-subtitle">Find inspirations for your dream spaces.</p>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <div>
-            <label style={{display: 'block', fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '0.3rem'}}>Room Type</label>
+        <div className="projects-filters">
+          <div className="filter-group">
+            <label className="filter-label">Room Type</label>
             <select 
-              className="input-field" 
-              style={{ width: '180px', padding: '0.5rem', background: 'var(--color-bg-secondary)' }}
+              className="input-field filter-select filter-room" 
               value={filterRoom}
               onChange={(e) => setFilterRoom(e.target.value)}
             >
@@ -103,11 +102,10 @@ export default function Projects() {
               <option value="Bathroom">Bathroom</option>
             </select>
           </div>
-          <div>
-            <label style={{display: 'block', fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '0.3rem'}}>Style</label>
+          <div className="filter-group">
+            <label className="filter-label">Style</label>
             <select 
-              className="input-field" 
-              style={{ width: '150px', padding: '0.5rem', background: 'var(--color-bg-secondary)' }}
+              className="input-field filter-select filter-style" 
               value={filterStyle}
               onChange={(e) => setFilterStyle(e.target.value)}
             >
@@ -160,28 +158,9 @@ export default function Projects() {
                   <div 
                     key={project.id} 
                     onClick={() => handleProjectClick(project.id)}
+                    className="project-card"
                     style={{ 
-                      minWidth: '320px',
-                      maxWidth: '400px',
-                      flex: '0 0 auto',
-                      scrollSnapAlign: 'start',
-                      position: 'relative',
-                      height: '240px', 
-                      borderRadius: '12px',
-                      overflow: 'hidden', 
-                      cursor: 'pointer', 
-                      transition: 'all var(--transition-smooth)',
-                      animation: `fadeInUp 0.5s ease ${i * 0.1}s forwards`,
-                      opacity: 0,
-                      transform: 'translateY(20px)'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-6px)';
-                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
+                      animation: `fadeInUp 0.5s ease ${i * 0.1}s forwards`
                     }}
                   >
                     {/* Full Bleed Image Background */}
@@ -198,20 +177,11 @@ export default function Projects() {
                     />
                     
                     {/* Gradient Overlay for Text Visibility */}
-                    <div style={{
-                      position: 'absolute',
-                      bottom: 0, left: 0, right: 0,
-                      padding: '2rem 1.5rem 1.2rem',
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'flex-end',
-                      pointerEvents: 'none'
-                    }}>
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.2rem' }}>
+                    <div className="project-card-overlay">
+                      <h3 className="project-card-title">
                         {project.title}
                       </h3>
-                      <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
+                      <p className="project-card-subtitle">
                         {project.style}
                       </p>
                     </div>
@@ -223,6 +193,105 @@ export default function Projects() {
         </div>
       )}
       <style>{`
+        .projects-page {
+          padding: 2rem 3%;
+          min-height: 80vh;
+          width: 100%;
+          max-width: 100%;
+        }
+        .projects-header {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-bottom: 3rem;
+          gap: 2rem;
+        }
+        .projects-title {
+          font-size: 3rem;
+          margin-bottom: 0.5rem;
+          background: linear-gradient(to right, #ffffff, #60a5fa);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .projects-subtitle {
+          color: var(--color-text-secondary);
+          font-size: 1.1rem;
+        }
+        .projects-filters {
+          display: flex;
+          gap: 1rem;
+          background: rgba(255,255,255,0.03);
+          padding: 1rem;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.05);
+        }
+        .filter-group {
+          /* container for label and select */
+        }
+        .filter-label {
+          display: block;
+          font-size: 0.8rem;
+          color: var(--color-text-secondary);
+          margin-bottom: 0.3rem;
+        }
+        .filter-select {
+          padding: 0.5rem;
+          background: var(--color-bg-secondary);
+        }
+        .filter-room {
+          width: 180px;
+        }
+        .filter-style {
+          width: 150px;
+        }
+        
+        .project-card {
+          min-width: 320px;
+          max-width: 400px;
+          flex: 0 0 auto;
+          scroll-snap-align: start;
+          position: relative;
+          height: 240px;
+          border-radius: 12px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all var(--transition-smooth);
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        
+        .project-card:hover {
+          transform: translateY(-6px) !important;
+          box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+        }
+        
+        .project-card-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 2rem 1.5rem 1.2rem;
+          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          pointer-events: none;
+        }
+        
+        .project-card-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #fff;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          margin-bottom: 0.2rem;
+        }
+        
+        .project-card-subtitle {
+          color: rgba(255,255,255,0.7);
+          font-size: 0.85rem;
+        }
+
         @keyframes fadeInUp {
           to {
             opacity: 1;
@@ -238,6 +307,42 @@ export default function Projects() {
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+          .projects-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+          }
+          .projects-filters {
+            width: 100%;
+            flex-wrap: wrap;
+          }
+          .filter-group {
+            flex: 1;
+            min-width: 120px;
+          }
+          .filter-select {
+            width: 100%;
+          }
+          .projects-title {
+            font-size: 2.2rem;
+          }
+          .projects-page {
+            padding: 1.5rem 4%;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .project-card {
+            min-width: 85vw; /* Almost full width on very small screens */
+            max-width: 85vw;
+          }
+          .projects-title {
+            font-size: 1.8rem;
+          }
         }
       `}</style>
     </div>
