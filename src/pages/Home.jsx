@@ -4,28 +4,15 @@ import { useNavigate } from 'react-router-dom';
 export default function Home() {
   const navigate = useNavigate();
 
-  const categories = [
-    { name: 'Home Interiors', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Modular Kitchen', image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Living Room', image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Bedroom', image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Wardrobe', image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Space Saving Furniture', image: 'https://images.unsplash.com/photo-1583847268964-b28e2023d537?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Home Office', image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Bathroom', image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' }
-  ];
-
   return (
     <>
-      {/* ── HERO BANNER (full-width photo + text overlay) ── */}
+      {/* ── HERO BANNER ── */}
       <section style={{
         width: '100%',
         position: 'relative',
         height: 'clamp(420px, 60vh, 680px)',
         overflow: 'hidden',
-        marginTop: '0',
       }}>
-        {/* Background Image */}
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: 'url("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=85")',
@@ -34,14 +21,10 @@ export default function Home() {
           transform: 'scale(1.03)',
           transition: 'transform 8s ease',
         }} />
-
-        {/* Gradient overlay — left side darker for text readability */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(5,5,20,0.80) 0%, rgba(5,5,20,0.45) 55%, rgba(5,5,20,0.05) 100%)',
+          background: 'linear-gradient(90deg, rgba(5,5,20,0.82) 0%, rgba(5,5,20,0.45) 55%, rgba(5,5,20,0.05) 100%)',
         }} />
-
-        {/* Text Content */}
         <div style={{
           position: 'relative', zIndex: 1,
           height: '100%',
@@ -51,7 +34,6 @@ export default function Home() {
           padding: '0 4rem',
           maxWidth: '700px',
         }}>
-          {/* Small tag */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
             background: 'rgba(212,175,55,0.15)',
@@ -69,10 +51,8 @@ export default function Home() {
 
           <h1 style={{
             fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
-            fontWeight: 700,
-            color: 'white',
-            lineHeight: 1.2,
-            marginBottom: '0.75rem',
+            fontWeight: 700, color: 'white',
+            lineHeight: 1.2, marginBottom: '0.75rem',
             letterSpacing: '-0.02em',
           }}>
             Interiors you'll<br />
@@ -82,9 +62,7 @@ export default function Home() {
           <p style={{
             color: 'rgba(255,255,255,0.75)',
             fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
-            lineHeight: 1.65,
-            marginBottom: '2rem',
-            maxWidth: '480px',
+            lineHeight: 1.65, marginBottom: '2rem', maxWidth: '480px',
           }}>
             From modular kitchens to luxury living rooms — we craft spaces that reflect your lifestyle. Without the stress.
           </p>
@@ -99,16 +77,10 @@ export default function Home() {
             </button>
             <button
               style={{
-                padding: '0.85rem 2rem',
-                fontSize: '0.95rem',
-                borderRadius: '10px',
-                border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white',
-                background: 'rgba(255,255,255,0.07)',
-                backdropFilter: 'blur(8px)',
-                fontFamily: "'Outfit', sans-serif",
-                cursor: 'pointer',
-                transition: 'all 0.2s',
+                padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.3)', color: 'white',
+                background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(8px)',
+                fontFamily: "'Outfit', sans-serif", cursor: 'pointer', transition: 'all 0.2s',
               }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
@@ -119,83 +91,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom fade into page */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: '80px',
           background: 'linear-gradient(to bottom, transparent, var(--color-bg-primary))',
         }} />
       </section>
-
-      {/* Category Section */}
-      <section className="container" style={{ paddingBottom: '6rem' }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '2.5rem', textAlign: 'center' }}>Browse by Category</h2>
-        
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-          gap: '2rem' 
-        }}>
-          {categories.map((cat, index) => (
-            <div 
-              key={cat.name} 
-              className="category-card"
-              onClick={() => navigate('/projects?category=' + encodeURIComponent(cat.name))}
-              style={{
-                position: 'relative',
-                height: '300px', // slightly smaller to fit more categories nicely
-                borderRadius: '16px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                animation: `fadeInUp 0.6s ease ${index * 0.1}s forwards`,
-                opacity: 0,
-                transform: 'translateY(20px)'
-              }}
-            >
-              <div 
-                style={{ 
-                  position: 'absolute', 
-                  top: 0, 
-                  left: 0, 
-                  right: 0, 
-                  bottom: 0, 
-                  backgroundImage: `url(${cat.image})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  transition: 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                }}
-                className="category-bg"
-              />
-              <div 
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: '2rem 1.5rem',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)',
-                  display: 'flex',
-                  alignItems: 'flex-end'
-                }}
-              >
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{cat.name}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Inject Keyframes */}
-      <style>{`
-        @keyframes fadeInUp {
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .category-card:hover .category-bg {
-          transform: scale(1.08);
-        }
-      `}</style>
     </>
   );
 }
