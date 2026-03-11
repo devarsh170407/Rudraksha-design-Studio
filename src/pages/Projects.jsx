@@ -69,12 +69,15 @@ export default function Projects() {
               value={filterRoom}
               onChange={(e) => setFilterRoom(e.target.value)}
             >
-              <option value="All">All Rooms</option>
+              <option value="All">All Categories</option>
+              <option value="Home Interiors">Home Interiors</option>
               <option value="Modular Kitchen">Modular Kitchen</option>
               <option value="Living Room">Living Room</option>
+              <option value="Bedroom">Bedroom</option>
               <option value="Wardrobe">Wardrobe</option>
-              <option value="TV Unit">TV Unit</option>
-              <option value="Study Room">Study Room</option>
+              <option value="Space Saving Furniture">Space Saving Furniture</option>
+              <option value="Home Office">Home Office</option>
+              <option value="Bathroom">Bathroom</option>
             </select>
           </div>
           <div>

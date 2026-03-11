@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
     title: '',
-    category: 'Modular Kitchen',
+    category: 'Home Interiors',
     budget: '',
     style: 'Modern',
     size: ''
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
           });
 
           setMessage({ text: 'Project uploaded successfully!', type: 'success' });
-          setFormData({ title: '', category: 'Modular Kitchen', budget: '', style: 'Modern', size: '' });
+          setFormData({ title: '', category: 'Home Interiors', budget: '', style: 'Modern', size: '' });
           setThumbnailFile(null);
           setProgress(0);
           setUploading(false);
@@ -122,11 +122,14 @@ export default function AdminDashboard() {
               <div>
                 <label style={styles.label}>Category</label>
                 <select name="category" className="input-field" value={formData.category} onChange={handleChange}>
+                  <option>Home Interiors</option>
                   <option>Modular Kitchen</option>
-                  <option>Wardrobe</option>
                   <option>Living Room</option>
-                  <option>TV Unit</option>
-                  <option>Study Room</option>
+                  <option>Bedroom</option>
+                  <option>Wardrobe</option>
+                  <option>Space Saving Furniture</option>
+                  <option>Home Office</option>
+                  <option>Bathroom</option>
                 </select>
               </div>
               <div>

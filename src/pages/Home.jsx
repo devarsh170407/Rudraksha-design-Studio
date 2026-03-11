@@ -5,11 +5,14 @@ export default function Home() {
   const navigate = useNavigate();
 
   const categories = [
+    { name: 'Home Interiors', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
     { name: 'Modular Kitchen', image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
     { name: 'Living Room', image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
+    { name: 'Bedroom', image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
     { name: 'Wardrobe', image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'TV Unit', image: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
-    { name: 'Study Room', image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' }
+    { name: 'Space Saving Furniture', image: 'https://images.unsplash.com/photo-1583847268964-b28e2023d537?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
+    { name: 'Home Office', image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
+    { name: 'Bathroom', image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' }
   ];
 
   return (
@@ -46,7 +49,7 @@ export default function Home() {
               onClick={() => navigate('/projects')}
               style={{
                 position: 'relative',
-                height: '350px',
+                height: '300px', // slightly smaller to fit more categories nicely
                 borderRadius: '16px',
                 overflow: 'hidden',
                 cursor: 'pointer',
