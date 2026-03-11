@@ -161,6 +161,13 @@ export default function Home() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
+            <div className="glass-panel" style={{
+              position: 'absolute', bottom: '-2rem', right: '-2rem', padding: '1.5rem',
+              maxWidth: '220px', textAlign: 'center', border: '1px solid rgba(212,175,55,0.3)'
+            }}>
+              <h3 style={{ fontSize: '1.8rem', color: '#d4af37', fontWeight: 700, marginBottom: '0.2rem' }}>NEW</h3>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.05em' }}>FRESH PERSPECTIVE IN DESIGN</p>
+            </div>
           </div>
 
           <div>
@@ -172,9 +179,9 @@ export default function Home() {
               Designing spaces that <span style={{ color: '#d4af37' }}>tell your story.</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2.5rem' }}>
-              At Rudraksha Design Studio, we believe that your home should be a direct reflection of your personality and aspirations. Our design philosophy centers around the perfect harmony of luxury, comfort, and innovation.
+              At Rudraksha Design Studio, we are a fresh team of designers fueled by passion and a commitment to excellence. We believe that your home should be a direct reflection of your personality and aspirations. 
               <br /><br />
-              From conceptualizing bespoke modular kitchens to orchestrating grand living room transformations, our team brings meticulous craftsmanship to every project. We don't just design rooms; we create environments where memories are made and life is celebrated in style.
+              As a growing studio, we bring a modern perspective and a tireless dedication to every project. We don't just design rooms; we create personal environments where your vision comes to life with genuine care and innovation.
             </p>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>

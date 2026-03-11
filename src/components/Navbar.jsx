@@ -96,6 +96,12 @@ const styles = {
     gap: '0.5rem',
     fontWeight: 500,
     fontSize: '0.95rem',
+    color: 'white',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+    padding: 0,
   },
   logoutBtn: {
     padding: '0.5rem 1rem',
