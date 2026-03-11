@@ -211,42 +211,52 @@ export default function Home() {
         }} />
       </section>
 
-      {/* ── WHY CHOOSE US MINIMALIST GRID ── */}
+      {/* ── WHY CHOOSE US AUTO-SCROLLER ── */}
       <section style={{ 
-        padding: '6rem 4rem', background: 'var(--color-bg-primary)', position: 'relative'
+        padding: '6rem 0', background: 'var(--color-bg-primary)', position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '4rem', letterSpacing: '-0.02em' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', padding: '0 4rem' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '5rem', letterSpacing: '-0.02em' }}>
             Why Choose <span style={{ color: '#d4af37' }}>Rudraksha</span>
           </h2>
-          
-          <div style={{ 
-            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4rem 2rem',
+        </div>
+
+        {/* Slider Track with Fading Masks */}
+        <div style={{ 
+          position: 'relative', width: '100%', overflow: 'hidden',
+          maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+        }}>
+          <div className="slider-track" style={{ 
+            display: 'flex', width: 'max-content', gap: '6rem',
+            animation: 'scroll 30s linear infinite'
           }}>
-            {[
-              { icon: <Heart size={32} />, label: "Personalized Design" },
-              { icon: <Shield size={32} />, label: "Quality Materials" },
-              { icon: <IndianRupee size={32} />, label: "Honest Pricing" },
-              { icon: <Sparkles size={32} />, label: "Modern Aesthetics" },
-              { icon: <Clock size={32} />, label: "Timely Delivery" },
-              { icon: <Layers size={32} />, label: "3D Visuals" },
-              { icon: <Paintbrush size={32} />, label: "Expert Execution" },
-              { icon: <CheckCircle size={32} />, label: "Genuine Care" }
-            ].map((item, idx) => (
-              <div key={idx} className="feature-item" style={{ 
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem' 
-              }}>
-                <div style={{ 
-                  color: '#d4af37', transition: 'transform 0.3s ease'
-                }}>
-                  {item.icon}
-                </div>
-                <h4 style={{ 
-                  color: 'white', fontSize: '1rem', fontWeight: 500, margin: 0, 
-                  letterSpacing: '0.01em', opacity: 0.9 
-                }}>
-                  {item.label}
-                </h4>
+            {[...Array(2)].map((_, i) => (
+              <div key={i} style={{ display: 'flex', gap: '6rem', alignItems: 'center' }}>
+                {[
+                  { icon: <Heart size={32} />, label: "Personalized Design" },
+                  { icon: <Shield size={32} />, label: "Quality Materials" },
+                  { icon: <IndianRupee size={32} />, label: "Honest Pricing" },
+                  { icon: <Sparkles size={32} />, label: "Modern Aesthetics" },
+                  { icon: <Clock size={32} />, label: "Timely Delivery" },
+                  { icon: <Layers size={32} />, label: "3D Visuals" },
+                  { icon: <Paintbrush size={32} />, label: "Expert Execution" },
+                  { icon: <CheckCircle size={32} />, label: "Genuine Care" }
+                ].map((item, idx) => (
+                  <div key={idx} className="feature-item-slider" style={{ 
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem',
+                    minWidth: '200px'
+                  }}>
+                    <div style={{ color: '#d4af37' }}>{item.icon}</div>
+                    <h4 style={{ 
+                      color: 'white', fontSize: '0.95rem', fontWeight: 500, margin: 0, 
+                      letterSpacing: '0.02em', whiteSpace: 'nowrap'
+                    }}>
+                      {item.label}
+                    </h4>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -323,9 +333,14 @@ export default function Home() {
 
       <style>{`
         .projects-page { min-height: 60vh; width: 100%; max-width: 100%; }
-        .feature-item { transition: transform 0.3s ease; }
-        .feature-item:hover { transform: translateY(-8px); }
-        .feature-item:hover > div:first-child { transform: scale(1.1); color: white; }
+        .feature-item-slider:hover > div:first-child { transform: scale(1.2); color: white; }
+        
+        @keyframes scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+
+        .slider-track:hover { animation-play-state: paused; }
         
         .project-card {
           min-width: 320px; max-width: 400px; flex: 0 0 auto;
