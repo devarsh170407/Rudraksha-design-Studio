@@ -235,20 +235,20 @@ export default function Home() {
             {[...Array(2)].map((_, i) => (
               <div key={i} style={{ display: 'flex', gap: '6rem', alignItems: 'center' }}>
                 {[
-                  { icon: <Heart size={32} />, label: "Personalized Design" },
-                  { icon: <Shield size={32} />, label: "Quality Materials" },
-                  { icon: <IndianRupee size={32} />, label: "Honest Pricing" },
-                  { icon: <Sparkles size={32} />, label: "Modern Aesthetics" },
-                  { icon: <Clock size={32} />, label: "Timely Delivery" },
-                  { icon: <Layers size={32} />, label: "3D Visuals" },
-                  { icon: <Paintbrush size={32} />, label: "Expert Execution" },
-                  { icon: <CheckCircle size={32} />, label: "Genuine Care" }
+                  { icon: <Heart size={32} />, label: "Personalized Design", color: "#ff4d4d" },
+                  { icon: <Shield size={32} />, label: "Quality Materials", color: "#4d94ff" },
+                  { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#22c55e" },
+                  { icon: <Sparkles size={32} />, label: "Modern Aesthetics", color: "#ffcc00" },
+                  { icon: <Clock size={32} />, label: "Timely Delivery", color: "#ff66b2" },
+                  { icon: <Layers size={32} />, label: "3D Visuals", color: "#a64dff" },
+                  { icon: <Paintbrush size={32} />, label: "Expert Execution", color: "#00cccc" },
+                  { icon: <CheckCircle size={32} />, label: "Genuine Care", color: "#ff8533" }
                 ].map((item, idx) => (
                   <div key={idx} className="feature-item-slider" style={{ 
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem',
                     minWidth: '200px'
                   }}>
-                    <div style={{ color: '#d4af37' }}>{item.icon}</div>
+                    <div style={{ color: item.color, transition: 'transform 0.3s ease' }}>{item.icon}</div>
                     <h4 style={{ 
                       color: 'white', fontSize: '0.95rem', fontWeight: 500, margin: 0, 
                       letterSpacing: '0.02em', whiteSpace: 'nowrap'
@@ -333,7 +333,7 @@ export default function Home() {
 
       <style>{`
         .projects-page { min-height: 60vh; width: 100%; max-width: 100%; }
-        .feature-item-slider:hover > div:first-child { transform: scale(1.2); color: white; }
+        .feature-item-slider:hover > div:first-child { transform: scale(1.2); }
         
         @keyframes scroll {
           from { transform: translateX(0); }
