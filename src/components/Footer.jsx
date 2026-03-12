@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout, Loader2 } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import Logo from './Logo';
+
 
 const WhatsAppIcon = ({ size = 20, color = "currentColor" }) => (
   <svg 
@@ -205,8 +205,9 @@ export default function Footer() {
         <div style={styles.footerContainer}>
           <div style={styles.footerGrid}>
             <div style={styles.brandCol}>
-              <Link to="/">
-                <Logo size={40} textColor="#fff" />
+              <Link to="/" style={styles.footerLogoContainer}>
+                <img src="/logomain.png" alt="Logo" style={styles.footerLogoImg} />
+                <h2 style={styles.footerLogoText}>Rudraksha <span style={{ color: '#d4af37' }}>Design Studio</span></h2>
               </Link>
               <p style={styles.footerAbout}>
                 Turning visions into breathtaking reality. We are a fresh team of designers dedicated to creating spaces that tell your unique story.
@@ -442,10 +443,22 @@ const styles = {
   brandCol: {
     maxWidth: '400px',
   },
-  footerLogo: {
+  footerLogoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    marginBottom: '1.5rem',
+    textDecoration: 'none',
+  },
+  footerLogoImg: {
+    height: '40px',
+    width: 'auto',
+  },
+  footerLogoText: {
     fontSize: '1.5rem',
     fontWeight: 700,
-    marginBottom: '1.5rem',
+    color: '#fff',
+    margin: 0,
   },
   footerAbout: {
     color: 'rgba(255,255,255,0.6)',

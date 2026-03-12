@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { Home, Compass, User as UserIcon, LogOut, Settings } from 'lucide-react';
-import Logo from './Logo';
+
 
 export default function Navbar() {
   const { currentUser, isAdmin } = useAuth();
@@ -22,8 +22,11 @@ export default function Navbar() {
   return (
     <nav style={styles.nav} className="glass-panel">
       <div style={styles.logoContainer}>
-        <Link to="/" style={styles.logo}>
-          <Logo size={32} />
+        <Link to="/" style={styles.logoLink}>
+          <img src="/logomain.png" alt="Rudraksha Logo" style={styles.logoImage} />
+          <span style={styles.logoText}>
+            Rudraksha <span style={styles.logoAccent}>Design Studio</span>
+          </span>
         </Link>
       </div>
       
@@ -78,10 +81,23 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
   },
-  logo: {
-    fontSize: '1.5rem',
+  logoLink: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    textDecoration: 'none',
+  },
+  logoImage: {
+    height: '40px',
+    width: 'auto',
+    objectFit: 'contain',
+  },
+  logoText: {
+    fontSize: '1.4rem',
     fontWeight: 700,
     letterSpacing: '-0.5px',
+    color: 'white',
+    fontFamily: "'Outfit', sans-serif",
   },
   logoAccent: {
     color: 'var(--color-accent-primary)',
