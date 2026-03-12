@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { Home, Compass, User as UserIcon, LogOut, Settings } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Navbar() {
   const { currentUser, isAdmin } = useAuth();
@@ -22,7 +23,7 @@ export default function Navbar() {
     <nav style={styles.nav} className="glass-panel">
       <div style={styles.logoContainer}>
         <Link to="/" style={styles.logo}>
-          Rudraksha <span style={styles.logoAccent}>Design Studio</span>
+          <Logo size={32} />
         </Link>
       </div>
       

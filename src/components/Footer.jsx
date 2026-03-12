@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout, Loader2 } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import Logo from './Logo';
 
 const WhatsAppIcon = ({ size = 20, color = "currentColor" }) => (
   <svg 
@@ -204,7 +205,9 @@ export default function Footer() {
         <div style={styles.footerContainer}>
           <div style={styles.footerGrid}>
             <div style={styles.brandCol}>
-              <h2 style={styles.footerLogo}>Rudraksha <span style={{ color: '#d4af37' }}>Design Studio</span></h2>
+              <Link to="/">
+                <Logo size={40} textColor="#fff" />
+              </Link>
               <p style={styles.footerAbout}>
                 Turning visions into breathtaking reality. We are a fresh team of designers dedicated to creating spaces that tell your unique story.
               </p>
