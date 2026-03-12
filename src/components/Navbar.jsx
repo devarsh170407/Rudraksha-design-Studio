@@ -23,7 +23,7 @@ export default function Navbar() {
     <nav style={styles.nav} className="glass-panel">
       <div style={styles.logoContainer}>
         <Link to="/" style={styles.logoLink}>
-          <img src="/logomain.jpeg" alt="Rudraksha Logo" style={styles.logoImage} />
+          <img src="/logomain.png" alt="Rudraksha Logo" style={styles.logoImage} />
           <span style={styles.logoText}>
             Rudraksha <span style={styles.logoAccent}>Design Studio</span>
           </span>
