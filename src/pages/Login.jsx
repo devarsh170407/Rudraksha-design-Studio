@@ -60,7 +60,7 @@ export default function Login() {
       }
       setConfirmPassword('');
       setPhone('');
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (err) {
       let msg = err.message;
       if (err.code === 'auth/invalid-credential') msg = 'Invalid email or password. Please try again.';
@@ -214,14 +214,36 @@ export default function Login() {
                       border: '1px solid rgba(255,255,255,0.09)',
                       color: 'white',
                       padding: '0.75rem 1rem 0.75rem 2.4rem',
-                      borderRadius: '9px',
-                      fontSize: '0.88rem',
-                      outline: 'none',
-                      fontFamily: "'Outfit', sans-serif",
-                      transition: 'border-color 0.2s'
-                    }}
-                    onFocus={e => e.target.style.borderColor = '#2563eb'}
-                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.09)'}
+           <button 
+          onClick={() => {
+            if (window.location.pathname !== '/') {
+              navigate('/?scroll=about');
+            } else {
+              const el = document.getElementById('about');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }} 
+          style={styles.link}
+        >
+          <Compass size={18} style={{ transform: 'rotate(90deg)' }} /> About
+        </button>
+        <button 
+          onClick={() => {
+            if (window.location.pathname !== '/') {
+              navigate('/projects');
+            } else {
+              const el = document.getElementById('explore-gallery'); // We'll add this ID to Home.jsx if missing, or use a general one
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                navigate('/projects');
+              }
+            }
+          }} 
+          style={styles.link}
+        >
+          <Compass size={18} /> Explore
+        </button>gba(255,255,255,0.09)'}
                   />
                 </div>
               </div>
