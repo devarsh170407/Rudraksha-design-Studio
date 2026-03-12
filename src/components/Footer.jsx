@@ -206,7 +206,7 @@ export default function Footer() {
           <div style={styles.footerGrid}>
             <div style={styles.brandCol}>
               <Link to="/" style={styles.footerLogoContainer}>
-                <img src="/logomain.png" alt="Logo" style={styles.footerLogoImg} />
+                <img src="/logomain.jpeg" alt="Logo" style={styles.footerLogoImg} />
                 <h2 style={styles.footerLogoText}>Rudraksha <span style={{ color: '#d4af37' }}>Design Studio</span></h2>
               </Link>
               <p style={styles.footerAbout}>
