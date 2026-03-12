@@ -60,7 +60,7 @@ export default function Login() {
       }
       setConfirmPassword('');
       setPhone('');
-      navigate('/projects');
+      navigate('/');
     } catch (err) {
       let msg = err.message;
       if (err.code === 'auth/invalid-credential') msg = 'Invalid email or password. Please try again.';

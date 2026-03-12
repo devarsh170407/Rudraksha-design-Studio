@@ -10,11 +10,13 @@ import ProjectDetails from './pages/ProjectDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <Navbar />
         <main style={{ minHeight: '80vh' }}>
           <Routes>
