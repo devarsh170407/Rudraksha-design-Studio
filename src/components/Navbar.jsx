@@ -86,8 +86,7 @@ const styles = {
     alignItems: 'center',
     gap: '0.75rem',
     textDecoration: 'none',
-    color: 'inherit',
-    transition: 'none',
+    transition: 'color var(--transition-fast)',
   },
   logoImage: {
     height: '40px',
@@ -98,7 +97,6 @@ const styles = {
     fontSize: '1.4rem',
     fontWeight: 700,
     letterSpacing: '-0.5px',
-    color: 'white',
     fontFamily: "'Outfit', sans-serif",
   },
   logoAccent: {
