@@ -264,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* ── GALLERY SECTION ── */}
-      <div id="gallery" className="projects-page">
+      <div id="explore-gallery" className="projects-page">
 
 
 

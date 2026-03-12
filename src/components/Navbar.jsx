@@ -45,7 +45,23 @@ export default function Navbar() {
         >
           <Compass size={18} style={{ transform: 'rotate(90deg)' }} /> About
         </button>
-        <Link to="/projects" style={styles.link}><Compass size={18} /> Explore</Link>
+        <button 
+          onClick={() => {
+            if (window.location.pathname !== '/') {
+              navigate('/projects');
+            } else {
+              const el = document.getElementById('explore-gallery');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                navigate('/projects');
+              }
+            }
+          }} 
+          style={styles.link}
+        >
+          <Compass size={18} /> Explore
+        </button>
         
         {currentUser ? (
           <>
