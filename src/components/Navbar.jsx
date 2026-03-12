@@ -86,6 +86,8 @@ const styles = {
     alignItems: 'center',
     gap: '0.75rem',
     textDecoration: 'none',
+    color: 'inherit',
+    transition: 'none',
   },
   logoImage: {
     height: '40px',
