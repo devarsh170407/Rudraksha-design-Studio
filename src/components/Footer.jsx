@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, ChevronRight, ChevronLeft, Sparkles, Box, Layout, Loader2 } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
+import { useAuth } from '../contexts/AuthContext';
 
 const WhatsAppIcon = ({ size = 20, color = "currentColor" }) => (
   <svg 
@@ -29,10 +29,16 @@ const WhatsAppLogoFull = ({ size = 24 }) => (
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  
   const [step, setStep] = useState(0); // 0: Intro, 1: Rooms, 2: Styles, 3: Success
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isHomePage = location.pathname === '/';
 
   const rooms = [
     { id: 'interiors', label: 'Home Interiors', icon: <Home size={20} /> },
@@ -58,6 +64,14 @@ export default function Footer() {
     );
   };
 
+  const handleStartCalculation = () => {
+    if (!currentUser) {
+      navigate('/login');
+    } else {
+      setStep(1);
+    }
+  };
+
   const handleGenerateEstimate = async () => {
     setIsSubmitting(true);
     try {
@@ -70,6 +84,8 @@ export default function Footer() {
         style: selectedStyle,
         styleFormatted: styleText,
         createdAt: serverTimestamp(),
+        userEmail: currentUser?.email,
+        userId: currentUser?.uid,
         status: 'new'
       });
       
@@ -84,27 +100,28 @@ export default function Footer() {
 
   return (
     <footer style={styles.footer}>
-      {/* ── GET ESTIMATE SECTION ── */}
-      <section style={styles.estimateSection}>
-        <div style={styles.container}>
-          {step === 0 && (
-            <>
-              <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
-              <p style={styles.estimateSubtitle}>Professional interior cost calculator for your dream space.</p>
-              
-              <div style={styles.cardGrid}>
-                <div className="glass-panel" style={{ ...styles.estimateCard, maxWidth: '500px', margin: '0 auto' }}>
-                  <div style={styles.iconContainer}>
-                    <Home size={40} color="var(--color-accent-primary)" />
-                    <div style={styles.plusOverlay}>＋</div>
+      {/* ── GET ESTIMATE SECTION (Home Only) ── */}
+      {isHomePage && (
+        <section style={styles.estimateSection}>
+          <div style={styles.container}>
+            {step === 0 && (
+              <>
+                <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
+                <p style={styles.estimateSubtitle}>Professional interior cost calculator for your dream space.</p>
+                
+                <div style={styles.cardGrid}>
+                  <div className="glass-panel" style={{ ...styles.estimateCard, maxWidth: '500px', margin: '0 auto' }}>
+                    <div style={styles.iconContainer}>
+                      <Home size={40} color="var(--color-accent-primary)" />
+                      <div style={styles.plusOverlay}>＋</div>
+                    </div>
+                    <h3 style={styles.cardTitle}>Full Home Interiors</h3>
+                    <p style={styles.cardDesc}>Select your rooms and style to get a personalized cost estimate.</p>
+                    <button onClick={handleStartCalculation} style={styles.estimateBtn}>Start Calculation</button>
                   </div>
-                  <h3 style={styles.cardTitle}>Full Home Interiors</h3>
-                  <p style={styles.cardDesc}>Select your rooms and style to get a personalized cost estimate.</p>
-                  <button onClick={() => setStep(1)} style={styles.estimateBtn}>Start Calculation</button>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
 
           {step === 1 && (
             <div style={styles.stepContainer}>
@@ -199,6 +216,7 @@ export default function Footer() {
           )}
         </div>
       </section>
+      )}
 
       {/* ── MAIN FOOTER ── */}
       <section style={styles.mainFooter}>
