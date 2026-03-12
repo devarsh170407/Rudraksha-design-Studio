@@ -231,7 +231,7 @@ export default function Footer() {
                 Turning visions into breathtaking reality. We are a fresh team of designers dedicated to creating spaces that tell your unique story.
               </p>
               <div style={styles.socialLinks}>
-                <a href="#" style={styles.socialIcon}><Instagram size={20} /></a>
+                <a href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}><Instagram size={20} /></a>
                 <a href="#" style={styles.socialIcon}><Facebook size={20} /></a>
                 <a href="#" style={styles.socialIcon}><Twitter size={20} /></a>
               </div>
@@ -262,19 +262,36 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* WhatsApp Floating Icon */}
-        <a 
-          href="https://wa.me/919898384133" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={styles.whatsappFloat}
-          title="Chat on WhatsApp"
-        >
-          <div style={{ position: 'relative' }}>
-            <div style={styles.whatsappPulse}></div>
-            <WhatsAppLogoFull size={32} />
-          </div>
-        </a>
+        {/* Floating Social Buttons */}
+        <div style={styles.floatingButtonsContainer}>
+          {/* Instagram Floating Icon */}
+          <a 
+            href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={styles.instagramFloat}
+            title="Follow on Instagram"
+          >
+            <div style={{ position: 'relative' }}>
+              <div style={styles.instagramPulse}></div>
+              <Instagram size={28} />
+            </div>
+          </a>
+
+          {/* WhatsApp Floating Icon */}
+          <a 
+            href="https://wa.me/919898384133" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={styles.whatsappFloat}
+            title="Chat on WhatsApp"
+          >
+            <div style={{ position: 'relative' }}>
+              <div style={styles.whatsappPulse}></div>
+              <WhatsAppLogoFull size={32} />
+            </div>
+          </a>
+        </div>
       </section>
     </footer>
   );
@@ -544,10 +561,37 @@ const styles = {
     textDecoration: 'none',
     fontSize: '0.88rem',
   },
-  whatsappFloat: {
+  floatingButtonsContainer: {
     position: 'fixed',
     bottom: '2rem',
     right: '2rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    zIndex: 1000,
+  },
+  instagramFloat: {
+    width: '60px',
+    height: '60px',
+    background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+    color: 'white',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 15px rgba(220, 39, 67, 0.4)',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer',
+  },
+  instagramPulse: {
+    position: 'absolute',
+    inset: '-10px',
+    border: '2px solid #dc2743',
+    borderRadius: '50%',
+    animation: 'pulse 2s infinite',
+    opacity: 0,
+  },
+  whatsappFloat: {
     width: '60px',
     height: '60px',
     background: '#25D366',
@@ -557,7 +601,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
-    zIndex: 1000,
     transition: 'all 0.3s ease',
     cursor: 'pointer',
   },
