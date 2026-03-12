@@ -264,20 +264,6 @@ export default function Footer() {
 
         {/* Floating Social Buttons */}
         <div style={styles.floatingButtonsContainer}>
-          {/* Instagram Floating Icon */}
-          <a 
-            href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={styles.instagramFloat}
-            title="Follow on Instagram"
-          >
-            <div style={{ position: 'relative' }}>
-              <div style={styles.instagramPulse}></div>
-              <Instagram size={28} />
-            </div>
-          </a>
-
           {/* WhatsApp Floating Icon */}
           <a 
             href="https://wa.me/919898384133" 
@@ -289,6 +275,20 @@ export default function Footer() {
             <div style={{ position: 'relative' }}>
               <div style={styles.whatsappPulse}></div>
               <WhatsAppLogoFull size={32} />
+            </div>
+          </a>
+
+          {/* Instagram Floating Icon */}
+          <a 
+            href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={styles.instagramFloat}
+            title="Follow on Instagram"
+          >
+            <div style={{ position: 'relative' }}>
+              <div style={styles.instagramPulse}></div>
+              <Instagram size={28} />
             </div>
           </a>
         </div>
@@ -575,7 +575,7 @@ const styles = {
     height: '60px',
     background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
     color: 'white',
-    borderRadius: '50%',
+    borderRadius: '16px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -587,7 +587,7 @@ const styles = {
     position: 'absolute',
     inset: '-10px',
     border: '2px solid #dc2743',
-    borderRadius: '50%',
+    borderRadius: '16px',
     animation: 'pulse 2s infinite',
     opacity: 0,
   },
