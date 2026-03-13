@@ -150,7 +150,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleFirebaseUpload = (file, path) => {
+  const handleFirebaseUpload = (file, path, onProgress) => {
     return new Promise((resolve, reject) => {
       const storageRef = ref(storage, `${path}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
@@ -158,7 +158,9 @@ export default function AdminDashboard() {
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          // Progress tracking can be handled individually if needed
+          if (onProgress) {
+            onProgress(snapshot.bytesTransferred, snapshot.totalBytes);
+          }
         },
         (error) => {
           console.error("Upload error:", error);
@@ -186,46 +188,37 @@ export default function AdminDashboard() {
     try {
       const projectId = Date.now().toString();
       
-      const totalFiles = images.length + (threeDVideo ? 1 : 0) + (completedVideo ? 1 : 0);
-      let uploadedCount = 0;
+      const allFiles = [...images];
+      if (threeDVideo) allFiles.push(threeDVideo);
+      if (completedVideo) allFiles.push(completedVideo);
 
-      const updateProgress = () => {
-        uploadedCount++;
-        setProgress((uploadedCount / totalFiles) * 100);
+      const totalBytes = allFiles.reduce((acc, file) => acc + file.size, 0);
+      const fileProgress = new Map(); // Track bytes transferred for each file
+
+      const updateGlobalProgress = (fileName, bytesTransferred) => {
+        fileProgress.set(fileName, bytesTransferred);
+        const totalTransferred = Array.from(fileProgress.values()).reduce((acc, val) => acc + val, 0);
+        setProgress((totalTransferred / totalBytes) * 100);
       };
 
-      // Create upload promises for parallel execution
+      // Create upload promises
       const imagePromises = images.map(img => 
-        handleFirebaseUpload(img, `projects/${projectId}/images`).then(url => {
-          updateProgress();
-          return url;
-        })
+        handleFirebaseUpload(img, `projects/${projectId}/images`, (bytes) => updateGlobalProgress(img.name, bytes))
       );
 
-      const videoPromises = [];
-      let threeDVideoPromise = null;
-      if (threeDVideo) {
-        threeDVideoPromise = handleFirebaseUpload(threeDVideo, `projects/${projectId}/videos`).then(url => {
-          updateProgress();
-          return url;
-        });
-        videoPromises.push(threeDVideoPromise);
-      }
+      let threeDVideoPromise = threeDVideo 
+        ? handleFirebaseUpload(threeDVideo, `projects/${projectId}/videos`, (bytes) => updateGlobalProgress(threeDVideo.name, bytes)) 
+        : Promise.resolve(null);
 
-      let completedVideoPromise = null;
-      if (completedVideo) {
-        completedVideoPromise = handleFirebaseUpload(completedVideo, `projects/${projectId}/videos`).then(url => {
-          updateProgress();
-          return url;
-        });
-        videoPromises.push(completedVideoPromise);
-      }
+      let completedVideoPromise = completedVideo 
+        ? handleFirebaseUpload(completedVideo, `projects/${projectId}/videos`, (bytes) => updateGlobalProgress(completedVideo.name, bytes)) 
+        : Promise.resolve(null);
 
-      // Wait for all uploads to complete simultaneously
+      // Wait for all to complete
       const [imageUrls, threeDVideoUrl, completedVideoUrl] = await Promise.all([
         Promise.all(imagePromises),
-        threeDVideo ? threeDVideoPromise : Promise.resolve(null),
-        completedVideo ? completedVideoPromise : Promise.resolve(null)
+        threeDVideoPromise,
+        completedVideoPromise
       ]);
 
       // Save to Firestore
@@ -243,7 +236,7 @@ export default function AdminDashboard() {
       
       await addDoc(collection(db, 'projects'), newProject);
 
-      setMessage({ text: 'Project published! Files uploaded simultaneously to Firebase Storage and metadata saved to Firestore.', type: 'success' });
+      setMessage({ text: 'Project published! All files uploaded successfully.', type: 'success' });
       
       // Reset
       setTimeout(() => {
