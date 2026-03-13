@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, storage } from '../firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { db } from '../firebase';
 import { 
   collection, 
   addDoc, 
@@ -207,8 +206,25 @@ export default function AdminDashboard() {
       throw new Error('GitHub configuration missing in .env');
     }
 
-    const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    // Add a random suffix to guarantee uniqueness during parallel uploads
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const fileName = `${Date.now()}_${randomSuffix}_${file.name.replace(/\s+/g, '_')}`;
     const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}/${fileName}`;
+    
+    // Check if file already exists to get SHA (just in case)
+    let sha;
+    try {
+      const getRes = await fetch(url, {
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
+      });
+      if (getRes.status === 200) {
+        const data = await getRes.json();
+        sha = data.sha;
+      }
+    } catch (e) {
+      console.warn("Error checking file existence:", e);
+    }
+
     const base64Content = await fileToBase64(file);
 
     const response = await fetch(url, {
@@ -219,7 +235,8 @@ export default function AdminDashboard() {
       },
       body: JSON.stringify({
         message: `Upload ${fileName} via Admin Dashboard`,
-        content: base64Content
+        content: base64Content,
+        sha: sha
       }),
     });
 
