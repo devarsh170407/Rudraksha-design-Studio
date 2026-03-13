@@ -206,25 +206,12 @@ export default function AdminDashboard() {
       throw new Error('GitHub configuration missing in .env');
     }
 
-    // Add a random suffix to guarantee uniqueness during parallel uploads
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const fileName = `${Date.now()}_${randomSuffix}_${file.name.replace(/\s+/g, '_')}`;
+    // Filenames are now prefixed with a unique timestamp + random string
+    // to guarantee no collisions even with rapid clicks
+    const uniqueId = Math.random().toString(36).substring(2, 10);
+    const fileName = `${Date.now()}_${uniqueId}_${file.name.replace(/\s+/g, '_')}`;
     const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}/${fileName}`;
     
-    // Check if file already exists to get SHA (just in case)
-    let sha;
-    try {
-      const getRes = await fetch(url, {
-        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
-      });
-      if (getRes.status === 200) {
-        const data = await getRes.json();
-        sha = data.sha;
-      }
-    } catch (e) {
-      console.warn("Error checking file existence:", e);
-    }
-
     const base64Content = await fileToBase64(file);
 
     const response = await fetch(url, {
@@ -235,14 +222,15 @@ export default function AdminDashboard() {
       },
       body: JSON.stringify({
         message: `Upload ${fileName} via Admin Dashboard`,
-        content: base64Content,
-        sha: sha
+        content: base64Content
       }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'GitHub upload failed');
+      // If we get a conflict (409), it means the file somehow already exists.
+      // But with our naming convention, this shouldn't happen.
+      throw new Error(error.message || `GitHub upload failed (${response.status})`);
     }
 
     return `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${path}/${fileName}`;
@@ -272,7 +260,8 @@ export default function AdminDashboard() {
     setMessage({ text: '', type: '' });
 
     try {
-      const projectId = Date.now().toString();
+      // Use a robust project ID combining timestamp and random string
+      const projectId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       
       const totalFiles = images.length + (threeDVideo ? 1 : 0) + (completedVideo ? 1 : 0);
       let uploadedCount = 0;
@@ -348,24 +337,11 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteProject = async (project) => {
-    if (!window.confirm('Are you sure you want to delete this project? This will remove all files from storage too.')) return;
+    if (!window.confirm('Are you sure you want to delete this project?')) return;
 
     try {
-      // 1. Delete from Firestore
+      // Delete from Firestore
       await deleteDoc(doc(db, 'projects', project.id));
-
-      // 2. Delete files from Storage (Optional but recommended for cleanup)
-      // Note: Firebase doesn't support deleting "folders", we'd need to delete each file ref.
-      // For simplicity in this demo, we'll just delete the Firestore entry.
-      // If we wanted to be thorough:
-      /*
-      for (const url of project.images) {
-        const imageRef = ref(storage, url);
-        await deleteObject(imageRef).catch(err => console.error("Error deleting image:", err));
-      }
-      if (project.threeDVideo) await deleteObject(ref(storage, project.threeDVideo)).catch(e => {});
-      if (project.completedVideo) await deleteObject(ref(storage, project.completedVideo)).catch(e => {});
-      */
 
       setMessage({ text: 'Project deleted successfully!', type: 'success' });
       fetchProjects();
