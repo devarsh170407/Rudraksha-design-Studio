@@ -23,12 +23,12 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
   const [allProjects, setAllProjects] = useState([]);
   const [leads, setLeads] = useState([]);
-  const [estimates, setEstimates] = useState([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     category: 'Home Interiors',
-    style: 'Modern'
+    style: 'Modern',
+    projectStatus: 'Completed'
   });
   
   const [images, setImages] = useState([]);
@@ -75,19 +75,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchEstimates = async () => {
-    setFetching(true);
-    try {
-      const q = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      setEstimates(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } catch (e) {
-      console.error('Error fetching estimates:', e);
-    } finally {
-      setFetching(false);
-    }
-  };
-
   const handleUpdateStatus = async (collectionName, docId, newStatus) => {
     try {
       const docRef = doc(db, collectionName, docId);
@@ -96,8 +83,6 @@ export default function AdminDashboard() {
       // Update local state
       if (collectionName === 'users') {
         setLeads(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
-      } else if (collectionName === 'estimates') {
-        setEstimates(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
       }
       
       setMessage({ text: 'Status updated successfully!', type: 'success' });
@@ -114,7 +99,6 @@ export default function AdminDashboard() {
     }
     if (activeTab === 'leads') {
       fetchLeads();
-      fetchEstimates();
     }
   }, [activeTab]);
 
@@ -301,6 +285,7 @@ export default function AdminDashboard() {
         thumbnailIndex: thumbnailIndex,
         threeDVideo: threeDVideoUrl,
         completedVideo: completedVideoUrl,
+        projectStatus: formData.projectStatus,
         createdAt: serverTimestamp(),
         localId: projectId
       };
@@ -311,7 +296,7 @@ export default function AdminDashboard() {
       
       // Reset
       setTimeout(() => {
-        setFormData({ title: '', category: 'Home Interiors', style: 'Modern' });
+        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed' });
         setImages([]);
         setThumbnailIndex(0);
         setThreeDVideo(null);
@@ -334,20 +319,16 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteProject = async (project) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) return;
-
+  const handleToggleProjectStatus = async (project) => {
+    const newStatus = project.projectStatus === 'Completed' ? 'In Progress' : 'Completed';
     try {
-      // Delete from Firestore
-      await deleteDoc(doc(db, 'projects', project.id));
-
-      setMessage({ text: 'Project deleted successfully!', type: 'success' });
-      fetchProjects();
-      
+      await updateDoc(doc(db, 'projects', project.id), { projectStatus: newStatus });
+      setAllProjects(prev => prev.map(p => p.id === project.id ? { ...p, projectStatus: newStatus } : p));
+      setMessage({ text: `Project marked as ${newStatus}`, type: 'success' });
       setTimeout(() => setMessage({ text: '', type: '' }), 3000);
     } catch (e) {
-      console.error('Delete error:', e);
-      setMessage({ text: 'Error deleting project.', type: 'error' });
+      console.error('Update status error:', e);
+      setMessage({ text: 'Error updating project status.', type: 'error' });
     }
   };
 
@@ -392,7 +373,7 @@ export default function AdminDashboard() {
                   color: activeTab === 'leads' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
                   border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
                 }}>
-                📊 Leads & Estimates
+                📊 Business Leads
               </button>
             </li>
           </ul>
@@ -442,6 +423,13 @@ export default function AdminDashboard() {
                       <option>Modern</option>
                       <option>Classic</option>
                       <option>Minimalist</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={styles.label}>Project Status</label>
+                    <select name="projectStatus" className="input-field" value={formData.projectStatus} onChange={handleChange}>
+                      <option>Completed</option>
+                      <option>In Progress</option>
                     </select>
                   </div>
                 </div>
@@ -619,19 +607,34 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       
-                      <button 
-                        onClick={() => handleDeleteProject(project)}
-                        style={{
-                          background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-                          border: '1px solid rgba(239, 68, 68, 0.2)', padding: '0.6rem 1.2rem',
-                          borderRadius: '8px', cursor: 'pointer', fontWeight: 600,
-                          transition: 'all 0.2s', fontSize: '0.9rem'
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
-                      >
-                        Delete
-                      </button>
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                          <button 
+                            onClick={() => handleToggleProjectStatus(project)}
+                            style={{
+                              background: project.projectStatus === 'Completed' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                              color: project.projectStatus === 'Completed' ? '#22c55e' : '#eab308',
+                              border: `1px solid ${project.projectStatus === 'Completed' ? 'rgba(34,197,94,0.2)' : 'rgba(234,179,8,0.2)'}`,
+                              padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                            }}
+                          >
+                            {project.projectStatus || 'Completed'}
+                          </button>
+                          <button 
+                            onClick={() => {
+                              if (window.confirm('Delete this project?')) {
+                                deleteDoc(doc(db, 'projects', project.id)).then(() => fetchProjects());
+                              }
+                            }}
+                            style={{
+                              background: 'transparent', color: 'rgba(239, 68, 68, 0.6)',
+                              border: 'none', cursor: 'pointer', fontSize: '0.75rem', textDecoration: 'underline'
+                            }}
+                          >
+                            Delete Permanent
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -736,76 +739,6 @@ export default function AdminDashboard() {
                         {leads.length === 0 && (
                           <tr>
                             <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No registered users found.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Estimates Section */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Recent Estimate Requests</h3>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{estimates.length} Requests</span>
-                  </div>
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                      <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                          <th style={{ padding: '1rem' }}>User Email</th>
-                          <th style={{ padding: '1rem' }}>Rooms Selected</th>
-                          <th style={{ padding: '1rem' }}>Style</th>
-                          <th style={{ padding: '1rem' }}>Status</th>
-                          <th style={{ padding: '1rem' }}>Contact</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {estimates
-                          .filter(est => showCompleted || est.status !== 'done')
-                          .map(est => (
-                          <tr key={est.id} style={{ 
-                            borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            opacity: est.status === 'done' ? 0.6 : 1,
-                            background: est.status === 'done' ? 'rgba(0,0,0,0.2)' : 'transparent'
-                          }}>
-                            <td style={{ padding: '1rem' }}>{est.userEmail || 'Guest'}</td>
-                            <td style={{ padding: '1rem' }}>{est.roomsFormatted}</td>
-                            <td style={{ padding: '1rem' }}>{est.styleFormatted}</td>
-                            <td style={{ padding: '1rem' }}>
-                              <button 
-                                onClick={() => handleUpdateStatus('estimates', est.id, est.status === 'done' ? 'pending' : 'done')}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '0.5rem',
-                                  color: est.status === 'done' ? 'var(--color-success)' : 'var(--color-text-secondary)',
-                                  fontSize: '0.85rem'
-                                }}
-                              >
-                                {est.status === 'done' ? <CheckCircle size={18} /> : <Circle size={18} />}
-                                {est.status === 'done' ? 'Done' : 'Pending'}
-                              </button>
-                            </td>
-                            <td style={{ padding: '1rem' }}>
-                              <div style={{ display: 'flex', gap: '0.8rem' }}>
-                                <a 
-                                  href={`mailto:${est.userEmail}`} 
-                                  title="Email User"
-                                  style={{ color: 'var(--color-accent-primary)' }}
-                                >
-                                  <Mail size={18} />
-                                </a>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                        {estimates.length === 0 && (
-                          <tr>
-                            <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No estimate requests found.</td>
                           </tr>
                         )}
                       </tbody>

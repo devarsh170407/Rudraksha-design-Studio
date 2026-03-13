@@ -261,6 +261,21 @@ export default function Projects() {
                         backgroundSize: 'cover', backgroundPosition: 'center',
                         transition: 'transform 0.6s ease',
                       }} className="project-img-bg" />
+                      
+                      {/* Status Badge */}
+                      <div style={{
+                        position: 'absolute', top: '12px', right: '12px',
+                        padding: '0.3rem 0.7rem', borderRadius: '6px',
+                        fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
+                        letterSpacing: '0.05em', zIndex: 2,
+                        background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.9)' : 'rgba(34, 197, 94, 0.9)',
+                        color: project.projectStatus === 'In Progress' ? '#000' : '#fff',
+                        backdropFilter: 'blur(4px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                      }}>
+                        {project.projectStatus || 'Completed'}
+                      </div>
+
                       <div className="project-card-overlay">
                         <h4 className="project-card-title">{project.title}</h4>
                         <p className="project-card-subtitle">{project.style}</p>

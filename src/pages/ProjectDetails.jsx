@@ -7,8 +7,8 @@ import { Heart, ArrowLeft } from 'lucide-react';
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -39,6 +39,7 @@ export default function ProjectDetails() {
   if (!project) return null;
 
   return (
+    <>
     <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
       <button 
         onClick={() => navigate(-1)} 
@@ -72,7 +73,17 @@ export default function ProjectDetails() {
           {project.images && project.images.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
               {project.images.map((src, i) => (
-                <div key={i} style={{ borderRadius: '12px', overflow: 'hidden', height: '250px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div 
+                  key={i} 
+                  onClick={() => setSelectedImage(src)}
+                  style={{ 
+                    borderRadius: '12px', overflow: 'hidden', height: '250px', 
+                    border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer',
+                    transition: 'transform 0.3s ease'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
                   <img src={src} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ))}
@@ -89,12 +100,36 @@ export default function ProjectDetails() {
           <div className="glass-panel" style={{ padding: '2.5rem' }}>
             <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', lineHeight: 1.2 }}>{project.title}</h1>
             
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-              <span style={{ padding: '0.3rem 0.8rem', background: 'var(--color-accent-primary)', color: 'var(--color-text-primary)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+              <span style={{ padding: '0.3rem 0.8rem', background: 'var(--color-accent-primary)', color: 'var(--color-bg-primary)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>
                 {project.category}
               </span>
               <span style={{ padding: '0.3rem 0.8rem', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>
                 {project.style}
+              </span>
+            </div>
+
+            <div style={{ 
+              marginBottom: '2rem', 
+              padding: '1rem', 
+              borderRadius: '12px', 
+              background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+              border: `1px solid ${project.projectStatus === 'In Progress' ? 'rgba(234,179,8,0.2)' : 'rgba(34,197,94,0.2)'}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem'
+            }}>
+              <div style={{ 
+                width: '10px', height: '10px', borderRadius: '50%', 
+                background: project.projectStatus === 'In Progress' ? '#eab308' : '#22c55e',
+                boxShadow: `0 0 10px ${project.projectStatus === 'In Progress' ? '#eab308' : '#22c55e'}` 
+              }} />
+              <span style={{ 
+                fontWeight: 600, 
+                color: project.projectStatus === 'In Progress' ? '#eab308' : '#22c55e',
+                fontSize: '0.9rem' 
+              }}>
+                Status: {project.projectStatus || 'Completed'}
               </span>
             </div>
 
@@ -111,5 +146,40 @@ export default function ProjectDetails() {
 
       </div>
     </div>
+
+    {/* Lightbox Modal */}
+    {selectedImage && (
+      <div 
+        onClick={() => setSelectedImage(null)}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.92)' , backdropFilter: 'blur(10px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '2rem', cursor: 'zoom-out',
+          animation: 'fadeIn 0.3s ease'
+        }}
+      >
+        <button 
+          onClick={() => setSelectedImage(null)}
+          style={{
+            position: 'absolute', top: '2rem', right: '2rem',
+            background: 'white', color: 'black', border: 'none',
+            width: '40px', height: '40px', borderRadius: '50%',
+            fontSize: '1.5rem', fontWeight: 'bold', cursor: 'pointer'
+          }}
+        >
+          ×
+        </button>
+        <img 
+          src={selectedImage} 
+          alt="Fullscreen" 
+          style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }} 
+        />
+        <style>{`
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        `}</style>
+      </div>
+    )}
+    </>
   );
 }
