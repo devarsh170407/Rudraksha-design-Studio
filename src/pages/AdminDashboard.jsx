@@ -181,6 +181,12 @@ export default function AdminDashboard() {
       return;
     }
 
+    // Check if storage is initialized
+    if (!storage) {
+      setMessage({ text: 'Cloud Storage not initialized. Please check your firebase.js configuration.', type: 'error' });
+      return;
+    }
+
     setUploading(true);
     setProgress(0);
     setMessage({ text: '', type: '' });
@@ -252,10 +258,19 @@ export default function AdminDashboard() {
       
     } catch (error) {
       console.error("Project upload error:", error);
-      setMessage({ 
-        text: `Error: ${error.message}. Check browser console and Vercel logs for details.`, 
-        type: 'error' 
-      });
+      let errorMsg = `Upload Failed: ${error.message}`;
+      
+      if (error.code === 'storage/unauthorized') {
+        errorMsg = "Unauthorized: You don't have permission to upload. Please check your Firebase Storage rules.";
+      } else if (error.code === 'storage/canceled') {
+        errorMsg = "Upload was canceled.";
+      } else if (error.name === 'FirebaseError') {
+        errorMsg = `Firebase Error: ${error.message} (Code: ${error.code})`;
+      } else if (error.message && error.message.includes('CORS')) {
+        errorMsg = "CORS Error: Cloud Storage is blocking the upload. Please ensure CORS is configured on your Firebase bucket.";
+      }
+      
+      setMessage({ text: errorMsg, type: 'error' });
       setUploading(false);
     }
   };
