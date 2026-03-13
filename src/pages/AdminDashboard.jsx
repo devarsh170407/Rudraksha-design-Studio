@@ -16,9 +16,7 @@ import {
   Circle, 
   Mail, 
   MessageCircle, 
-  PhoneCall,
-  ExternalLink,
-  Trash2
+  PhoneCall
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -271,15 +269,17 @@ export default function AdminDashboard() {
         setProgress((uploadedCount / totalFiles) * 100);
       };
 
-      // 1. Compress and Upload Images
-      const imagePromises = images.map(async (img) => {
+      // 1. Compress and Upload Images SEQUENTIALLY
+      // Sequential upload is required to avoid GitHub SHA/Commit conflicts
+      const imageUrls = [];
+      for (const img of images) {
         const compressedImg = await compressImage(img);
         const url = await handlegithubUpload(compressedImg, `public/uploads/${projectId}/images`);
+        imageUrls.push(url);
         updateProgress();
-        return url;
-      });
+      }
 
-      // 2. Upload Videos (Direct to GitHub, bypassing Vercel limits)
+      // 2. Upload Videos (Direct to GitHub, bypassing Vercel limits) - Also Sequentially
       let threeDVideoUrl = null;
       if (threeDVideo) {
         threeDVideoUrl = await handlegithubUpload(threeDVideo, `public/uploads/${projectId}/videos`);
@@ -291,8 +291,6 @@ export default function AdminDashboard() {
         completedVideoUrl = await handlegithubUpload(completedVideo, `public/uploads/${projectId}/videos`);
         updateProgress();
       }
-
-      const imageUrls = await Promise.all(imagePromises);
 
       // 3. Save to Firestore
       const newProject = {
