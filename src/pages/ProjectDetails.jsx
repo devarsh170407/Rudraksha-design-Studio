@@ -7,6 +7,7 @@ import { Heart, ArrowLeft } from 'lucide-react';
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
 
