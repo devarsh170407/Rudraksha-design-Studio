@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { 
   collection, 
   addDoc, 
@@ -139,42 +140,26 @@ export default function AdminDashboard() {
     if (e.target.files[0]) setCompletedVideo(e.target.files[0]);
   };
 
-  const fileToBase64 = (file) => {
+  const handleFirebaseUpload = (file, path) => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64 = reader.result.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = (error) => reject(error);
+      const storageRef = ref(storage, `${path}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Progress tracking can be handled individually if needed
+        },
+        (error) => {
+          console.error("Upload error:", error);
+          reject(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
     });
-  };
-
-  const handleFileUpload = async (file, path) => {
-    try {
-      const base64Content = await fileToBase64(file);
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fileName: `${Date.now()}_${file.name.replace(/\s+/g, '_')}`,
-          content: base64Content,
-          path: path
-        })
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || 'GitHub upload failed');
-      }
-
-      const data = await response.json();
-      return data.url;
-    } catch (error) {
-      console.error('Upload error:', error);
-      throw error;
-    }
   };
 
   const handleUpload = async (e) => {
@@ -192,7 +177,6 @@ export default function AdminDashboard() {
       const projectId = Date.now().toString();
       const imageUrls = [];
       
-      // Calculate total files to upload for progress bar
       const totalFiles = images.length + (threeDVideo ? 1 : 0) + (completedVideo ? 1 : 0);
       let uploadedCount = 0;
 
@@ -203,21 +187,21 @@ export default function AdminDashboard() {
 
       // Upload Images
       for (let i = 0; i < images.length; i++) {
-        const url = await handleFileUpload(images[i], `public/uploads/${projectId}/images`);
+        const url = await handleFirebaseUpload(images[i], `projects/${projectId}/images`);
         imageUrls.push(url);
         updateProgress();
       }
 
-      // Upload Videos if they exist
+      // Upload Videos
       let threeDVideoUrl = null;
       if (threeDVideo) {
-        threeDVideoUrl = await handleFileUpload(threeDVideo, `public/uploads/${projectId}/videos`);
+        threeDVideoUrl = await handleFirebaseUpload(threeDVideo, `projects/${projectId}/videos`);
         updateProgress();
       }
 
       let completedVideoUrl = null;
       if (completedVideo) {
-        completedVideoUrl = await handleFileUpload(completedVideo, `public/uploads/${projectId}/videos`);
+        completedVideoUrl = await handleFirebaseUpload(completedVideo, `projects/${projectId}/videos`);
         updateProgress();
       }
 
@@ -231,12 +215,12 @@ export default function AdminDashboard() {
         threeDVideo: threeDVideoUrl,
         completedVideo: completedVideoUrl,
         createdAt: serverTimestamp(),
-        localId: projectId // Keep track of the folder name in storage
+        localId: projectId
       };
       
       await addDoc(collection(db, 'projects'), newProject);
 
-      setMessage({ text: 'Project published! Metadata saved to Firestore and files to GitHub.', type: 'success' });
+      setMessage({ text: 'Project published! Files uploaded to Firebase Storage and metadata saved to Firestore.', type: 'success' });
       
       // Reset
       setTimeout(() => {
