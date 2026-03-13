@@ -140,6 +140,16 @@ export default function AdminDashboard() {
     if (e.target.files[0]) setCompletedVideo(e.target.files[0]);
   };
 
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    setImages(newImages);
+    if (thumbnailIndex === index) {
+      setThumbnailIndex(0);
+    } else if (thumbnailIndex > index) {
+      setThumbnailIndex(thumbnailIndex - 1);
+    }
+  };
+
   const handleFirebaseUpload = (file, path) => {
     return new Promise((resolve, reject) => {
       const storageRef = ref(storage, `${path}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`);
@@ -395,6 +405,31 @@ export default function AdminDashboard() {
                             position: 'relative'
                           }}
                         >
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
+                            style={{
+                              position: 'absolute',
+                              top: '-8px',
+                              right: '-8px',
+                              width: '20px',
+                              height: '20px',
+                              background: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '50%',
+                              fontSize: '12px',
+                              fontWeight: 'bold',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                              zIndex: 10
+                            }}
+                          >
+                            ×
+                          </button>
                           {thumbnailIndex === idx && (
                             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--color-accent-primary)', color: 'var(--color-bg-primary)', fontSize: '0.6rem', textAlign: 'center', fontWeight: 'bold', padding: '2px 0' }}>PRIMARY</div>
                           )}
@@ -412,8 +447,25 @@ export default function AdminDashboard() {
                     </label>
                     <input type="file" accept="video/*" onChange={handleThreeDVideoChange} />
                     {threeDVideo && (
-                      <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
-                        ✓ {threeDVideo.name}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
+                          ✓ {threeDVideo.name}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setThreeDVideo(null)}
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            color: '#ef4444',
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                            borderRadius: '4px',
+                            padding: '2px 8px',
+                            fontSize: '0.75rem',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Remove
+                        </button>
                       </div>
                     )}
                   </div>
@@ -425,8 +477,25 @@ export default function AdminDashboard() {
                     </label>
                     <input type="file" accept="video/*" onChange={handleCompletedVideoChange} />
                     {completedVideo && (
-                      <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
-                        ✓ {completedVideo.name}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
+                          ✓ {completedVideo.name}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setCompletedVideo(null)}
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            color: '#ef4444',
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                            borderRadius: '4px',
+                            padding: '2px 8px',
+                            fontSize: '0.75rem',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Remove
+                        </button>
                       </div>
                     )}
                   </div>
