@@ -6,10 +6,20 @@ import {
   getDocs, 
   deleteDoc, 
   doc, 
+  updateDoc,
   serverTimestamp,
   query,
   orderBy
 } from 'firebase/firestore';
+import { 
+  CheckCircle, 
+  Circle, 
+  Mail, 
+  MessageCircle, 
+  PhoneCall,
+  ExternalLink,
+  Trash2
+} from 'lucide-react';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
@@ -76,6 +86,26 @@ export default function AdminDashboard() {
       console.error('Error fetching estimates:', e);
     } finally {
       setFetching(false);
+    }
+  };
+
+  const handleUpdateStatus = async (collectionName, docId, newStatus) => {
+    try {
+      const docRef = doc(db, collectionName, docId);
+      await updateDoc(docRef, { status: newStatus });
+      
+      // Update local state
+      if (collectionName === 'users') {
+        setLeads(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
+      } else if (collectionName === 'estimates') {
+        setEstimates(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
+      }
+      
+      setMessage({ text: 'Status updated successfully!', type: 'success' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+    } catch (e) {
+      console.error('Error updating status:', e);
+      setMessage({ text: 'Error updating status.', type: 'error' });
     }
   };
 
@@ -478,31 +508,82 @@ export default function AdminDashboard() {
             </>
           ) : (
             <>
+            <>
               <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>Business Leads & Estimates</h2>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
                 {/* Users Section */}
                 <div>
-                  <h3 style={{ marginBottom: '1rem', color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Registered Users</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Registered Users</h3>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{leads.length} Users</span>
+                  </div>
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                           <th style={{ padding: '1rem' }}>Email</th>
                           <th style={{ padding: '1rem' }}>Phone</th>
-                          <th style={{ padding: '1rem' }}>Joined Date</th>
+                          <th style={{ padding: '1rem' }}>Status</th>
+                          <th style={{ padding: '1rem' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {leads.map(lead => (
-                          <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <tr key={lead.id} style={{ 
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            opacity: lead.status === 'done' ? 0.6 : 1,
+                            background: lead.status === 'done' ? 'rgba(0,0,0,0.2)' : 'transparent'
+                          }}>
                             <td style={{ padding: '1rem' }}>{lead.email}</td>
                             <td style={{ padding: '1rem' }}>{lead.phone || 'N/A'}</td>
-                            <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-                              {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}
+                            <td style={{ padding: '1rem' }}>
+                              <button 
+                                onClick={() => handleUpdateStatus('users', lead.id, lead.status === 'done' ? 'pending' : 'done')}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  color: lead.status === 'done' ? 'var(--color-success)' : 'var(--color-text-secondary)',
+                                  fontSize: '0.85rem'
+                                }}
+                              >
+                                {lead.status === 'done' ? <CheckCircle size={18} /> : <Circle size={18} />}
+                                {lead.status === 'done' ? 'Done' : 'Pending'}
+                              </button>
+                            </td>
+                            <td style={{ padding: '1rem' }}>
+                              <div style={{ display: 'flex', gap: '0.8rem' }}>
+                                {lead.phone && (
+                                  <a 
+                                    href={`https://wa.me/91${lead.phone.replace(/\D/g, '')}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    title="WhatsApp User"
+                                    style={{ color: '#25D366' }}
+                                  >
+                                    <MessageCircle size={18} />
+                                  </a>
+                                )}
+                                <a 
+                                  href={`mailto:${lead.email}`} 
+                                  title="Email User"
+                                  style={{ color: 'var(--color-accent-primary)' }}
+                                >
+                                  <Mail size={18} />
+                                </a>
+                              </div>
                             </td>
                           </tr>
                         ))}
+                        {leads.length === 0 && (
+                          <tr>
+                            <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No registered users found.</td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -510,31 +591,73 @@ export default function AdminDashboard() {
 
                 {/* Estimates Section */}
                 <div>
-                  <h3 style={{ marginBottom: '1rem', color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Recent Estimate Requests</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Recent Estimate Requests</h3>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{estimates.length} Requests</span>
+                  </div>
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <th style={{ padding: '1rem' }}>User Email</th>
                           <th style={{ padding: '1rem' }}>Rooms Selected</th>
                           <th style={{ padding: '1rem' }}>Style</th>
-                          <th style={{ padding: '1rem' }}>Date</th>
+                          <th style={{ padding: '1rem' }}>Status</th>
+                          <th style={{ padding: '1rem' }}>Contact</th>
                         </tr>
                       </thead>
                       <tbody>
                         {estimates.map(est => (
-                          <tr key={est.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <tr key={est.id} style={{ 
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            opacity: est.status === 'done' ? 0.6 : 1,
+                            background: est.status === 'done' ? 'rgba(0,0,0,0.2)' : 'transparent'
+                          }}>
+                            <td style={{ padding: '1rem' }}>{est.userEmail || 'Guest'}</td>
                             <td style={{ padding: '1rem' }}>{est.roomsFormatted}</td>
                             <td style={{ padding: '1rem' }}>{est.styleFormatted}</td>
-                            <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-                              {est.createdAt?.toDate ? est.createdAt.toDate().toLocaleString() : 'Just now'}
+                            <td style={{ padding: '1rem' }}>
+                              <button 
+                                onClick={() => handleUpdateStatus('estimates', est.id, est.status === 'done' ? 'pending' : 'done')}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  color: est.status === 'done' ? 'var(--color-success)' : 'var(--color-text-secondary)',
+                                  fontSize: '0.85rem'
+                                }}
+                              >
+                                {est.status === 'done' ? <CheckCircle size={18} /> : <Circle size={18} />}
+                                {est.status === 'done' ? 'Done' : 'Pending'}
+                              </button>
+                            </td>
+                            <td style={{ padding: '1rem' }}>
+                              <div style={{ display: 'flex', gap: '0.8rem' }}>
+                                <a 
+                                  href={`mailto:${est.userEmail}`} 
+                                  title="Email User"
+                                  style={{ color: 'var(--color-accent-primary)' }}
+                                >
+                                  <Mail size={18} />
+                                </a>
+                              </div>
                             </td>
                           </tr>
                         ))}
+                        {estimates.length === 0 && (
+                          <tr>
+                            <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No estimate requests found.</td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
                 </div>
               </div>
+            </>
             </>
           )}
         </main>
