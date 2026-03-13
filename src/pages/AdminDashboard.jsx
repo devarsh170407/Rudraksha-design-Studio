@@ -185,7 +185,6 @@ export default function AdminDashboard() {
 
     try {
       const projectId = Date.now().toString();
-      const imageUrls = [];
       
       const totalFiles = images.length + (threeDVideo ? 1 : 0) + (completedVideo ? 1 : 0);
       let uploadedCount = 0;
@@ -195,25 +194,39 @@ export default function AdminDashboard() {
         setProgress((uploadedCount / totalFiles) * 100);
       };
 
-      // Upload Images
-      for (let i = 0; i < images.length; i++) {
-        const url = await handleFirebaseUpload(images[i], `projects/${projectId}/images`);
-        imageUrls.push(url);
-        updateProgress();
-      }
+      // Create upload promises for parallel execution
+      const imagePromises = images.map(img => 
+        handleFirebaseUpload(img, `projects/${projectId}/images`).then(url => {
+          updateProgress();
+          return url;
+        })
+      );
 
-      // Upload Videos
-      let threeDVideoUrl = null;
+      const videoPromises = [];
+      let threeDVideoPromise = null;
       if (threeDVideo) {
-        threeDVideoUrl = await handleFirebaseUpload(threeDVideo, `projects/${projectId}/videos`);
-        updateProgress();
+        threeDVideoPromise = handleFirebaseUpload(threeDVideo, `projects/${projectId}/videos`).then(url => {
+          updateProgress();
+          return url;
+        });
+        videoPromises.push(threeDVideoPromise);
       }
 
-      let completedVideoUrl = null;
+      let completedVideoPromise = null;
       if (completedVideo) {
-        completedVideoUrl = await handleFirebaseUpload(completedVideo, `projects/${projectId}/videos`);
-        updateProgress();
+        completedVideoPromise = handleFirebaseUpload(completedVideo, `projects/${projectId}/videos`).then(url => {
+          updateProgress();
+          return url;
+        });
+        videoPromises.push(completedVideoPromise);
       }
+
+      // Wait for all uploads to complete simultaneously
+      const [imageUrls, threeDVideoUrl, completedVideoUrl] = await Promise.all([
+        Promise.all(imagePromises),
+        threeDVideo ? threeDVideoPromise : Promise.resolve(null),
+        completedVideo ? completedVideoPromise : Promise.resolve(null)
+      ]);
 
       // Save to Firestore
       const newProject = {
@@ -230,7 +243,7 @@ export default function AdminDashboard() {
       
       await addDoc(collection(db, 'projects'), newProject);
 
-      setMessage({ text: 'Project published! Files uploaded to Firebase Storage and metadata saved to Firestore.', type: 'success' });
+      setMessage({ text: 'Project published! Files uploaded simultaneously to Firebase Storage and metadata saved to Firestore.', type: 'success' });
       
       // Reset
       setTimeout(() => {
