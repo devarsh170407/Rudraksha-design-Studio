@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Heart, ArrowLeft } from 'lucide-react';
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -32,6 +34,45 @@ export default function ProjectDetails() {
 
     fetchProject();
   }, [id, navigate]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedImageIndex === null) return;
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'Escape') setSelectedImageIndex(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImageIndex, project]);
+
+  const handleNext = () => {
+    if (!project?.images) return;
+    setSelectedImageIndex((prev) => (prev + 1) % project.images.length);
+  };
+
+  const handlePrev = () => {
+    if (!project?.images) return;
+    setSelectedImageIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    if (isLeftSwipe) handleNext();
+    if (isRightSwipe) handlePrev();
+  };
 
   if (loading) {
     return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Loading project details...</div>;
@@ -76,7 +117,7 @@ export default function ProjectDetails() {
               {project.images.map((src, i) => (
                 <div 
                   key={i} 
-                  onClick={() => setSelectedImage(src)}
+                  onClick={() => setSelectedImageIndex(i)}
                   style={{ 
                     borderRadius: '12px', overflow: 'hidden', height: '250px', 
                     border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer',
@@ -149,35 +190,85 @@ export default function ProjectDetails() {
     </div>
 
     {/* Lightbox Modal */}
-    {selectedImage && (
+    {selectedImageIndex !== null && project.images && (
       <div 
-        onClick={() => setSelectedImage(null)}
+        onClick={() => setSelectedImageIndex(null)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
           position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'rgba(0,0,0,0.92)' , backdropFilter: 'blur(10px)',
+          background: 'rgba(0,0,0,0.95)' , backdropFilter: 'blur(15px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '2rem', cursor: 'zoom-out',
+          padding: '1rem', cursor: 'default',
           animation: 'fadeIn 0.3s ease'
         }}
       >
+        {/* Navigation Buttons */}
         <button 
-          onClick={() => setSelectedImage(null)}
+          onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+          style={{
+            position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)',
+            background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)',
+            width: '50px', height: '50px', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'all 0.2s', zIndex: 1001
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+        >
+          <ChevronLeft size={30} />
+        </button>
+
+        <button 
+          onClick={(e) => { e.stopPropagation(); handleNext(); }}
+          style={{
+            position: 'absolute', right: '1.5rem', top: '50%', transform: 'translateY(-50%)',
+            background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)',
+            width: '50px', height: '50px', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'all 0.2s', zIndex: 1001
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+        >
+          <ChevronRight size={30} />
+        </button>
+
+        <button 
+          onClick={() => setSelectedImageIndex(null)}
           style={{
             position: 'absolute', top: '2rem', right: '2rem',
             background: 'white', color: 'black', border: 'none',
-            width: '40px', height: '40px', borderRadius: '50%',
-            fontSize: '1.5rem', fontWeight: 'bold', cursor: 'pointer'
+            width: '45px', height: '45px', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', zIndex: 1002, boxShadow: '0 10px 20px rgba(0,0,0,0.3)'
           }}
         >
-          ×
+          <X size={24} />
         </button>
-        <img 
-          src={selectedImage} 
-          alt="Fullscreen" 
-          style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }} 
-        />
+
+        <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+          <img 
+            src={project.images[selectedImageIndex]} 
+            alt="Fullscreen" 
+            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }} 
+          />
+          {/* Index Indicator */}
+          <div style={{
+            position: 'absolute', bottom: '-40px', left: '50%', transform: 'translateX(-50%)',
+            color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', fontWeight: 500
+          }}>
+            {selectedImageIndex + 1} / {project.images.length}
+          </div>
+        </div>
+
         <style>{`
           @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          @media (max-width: 768px) {
+            button { display: none !important; }
+            .close-btn { display: flex !important; }
+          }
         `}</style>
       </div>
     )}
