@@ -405,20 +405,30 @@ export default function AdminDashboard() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                  <div className="file-upload-zone" style={{ padding: '1.5rem' }}>
+                  <div className="file-upload-zone" style={{ padding: '1.5rem', position: 'relative' }}>
                     <div className="file-upload-icon" style={{ fontSize: '1.5rem' }}>🎥</div>
                     <label className="file-upload-text" style={{ fontSize: '0.85rem' }}>
                       3D Design Video <span>(Optional)</span>
                     </label>
                     <input type="file" accept="video/*" onChange={handleThreeDVideoChange} />
+                    {threeDVideo && (
+                      <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
+                        ✓ {threeDVideo.name}
+                      </div>
+                    )}
                   </div>
                   
-                  <div className="file-upload-zone" style={{ padding: '1.5rem' }}>
+                  <div className="file-upload-zone" style={{ padding: '1.5rem', position: 'relative' }}>
                     <div className="file-upload-icon" style={{ fontSize: '1.5rem' }}>🎬</div>
                     <label className="file-upload-text" style={{ fontSize: '0.85rem' }}>
                       Completed Video <span>(Optional)</span>
                     </label>
                     <input type="file" accept="video/*" onChange={handleCompletedVideoChange} />
+                    {completedVideo && (
+                      <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
+                        ✓ {completedVideo.name}
+                      </div>
+                    )}
                   </div>
                 </div>
 
