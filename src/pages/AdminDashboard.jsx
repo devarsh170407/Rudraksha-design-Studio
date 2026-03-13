@@ -258,29 +258,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleFirebaseUpload = (file, path, onProgress) => {
-    return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, `${path}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          if (onProgress) {
-            onProgress(snapshot.bytesTransferred, snapshot.totalBytes);
-          }
-        },
-        (error) => {
-          console.error("Upload error:", error);
-          reject(error);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
-        }
-      );
-    });
-  };
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -289,11 +266,6 @@ export default function AdminDashboard() {
       return;
     }
 
-    // Check if storage is initialized
-    if (!storage) {
-      setMessage({ text: 'Cloud Storage not initialized. Please check your firebase.js configuration.', type: 'error' });
-      return;
-    }
 
     setUploading(true);
     setProgress(0);
@@ -366,14 +338,8 @@ export default function AdminDashboard() {
       console.error("Project upload error:", error);
       let errorMsg = `Upload Failed: ${error.message}`;
       
-      if (error.code === 'storage/unauthorized') {
-        errorMsg = "Unauthorized: You don't have permission to upload. Please check your Firebase Storage rules.";
-      } else if (error.code === 'storage/canceled') {
-        errorMsg = "Upload was canceled.";
-      } else if (error.name === 'FirebaseError') {
-        errorMsg = `Firebase Error: ${error.message} (Code: ${error.code})`;
-      } else if (error.message && error.message.includes('CORS')) {
-        errorMsg = "CORS Error: Cloud Storage is blocking the upload. Please ensure CORS is configured on your Firebase bucket.";
+      if (error.message && error.message.includes('CORS')) {
+        errorMsg = "CORS Error: GitHub or the browser is blocking the direct upload. Please check your GitHub token permissions.";
       }
       
       setMessage({ text: errorMsg, type: 'error' });
