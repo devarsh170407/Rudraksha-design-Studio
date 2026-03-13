@@ -140,6 +140,97 @@ export default function AdminDashboard() {
     if (e.target.files[0]) setCompletedVideo(e.target.files[0]);
   };
 
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Max dimensions (e.g., 1920px)
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1080;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress to JPEG with 0.8 quality
+          canvas.toBlob((blob) => {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          }, 'image/jpeg', 0.8);
+        };
+      };
+    });
+  };
+
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64 = reader.result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handlegithubUpload = async (file, path) => {
+    const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+    const GITHUB_USER = import.meta.env.VITE_GITHUB_USER;
+    const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO;
+    
+    if (!GITHUB_TOKEN || !GITHUB_USER || !GITHUB_REPO) {
+      throw new Error('GitHub configuration missing in .env');
+    }
+
+    const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}/${fileName}`;
+    const base64Content = await fileToBase64(file);
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: `Upload ${fileName} via Admin Dashboard`,
+        content: base64Content
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'GitHub upload failed');
+    }
+
+    return `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${path}/${fileName}`;
+  };
+
   const removeImage = (index) => {
     const newImages = images.filter((_, i) => i !== index);
     setImages(newImages);
@@ -194,40 +285,38 @@ export default function AdminDashboard() {
     try {
       const projectId = Date.now().toString();
       
-      const allFiles = [...images];
-      if (threeDVideo) allFiles.push(threeDVideo);
-      if (completedVideo) allFiles.push(completedVideo);
+      const totalFiles = images.length + (threeDVideo ? 1 : 0) + (completedVideo ? 1 : 0);
+      let uploadedCount = 0;
 
-      const totalBytes = allFiles.reduce((acc, file) => acc + file.size, 0);
-      const fileProgress = new Map(); // Track bytes transferred for each file
-
-      const updateGlobalProgress = (fileName, bytesTransferred) => {
-        fileProgress.set(fileName, bytesTransferred);
-        const totalTransferred = Array.from(fileProgress.values()).reduce((acc, val) => acc + val, 0);
-        setProgress((totalTransferred / totalBytes) * 100);
+      const updateProgress = () => {
+        uploadedCount++;
+        setProgress((uploadedCount / totalFiles) * 100);
       };
 
-      // Create upload promises
-      const imagePromises = images.map(img => 
-        handleFirebaseUpload(img, `projects/${projectId}/images`, (bytes) => updateGlobalProgress(img.name, bytes))
-      );
+      // 1. Compress and Upload Images
+      const imagePromises = images.map(async (img) => {
+        const compressedImg = await compressImage(img);
+        const url = await handlegithubUpload(compressedImg, `public/uploads/${projectId}/images`);
+        updateProgress();
+        return url;
+      });
 
-      let threeDVideoPromise = threeDVideo 
-        ? handleFirebaseUpload(threeDVideo, `projects/${projectId}/videos`, (bytes) => updateGlobalProgress(threeDVideo.name, bytes)) 
-        : Promise.resolve(null);
+      // 2. Upload Videos (Direct to GitHub, bypassing Vercel limits)
+      let threeDVideoUrl = null;
+      if (threeDVideo) {
+        threeDVideoUrl = await handlegithubUpload(threeDVideo, `public/uploads/${projectId}/videos`);
+        updateProgress();
+      }
 
-      let completedVideoPromise = completedVideo 
-        ? handleFirebaseUpload(completedVideo, `projects/${projectId}/videos`, (bytes) => updateGlobalProgress(completedVideo.name, bytes)) 
-        : Promise.resolve(null);
+      let completedVideoUrl = null;
+      if (completedVideo) {
+        completedVideoUrl = await handlegithubUpload(completedVideo, `public/uploads/${projectId}/videos`);
+        updateProgress();
+      }
 
-      // Wait for all to complete
-      const [imageUrls, threeDVideoUrl, completedVideoUrl] = await Promise.all([
-        Promise.all(imagePromises),
-        threeDVideoPromise,
-        completedVideoPromise
-      ]);
+      const imageUrls = await Promise.all(imagePromises);
 
-      // Save to Firestore
+      // 3. Save to Firestore
       const newProject = {
         title: formData.title,
         category: formData.category,
@@ -242,7 +331,7 @@ export default function AdminDashboard() {
       
       await addDoc(collection(db, 'projects'), newProject);
 
-      setMessage({ text: 'Project published! All files uploaded successfully.', type: 'success' });
+      setMessage({ text: 'Project published! Images compressed and files saved to GitHub (Direct).', type: 'success' });
       
       // Reset
       setTimeout(() => {
