@@ -26,6 +26,7 @@ export default function AdminDashboard() {
   const [allProjects, setAllProjects] = useState([]);
   const [leads, setLeads] = useState([]);
   const [estimates, setEstimates] = useState([]);
+  const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     category: 'Home Interiors',
@@ -509,7 +510,28 @@ export default function AdminDashboard() {
           ) : (
             <>
             <>
-              <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>Business Leads & Estimates</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Business Leads & Estimates</h2>
+                <button 
+                  onClick={() => setShowCompleted(!showCompleted)}
+                  className="glass-panel"
+                  style={{
+                    padding: '0.6rem 1.2rem',
+                    border: `1px solid ${showCompleted ? 'var(--color-accent-primary)' : 'rgba(255,255,255,0.1)'}`,
+                    color: showCompleted ? 'var(--color-accent-primary)' : 'var(--color-text-secondary)',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {showCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
+                  {showCompleted ? 'Showing All' : 'Hiding Completed'}
+                </button>
+              </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
                 {/* Users Section */}
@@ -529,7 +551,9 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {leads.map(lead => (
+                        {leads
+                          .filter(lead => showCompleted || lead.status !== 'done')
+                          .map(lead => (
                           <tr key={lead.id} style={{ 
                             borderBottom: '1px solid rgba(255,255,255,0.05)',
                             opacity: lead.status === 'done' ? 0.6 : 1,
@@ -607,7 +631,9 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {estimates.map(est => (
+                        {estimates
+                          .filter(est => showCompleted || est.status !== 'done')
+                          .map(est => (
                           <tr key={est.id} style={{ 
                             borderBottom: '1px solid rgba(255,255,255,0.05)',
                             opacity: est.status === 'done' ? 0.6 : 1,
