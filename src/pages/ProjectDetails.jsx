@@ -229,16 +229,6 @@ export default function ProjectDetails() {
 
           {/* Bottom Right: Specifications & Values */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', pb: '2rem' }}>
-               <h3 style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '2rem' }}>TECHNICAL SPECIFICATIONS</h3>
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                  {project.layout && <div className="spec-card"><span className="spec-title">LAYOUT</span><span className="spec-val">{project.layout}</span></div>}
-                  {project.dimension && <div className="spec-card"><span className="spec-title">DIMENSION</span><span className="spec-val">{project.dimension}</span></div>}
-                  {project.color && <div className="spec-card"><span className="spec-title">COLOUR</span><span className="spec-val">{project.color}</span></div>}
-                  {project.material && <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">{project.material}</span></div>}
-               </div>
-            </div>
-
             <div>
                <h3 style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '2rem' }}>STUDIO EXCELLENCE</h3>
                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.2rem', background: 'rgba(255,255,255,0.02)', padding: '2.5rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
