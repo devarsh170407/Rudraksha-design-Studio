@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, Sparkles, Paintbrush, Share2, Facebook, Instagram, MessageCircle } from 'lucide-react';
+import { doc, getDoc, updateDoc, setDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, Sparkles, Paintbrush, Share2, Facebook, Instagram, MessageCircle, Loader2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -13,6 +14,9 @@ export default function ProjectDetails() {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [activeSlide, setActiveSlide] = useState(0);
+  const { currentUser } = useAuth();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -35,6 +39,45 @@ export default function ProjectDetails() {
 
     fetchProject();
   }, [id, navigate]);
+
+  // Real-time listener for user's saved projects
+  useEffect(() => {
+    if (!currentUser) {
+      setIsSaved(false);
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', currentUser.uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const savedProjects = docSnap.data().savedProjects || [];
+        setIsSaved(savedProjects.includes(id));
+      }
+    });
+
+    return () => unsubscribe();
+  }, [currentUser, id]);
+
+  const handleToggleSave = async () => {
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
+    setIsSaving(true);
+    const userDocRef = doc(db, 'users', currentUser.uid);
+
+    try {
+      await setDoc(userDocRef, {
+        savedProjects: isSaved ? arrayRemove(id) : arrayUnion(id)
+      }, { merge: true });
+    } catch (error) {
+      console.error("Error updating collection:", error);
+      alert("Failed to update collection. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -244,8 +287,31 @@ export default function ProjectDetails() {
              </div>
           </div>
 
-          <button className="cta-outline" style={{ padding: '1.2rem', fontSize: '0.9rem', fontWeight: 700, borderRadius: '16px', display: 'flex', gap: '0.8rem', alignItems: 'center', justifyContent: 'center' }}>
-              <Heart size={20} /> SAVE TO COLLECTION
+          <button 
+            onClick={handleToggleSave}
+            disabled={isSaving}
+            className="cta-outline" 
+            style={{ 
+              padding: '1.2rem', 
+              fontSize: '0.9rem', 
+              fontWeight: 700, 
+              borderRadius: '16px', 
+              display: 'flex', 
+              gap: '0.8rem', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              borderColor: isSaved ? 'var(--color-accent-primary)' : 'rgba(255,255,255,0.2)',
+              background: isSaved ? 'rgba(37, 99, 235, 0.1)' : 'transparent',
+              color: isSaved ? 'var(--color-accent-primary)' : 'white',
+              cursor: isSaving ? 'not-allowed' : 'pointer'
+            }}
+          >
+              {isSaving ? (
+                <Loader2 size={20} className="spin-animation" />
+              ) : (
+                <Heart size={20} fill={isSaved ? "var(--color-accent-primary)" : "none"} />
+              )}
+              {isSaved ? 'SAVED TO COLLECTION' : 'SAVE TO COLLECTION'}
           </button>
 
           {/* Share */}
