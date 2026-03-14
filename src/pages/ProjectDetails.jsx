@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, ShieldCheck, Clock, Users, Wrench, Share2, Facebook, Instagram } from 'lucide-react';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -12,6 +12,7 @@ export default function ProjectDetails() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -48,12 +49,12 @@ export default function ProjectDetails() {
 
   const handleNext = () => {
     if (!project?.images) return;
-    setSelectedImageIndex((prev) => (prev + 1) % project.images.length);
+    setActiveSlide((prev) => (prev + 1) % project.images.length);
   };
 
   const handlePrev = () => {
     if (!project?.images) return;
-    setSelectedImageIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
+    setActiveSlide((prev) => (prev - 1 + project.images.length) % project.images.length);
   };
 
   const handleTouchStart = (e) => {
@@ -82,272 +83,136 @@ export default function ProjectDetails() {
 
   return (
     <>
-    <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
-      <button 
-        onClick={() => navigate(-1)} 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.6rem', 
-          marginBottom: '3rem', 
-          color: 'var(--color-text-secondary)',
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.05)',
-          padding: '0.6rem 1.2rem',
-          borderRadius: '30px',
-          fontSize: '0.9rem',
-          letterSpacing: '0.05rem',
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-          e.currentTarget.style.color = 'var(--color-text-primary)';
-          e.currentTarget.style.transform = 'translateX(-5px)';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-          e.currentTarget.style.color = 'var(--color-text-secondary)';
-          e.currentTarget.style.transform = 'translateX(0)';
-        }}
-      >
-        <ArrowLeft size={16} /> Back to Gallery
-      </button>
+    <div className="container" style={{ padding: '1rem 1.5rem 4rem', minHeight: '100vh', background: 'var(--color-bg-primary)' }}>
+      {/* Breadcrumbs / Back */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '1.5rem 0', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
+         <span onClick={() => navigate('/projects')} style={{ cursor: 'pointer', transition: 'color 0.3s' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color=''}>Explore</span>
+         <span>/</span>
+         <span style={{ color: 'var(--color-accent-secondary)', fontWeight: 600 }}>{project.category}</span>
+         <span>/</span>
+         <span style={{ opacity: 0.6 }}>{project.title}</span>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.6fr) 1fr', gap: '4rem' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr 400px', 
+        gap: '2.5rem',
+        background: 'var(--color-bg-secondary)',
+        borderRadius: '32px',
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.03)',
+        padding: '2.5rem',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.5)'
+      }}>
         
-        {/* Left Column: Media */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+        {/* Left Column: Media Feature */}
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
-          {/* Completed Project Video */}
-          {project.completedVideo && (
-            <div style={{ 
-              borderRadius: '24px', 
-              overflow: 'hidden', 
-              border: '1px solid var(--glass-border)', 
-              background: '#000',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-              animation: 'fadeInUp 0.8s ease' 
-            }}>
-              <video src={project.completedVideo} controls autoPlay muted style={{ width: '100%', display: 'block', maxHeight: '600px' }} />
-            </div>
-          )}
-
-          {/* 3D Design Video */}
-          {project.threeDVideo && (
-            <div style={{ 
-              borderRadius: '24px', 
-              overflow: 'hidden', 
-              border: '1px solid var(--color-accent-secondary)', 
-              background: '#000',
-              boxShadow: '0 20px 40px rgba(212, 175, 55, 0.1)',
-              animation: 'fadeInUp 1s ease'
-            }}>
-              <div style={{ 
-                padding: '1.2rem', 
-                background: 'linear-gradient(90deg, rgba(212,175,55,0.1), transparent)', 
-                textAlign: 'center', 
-                fontWeight: 600,
-                color: 'var(--color-accent-secondary)',
-                letterSpacing: '0.1rem',
-                textTransform: 'uppercase',
-                fontSize: '0.8rem'
-              }}>
-                ✦ 3D Design Walkthrough ✦
-              </div>
-              <video src={project.threeDVideo} controls loop muted style={{ width: '100%', display: 'block', maxHeight: '600px' }} />
-            </div>
-          )}
-
-          {/* Image Gallery - Masterpiece Layout */}
-          {project.images && project.images.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Featured Main Image */}
+          {/* Main Carousel Wrapper */}
+          <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', height: '550px', background: '#000', border: '1px solid rgba(255,255,255,0.05)' }}>
+            {project.images && project.images.map((src, i) => (
               <div 
-                onClick={() => setSelectedImageIndex(0)}
-                style={{ 
-                  borderRadius: '24px', 
-                  overflow: 'hidden', 
-                  height: '500px', 
-                  position: 'relative',
-                  border: '1px solid rgba(255,255,255,0.1)', 
-                  cursor: 'pointer',
-                  animation: 'fadeInUp 0.6s ease',
-                  boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
+                key={i}
+                style={{
+                  position: 'absolute', inset: 0,
+                  opacity: i === activeSlide ? 1 : 0,
+                  transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                  pointerEvents: i === activeSlide ? 'auto' : 'none'
                 }}
-                onMouseEnter={e => e.currentTarget.querySelector('img').style.transform = 'scale(1.05)'}
-                onMouseLeave={e => e.currentTarget.querySelector('img').style.transform = 'scale(1)'}
               >
                 <img 
-                  src={project.images[0]} 
-                  alt="Feature View" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }} 
+                  src={src} 
+                  alt={`Slide ${i}`} 
+                  onClick={() => setSelectedImageIndex(i)}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }} 
                 />
-                <div style={{ 
-                  position: 'absolute', inset: 0, 
-                  background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7))',
-                  display: 'flex', alignItems: 'flex-end', padding: '2rem'
-                }}>
-                  <span style={{ color: 'white', fontSize: '0.9rem', letterSpacing: '0.1rem', textTransform: 'uppercase', opacity: 0.8 }}>
-                    Primary Perspective
-                  </span>
-                </div>
               </div>
+            ))}
 
-              {/* Secondary Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem' }}>
-                {project.images.slice(1).map((src, i) => (
-                  <div 
-                    key={i + 1} 
-                    onClick={() => setSelectedImageIndex(i + 1)}
-                    style={{ 
-                      borderRadius: '20px', 
-                      overflow: 'hidden', 
-                      height: '300px', 
-                      border: '1px solid rgba(255,255,255,0.05)', 
-                      cursor: 'pointer',
-                      animation: `fadeInUp ${0.7 + (i * 0.1)}s ease`,
-                      boxShadow: '0 15px 30px rgba(0,0,0,0.3)',
-                      transition: 'all 0.4s ease'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'translateY(-10px)';
-                      e.currentTarget.style.borderColor = 'var(--color-accent-secondary)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                    }}
-                  >
-                    <img src={src} alt={`Detail ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                ))}
-              </div>
+            {/* Carousel Controls */}
+            <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', display: 'flex', gap: '0.8rem', zIndex: 10 }}>
+              <button onClick={handlePrev} className="carousel-btn"><ChevronLeft size={20} /></button>
+              <button onClick={handleNext} className="carousel-btn"><ChevronRight size={20} /></button>
             </div>
-          ) : (
-            <div style={{ padding: '5rem', background: 'rgba(255,255,255,0.01)', textAlign: 'center', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-              <p style={{ color: 'var(--color-text-secondary)', letterSpacing: '0.05rem' }}>Collection is being curated...</p>
+
+            {/* Indicators */}
+            <div style={{ position: 'absolute', bottom: '2rem', right: '2rem', display: 'flex', gap: '0.5rem', zIndex: 10 }}>
+              {project.images?.map((_, i) => (
+                <div 
+                  key={i} 
+                  style={{ 
+                    width: i === activeSlide ? '24px' : '8px', 
+                    height: '8px', 
+                    borderRadius: '4px',
+                    background: i === activeSlide ? 'var(--color-accent-secondary)' : 'rgba(255,255,255,0.3)',
+                    transition: 'all 0.3s ease'
+                  }} 
+                />
+              ))}
+            </div>
+
+            <div style={{ position: 'absolute', top: '2rem', left: '2rem', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', color: 'white', padding: '0.5rem 1rem', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1rem' }}>
+              ✦ PREMIUM VIEW {activeSlide + 1}/{project.images?.length}
+            </div>
+          </div>
+
+          {/* Videos Grid Below Carousel */}
+          {(project.completedVideo || project.threeDVideo) && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+               {project.completedVideo && (
+                 <div className="vid-container">
+                    <span className="vid-label">LIVE SITE WALKTHROUGH</span>
+                    <video src={project.completedVideo} controls muted style={{ width: '100%', borderRadius: '16px' }} />
+                 </div>
+               )}
+               {project.threeDVideo && (
+                 <div className="vid-container" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
+                    <span className="vid-label" style={{ color: 'var(--color-accent-secondary)' }}>3D ARCHITECTURAL VIEW</span>
+                    <video src={project.threeDVideo} controls loop muted style={{ width: '100%', borderRadius: '16px' }} />
+                 </div>
+               )}
             </div>
           )}
         </div>
 
-        {/* Right Column: Details */}
-        <div style={{ position: 'sticky', top: '120px', alignSelf: 'start', animation: 'fadeInRight 0.8s ease' }}>
-          <div className="glass-panel" style={{ 
-            padding: '3.5rem 3rem', 
-            border: '1px solid rgba(212, 175, 55, 0.15)',
-            background: 'linear-gradient(135deg, rgba(20,20,20,0.8), rgba(10,10,10,0.95))',
-            boxShadow: '0 40px 80px rgba(0,0,0,0.6)'
-          }}>
-            <h1 style={{ 
-              fontSize: '3.2rem', 
-              marginBottom: '1.5rem', 
-              lineHeight: 1.1, 
-              fontWeight: 700, 
-              letterSpacing: '-0.02rem',
-              background: 'linear-gradient(to right, #fff, #a1a1aa)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>{project.title}</h1>
-            
-            <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-              <span style={{ 
-                padding: '0.4rem 1.2rem', 
-                background: 'rgba(212, 175, 55, 0.1)', 
-                color: 'var(--color-accent-secondary)', 
-                border: '1px solid rgba(212, 175, 55, 0.3)',
-                borderRadius: '30px', 
-                fontSize: '0.75rem', 
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1rem'
-              }}>
-                {project.category}
-              </span>
-              <span style={{ 
-                padding: '0.4rem 1.2rem', 
-                background: 'rgba(255, 255, 255, 0.05)', 
-                color: 'var(--color-text-secondary)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '30px', 
-                fontSize: '0.75rem', 
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1rem'
-              }}>
-                {project.style}
-              </span>
-            </div>
+        {/* Right Column: Interaction Panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '0.5rem' }}>{project.title}</h1>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', marginBottom: '1.5rem' }}>
+              A signature {project.style.toLowerCase()} approach to modern {project.category.toLowerCase()} design.
+            </p>
+          </div>
 
-            <div style={{ 
-              marginBottom: '3rem', 
-              padding: '1.2rem 1.5rem', 
-              borderRadius: '16px', 
-              background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.05)' : 'rgba(34, 197, 94, 0.05)',
-              border: `1px solid ${project.projectStatus === 'In Progress' ? 'rgba(234,179,8,0.15)' : 'rgba(34,197,94,0.15)'}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ 
-                  width: '12px', height: '12px', borderRadius: '50%', 
-                  background: project.projectStatus === 'In Progress' ? '#eab308' : '#22c55e',
-                  boxShadow: `0 0 15px ${project.projectStatus === 'In Progress' ? '#eab308' : '#22c55e'}` 
-                }} />
-                <span style={{ 
-                  fontWeight: 600, 
-                  color: project.projectStatus === 'In Progress' ? '#eab308' : '#22c55e',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05rem'
-                }}>
-                  {project.projectStatus || 'Completed'}
-                </span>
-              </div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', opacity: 0.6 }}>Design Status</span>
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
+             <div className="spec-card"><span className="spec-title">LAYOUT</span><span className="spec-val">L-Shaped Island</span></div>
+             <div className="spec-card"><span className="spec-title">DIMENSION</span><span className="spec-val">12 x 14 feet</span></div>
+             <div className="spec-card"><span className="spec-title">COLOUR</span><span className="spec-val">Metallic & White</span></div>
+             <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">BWR Plywood</span></div>
+          </div>
 
-            <div style={{ 
-              marginBottom: '3rem', 
-              padding: '2rem', 
-              borderTop: '1px solid rgba(255,255,255,0.05)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.5rem'
-            }}>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', lineHeight: 1.8, fontStyle: 'italic' }}>
-                "Every design detail in this {project.category.toLowerCase()} has been meticulously crafted to embody the {project.style.toLowerCase()} aesthetic, ensuring a perfect balance of luxury and functionality."
-              </p>
-            </div>
+          {/* Guarantees */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px' }}>
+             <div className="guar-item"><ShieldCheck size={18} className="gold" /><span>10 YEAR WARRANTY</span></div>
+             <div className="guar-item"><Clock size={18} className="gold" /><span>45 DAYS DELIVERY</span></div>
+             <div className="guar-item"><Users size={18} className="gold" /><span>750+ EXPERTS</span></div>
+             <div className="guar-item"><Wrench size={18} className="gold" /><span>POST INSTALL</span></div>
+          </div>
 
-            <button 
-              className="btn-primary" 
-              style={{ 
-                width: '100%', 
-                padding: '1.2rem',
-                borderRadius: '16px',
-                marginBottom: '1rem', 
-                fontSize: '1rem',
-                letterSpacing: '0.05rem',
-                boxShadow: '0 10px 30px rgba(37, 99, 235, 0.2)',
-                background: 'var(--color-accent-primary)'
-              }}
-            >
-              <Heart size={20} fill="currentColor" /> Add to My Collection
-            </button>
-            <button 
-              className="btn-outline" 
-              style={{ 
-                width: '100%',
-                padding: '1.2rem',
-                borderRadius: '16px',
-                fontSize: '1rem',
-                letterSpacing: '0.05rem',
-                border: '1px solid rgba(255,255,255,0.1)'
-              }}
-            >
-              Request Design Tour
-            </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+             <button className="cta-primary">BOOK FREE DESIGN SESSION</button>
+             <button className="cta-outline"><Heart size={18} /> SAVE TO WISHLIST</button>
+          </div>
+
+          {/* Share */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
+             <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', letterSpacing: '0.1rem', display: 'block', marginBottom: '1rem' }}>SHARE THIS DESIGN</span>
+             <div style={{ display: 'flex', gap: '1.5rem' }}>
+                <Share2 size={20} className="share-icon" />
+                <Instagram size={20} className="share-icon" />
+                <Facebook size={20} className="share-icon" />
+                <MessageCircle size={20} className="share-icon" />
+             </div>
           </div>
         </div>
 
@@ -429,17 +294,103 @@ export default function ProjectDetails() {
         </div>
 
         <style>{`
-          @keyframes fadeInUp { 
-            from { opacity: 0; transform: translateY(30px); } 
-            to { opacity: 1; transform: translateY(0); } 
+          .carousel-btn {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            alignItems: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
-          @keyframes fadeInRight { 
-            from { opacity: 0; transform: translateX(30px); } 
-            to { opacity: 1; transform: translateX(0); } 
+          .carousel-btn:hover {
+            background: var(--color-accent-secondary);
+            color: black;
+            border-color: var(--color-accent-secondary);
+            transform: scale(1.1);
           }
+          .vid-container {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+          }
+          .vid-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.15rem;
+            display: block;
+            margin-bottom: 0.8rem;
+            opacity: 0.8;
+          }
+          .spec-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.2rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+          }
+          .spec-title { font-size: 0.65rem; color: var(--color-text-secondary); letter-spacing: 0.1rem; }
+          .spec-val { font-size: 0.9rem; font-weight: 600; color: white; }
+          .guar-item {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+             gap: 0.5rem;
+          }
+          .guar-item span { font-size: 0.55rem; font-weight: 700; color: var(--color-text-secondary); letter-spacing: 0.05rem; }
+          .gold { color: var(--color-accent-secondary); }
+          .cta-primary {
+             background: #ff0000; /* Homelane Red but maybe use accent primary better? User said don't change theme. Let's use accent primary blue */
+             background: var(--color-accent-primary);
+             color: white;
+             border: none;
+             padding: 1.2rem;
+             border-radius: 12px;
+             font-weight: 700;
+             letter-spacing: 0.05rem;
+             cursor: pointer;
+             transition: all 0.3s;
+          }
+          .cta-primary:hover {
+             filter: brightness(1.2);
+             transform: translateY(-2px);
+             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+          }
+          .cta-outline {
+             background: transparent;
+             border: 1px solid rgba(255,255,255,0.2);
+             color: white;
+             padding: 1.2rem;
+             border-radius: 12px;
+             font-weight: 600;
+             letter-spacing: 0.05rem;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 0.8rem;
+             transition: all 0.3s;
+          }
+          .cta-outline:hover {
+             background: rgba(255,255,255,0.05);
+             border-color: white;
+          }
+          .share-icon { color: var(--color-text-secondary); cursor: pointer; transition: color 0.3s; }
+          .share-icon:hover { color: var(--color-accent-secondary); }
+
           @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
           @media (max-width: 768px) {
             button { display: none !important; }
+            .carousel-btn { display: flex !important; }
             .close-btn { display: flex !important; }
           }
         `}</style>
