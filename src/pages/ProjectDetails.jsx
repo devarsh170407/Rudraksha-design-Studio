@@ -189,7 +189,7 @@ export default function ProjectDetails() {
                   width: i === activeSlide ? '40px' : '10px', 
                   height: '10px', 
                   borderRadius: '5px',
-                  background: i === activeSlide ? 'var(--color-accent-secondary)' : 'rgba(255,255,255,0.3)',
+                  background: i === activeSlide ? 'var(--color-accent-primary)' : 'rgba(255,255,255,0.3)',
                   transition: 'all 0.4s ease'
                 }} 
               />
@@ -223,7 +223,7 @@ export default function ProjectDetails() {
           <div>
             <h1 style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>{project.title}</h1>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ color: 'var(--color-accent-secondary)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.2rem' }}>{(project?.category || 'Interiors').toUpperCase()}</span>
+              <span style={{ color: 'var(--color-accent-primary)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.2rem' }}>{(project?.category || 'Interiors').toUpperCase()}</span>
               <div style={{ width: '30px', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
               <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '0.8rem', letterSpacing: '0.15rem' }}>{(project?.style || 'Modern').toUpperCase()}</span>
             </div>
@@ -272,8 +272,8 @@ export default function ProjectDetails() {
              </div>
            )}
            {project.threeDVideo && (
-             <div className="vid-container" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
-                <span className="vid-label" style={{ color: 'var(--color-accent-secondary)' }}>3D ARCHITECTURAL VIEW</span>
+             <div className="vid-container" style={{ borderColor: 'rgba(37, 99, 235, 0.3)' }}>
+                <span className="vid-label" style={{ color: 'var(--color-accent-primary)' }}>3D ARCHITECTURAL VIEW</span>
                 <video src={project.threeDVideo} controls loop muted style={{ width: '100%', borderRadius: '24px' }} />
              </div>
            )}
