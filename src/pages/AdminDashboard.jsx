@@ -28,7 +28,11 @@ export default function AdminDashboard() {
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
     projectStatus: 'Completed',
-    description: ''
+    description: '',
+    layout: '',
+    dimension: '',
+    color: '',
+    material: ''
   });
   
   const [images, setImages] = useState([]);
@@ -298,6 +302,10 @@ export default function AdminDashboard() {
         completedVideo: completedVideoUrl,
         projectStatus: formData.projectStatus,
         description: formData.description || '',
+        layout: formData.layout || '',
+        dimension: formData.dimension || '',
+        color: formData.color || '',
+        material: formData.material || '',
         createdAt: serverTimestamp(),
         localId: projectId
       };
@@ -308,7 +316,10 @@ export default function AdminDashboard() {
       
       // Reset
       setTimeout(() => {
-        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: '' });
+        setFormData({ 
+          title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: '',
+          layout: '', dimension: '', color: '', material: ''
+        });
         setImages([]);
         setThumbnailIndex(0);
         setThreeDVideo(null);
@@ -351,7 +362,11 @@ export default function AdminDashboard() {
       category: project.category,
       style: project.style,
       projectStatus: project.projectStatus || 'Completed',
-      description: project.description || ''
+      description: project.description || '',
+      layout: project.layout || '',
+      dimension: project.dimension || '',
+      color: project.color || '',
+      material: project.material || ''
     });
     setImages([]); // This will be for NEW images added during edit
     setThumbnailIndex(project.thumbnailIndex || 0);
@@ -389,6 +404,10 @@ export default function AdminDashboard() {
         style: formData.style,
         projectStatus: formData.projectStatus,
         description: formData.description || '',
+        layout: formData.layout || '',
+        dimension: formData.dimension || '',
+        color: formData.color || '',
+        material: formData.material || '',
         images: finalImages,
         thumbnailIndex: thumbnailIndex,
         updatedAt: serverTimestamp()
@@ -402,7 +421,10 @@ export default function AdminDashboard() {
       
       // Reset
       setTimeout(() => {
-        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: '' });
+        setFormData({ 
+          title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: '',
+          layout: '', dimension: '', color: '', material: ''
+        });
         setImages([]);
         setThumbnailIndex(0);
         setMessage({ text: '', type: '' });
@@ -492,11 +514,30 @@ export default function AdminDashboard() {
                   <textarea 
                     name="description" 
                     className="input-field" 
-                    placeholder="Describe the design story, key features, and material choices..." 
-                    style={{ minHeight: '120px', resize: 'vertical', paddingTop: '1rem' }}
+                    placeholder="Describe the design story..." 
+                    style={{ minHeight: '120px', resize: 'vertical' }}
                     value={formData.description} 
                     onChange={handleChange} 
                   />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                  <div>
+                    <label style={styles.label}>Layout</label>
+                    <input name="layout" className="input-field" placeholder="e.g. L-Shaped" value={formData.layout} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label style={styles.label}>Dimension</label>
+                    <input name="dimension" className="input-field" placeholder="e.g. 12x14 feet" value={formData.dimension} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label style={styles.label}>Color Palette</label>
+                    <input name="color" className="input-field" placeholder="e.g. Metallic & White" value={formData.color} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label style={styles.label}>Key Materials</label>
+                    <input name="material" className="input-field" placeholder="e.g. BWR Plywood" value={formData.material} onChange={handleChange} />
+                  </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
@@ -698,10 +739,29 @@ export default function AdminDashboard() {
                       <textarea 
                         name="description" 
                         className="input-field" 
-                        style={{ minHeight: '120px', resize: 'vertical', paddingTop: '1rem' }}
+                        style={{ minHeight: '120px', resize: 'vertical' }}
                         value={formData.description} 
                         onChange={handleChange} 
                       />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
+                      <div>
+                        <label style={styles.label}>Layout</label>
+                        <input name="layout" className="input-field" value={formData.layout} onChange={handleChange} />
+                      </div>
+                      <div>
+                        <label style={styles.label}>Dimension</label>
+                        <input name="dimension" className="input-field" value={formData.dimension} onChange={handleChange} />
+                      </div>
+                      <div>
+                        <label style={styles.label}>Color Palette</label>
+                        <input name="color" className="input-field" value={formData.color} onChange={handleChange} />
+                      </div>
+                      <div>
+                        <label style={styles.label}>Materials</label>
+                        <input name="material" className="input-field" value={formData.material} onChange={handleChange} />
+                      </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
