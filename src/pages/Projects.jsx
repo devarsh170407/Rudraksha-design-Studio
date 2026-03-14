@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Play, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -223,23 +223,89 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* Projects */}
-        {filterRoom === 'All' ? (
-          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--color-text-secondary)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏠</div>
-            <p style={{ fontSize: '1.05rem', marginBottom: '0.5rem', color: '#fff' }}>Select a category to explore designs</p>
-            <p style={{ fontSize: '0.88rem' }}>Use the dropdown above to filter by room type or style.</p>
-          </div>
-        ) : loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)' }}>
-            Loading breathtaking designs...
-          </div>
-        ) : filteredProjects.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
-            No projects found for this category yet.
+        {/* Projects Rendering Section */}
+        {filterRoom !== 'All' ? (
+          <div style={{ animation: 'fadeIn 0.6s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
+              <button 
+                onClick={() => setFilterRoom('All')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'white', padding: '0.5rem 1rem', borderRadius: '8px',
+                  cursor: 'pointer', fontSize: '0.85rem'
+                }}
+              >
+                <ArrowLeft size={16} /> Back to all Categories
+              </button>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0 }}>{filterRoom} <span style={{ color: 'var(--color-accent-primary)' }}>Gallery</span></h2>
+            </div>
+
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)' }}>
+                Loading breathtaking designs...
+              </div>
+            ) : filteredProjects.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
+                No projects found for this category yet.
+              </div>
+            ) : (
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
+                gap: '2.5rem' 
+              }}>
+                {filteredProjects.map((project, i) => (
+                  <div key={project.id} 
+                    style={{ animation: `fadeInUp 0.6s ease ${i * 0.1}s forwards`, opacity: 0 }}
+                    className="gallery-grid-card"
+                  >
+                    <div 
+                      className="project-card-v2"
+                      onClick={() => handleProjectClick(project.id)}
+                    >
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
+                        backgroundSize: 'cover', backgroundPosition: 'center',
+                        transition: 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                      }} className="project-img-bg" />
+                      
+                      <div className="card-top-overlays">
+                        <button className="heart-btn" onClick={(e) => { e.stopPropagation(); }}>
+                          <Heart size={20} />
+                        </button>
+                      </div>
+
+                      {(project.threeDVideo || project.completedVideo) && (
+                        <div className="play-icon-overlay">
+                          <Play size={32} fill="white" />
+                        </div>
+                      )}
+
+                      <div className="project-card-overlay-v2">
+                        <div style={{ flex: 1 }}>
+                          <h4 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'white', marginBottom: '0.25rem' }}>{project.title}</h4>
+                          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{project.style}</p>
+                        </div>
+                        <button 
+                          className="get-quote-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const msg = encodeURIComponent(`Hi Rudraksha Design! I'm interested in getting a quote for the "${project.title}" ${project.category} design.`);
+                            window.open(`https://wa.me/919898384133?text=${msg}`, '_blank');
+                          }}
+                        >
+                          Get Quote
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
             {Object.entries(
               filteredProjects.reduce((acc, p) => {
@@ -268,63 +334,19 @@ export default function Projects() {
                     </button>
                   </div>
                   
-                  <div style={{ position: 'relative', width: '100%', group: 'hover' }}>
-                    {/* Navigation Arrows - Only show for 5+ cards */}
+                  <div style={{ position: 'relative', width: '100%' }}>
                     {catProjects.length > 5 && (
                       <div className="scroll-arrows-container">
-                        <button 
-                          onClick={() => scroll('left')}
-                          className="slider-arrow arrow-left"
-                          aria-label="Scroll Left"
-                        >
-                          <ChevronLeft size={22} />
-                        </button>
-                        <button 
-                          onClick={() => scroll('right')}
-                          className="slider-arrow arrow-right"
-                          aria-label="Scroll Right"
-                        >
-                          <ChevronRight size={22} />
-                        </button>
+                        <button onClick={() => scroll('left')} className="slider-arrow arrow-left"><ChevronLeft size={22} /></button>
+                        <button onClick={() => scroll('right')} className="slider-arrow arrow-right"><ChevronRight size={22} /></button>
                       </div>
                     )}
 
-                    <div 
-                      ref={scrollRef}
-                      style={{
-                        display: 'flex', gap: '1.5rem',
-                        overflowX: 'auto', paddingBottom: '1rem',
-                        scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch',
-                      }} className="hide-scrollbar"
-                    >
+                    <div ref={scrollRef} className="hide-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', scrollSnapType: 'x mandatory' }}>
                       {catProjects.map((project, i) => (
-                        <div
-                          key={project.id}
-                          onClick={() => handleProjectClick(project.id)}
-                          className="project-card"
-                          style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}
-                        >
-                          <div style={{
-                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                            backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
-                            backgroundSize: 'cover', backgroundPosition: 'center',
-                            transition: 'transform 0.6s ease',
-                          }} className="project-img-bg" />
-                          
-                          {/* Status Badge */}
-                          <div style={{
-                            position: 'absolute', top: '12px', right: '12px',
-                            padding: '0.3rem 0.7rem', borderRadius: '6px',
-                            fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-                            letterSpacing: '0.05em', zIndex: 2,
-                            background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.9)' : 'rgba(34, 197, 94, 0.9)',
-                            color: project.projectStatus === 'In Progress' ? '#000' : '#fff',
-                            backdropFilter: 'blur(4px)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                          }}>
-                            {project.projectStatus || 'Completed'}
-                          </div>
-    
+                        <div key={project.id} onClick={() => handleProjectClick(project.id)} className="project-card" style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}>
+                          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.6s ease' }} className="project-img-bg" />
+                          <div style={{ position: 'absolute', top: '12px', right: '12px', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', zIndex: 2, background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.9)' : 'rgba(34, 197, 94, 0.9)', color: project.projectStatus === 'In Progress' ? '#000' : '#fff', backdropFilter: 'blur(4px)', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>{project.projectStatus || 'Completed'}</div>
                           <div className="project-card-overlay">
                             <h4 className="project-card-title">{project.title}</h4>
                             <p className="project-card-subtitle">{project.style}</p>
@@ -341,50 +363,79 @@ export default function Projects() {
       </div>
 
       <style>{`
+        .project-card-v2 {
+          position: relative; height: 320px; border-radius: 16px; overflow: hidden;
+          cursor: pointer; background: #1e293b; border: 1px solid rgba(255,255,255,0.05);
+          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .project-card-v2:hover { transform: translateY(-8px); border-color: rgba(37,99,235,0.3); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.6); }
+        .project-card-v2:hover .project-img-bg { transform: scale(1.1); }
+
+        .project-card-overlay-v2 {
+          position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem;
+          background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+          display: flex; align-items: flex-end; gap: 1rem;
+        }
+
+        .get-quote-btn {
+          background: var(--color-accent-primary); color: #000; border: none;
+          padding: 0.6rem 1.2rem; borderRadius: 8px; fontSize: 0.85rem; fontWeight: 700;
+          cursor: pointer; transition: all 0.2s;
+        }
+        .get-quote-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+        .card-top-overlays { position: absolute; top: 1rem; right: 1rem; z-index: 2; }
+        .heart-btn {
+          background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white;
+          width: 40px; height: 40px; border-radius: 50%; display: flex;
+          align-items: center; justify-content: center; backdrop-filter: blur(8px);
+          cursor: pointer; transition: all 0.2s;
+        }
+        .heart-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
+
+        .play-icon-overlay {
+          position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          width: 60px; height: 60px; border-radius: 50%; background: rgba(37,99,235,0.8);
+          display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+          color: white; box-shadow: 0 0 20px rgba(37,99,235,0.4);
+        }
+
         .project-card {
           min-width: 320px; max-width: 400px; flex: 0 0 auto;
-          scroll-snap-align: start; position: relative;
-          height: 240px; border-radius: 12px; overflow: hidden;
-          cursor: pointer; transition: all var(--transition-smooth);
-          opacity: 0; transform: translateY(20px);
+          scroll-snap-align: start; position: relative; height: 240px;
+          border-radius: 12px; overflow: hidden; cursor: pointer;
+          transition: all 0.4s ease; opacity: 0; transform: translateY(20px);
         }
-        .project-card:hover { transform: translateY(-6px) !important; box-shadow: 0 12px 24px rgba(0,0,0,0.4); }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .project-card-overlay {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          padding: 2rem 1.5rem 1.2rem;
-          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-          display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none;
+          position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem;
+          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+          display: flex; flex-direction: column; justify-content: flex-end;
         }
-        .project-card-title { font-size: 1.1rem; font-weight: 600; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 0.2rem; }
-        .project-card-subtitle { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
-        
+        .project-card-title { color: white; margin: 0; font-size: 1rem; }
+        .project-card-subtitle { color: rgba(255,255,255,0.6); font-size: 0.8rem; margin: 0.2rem 0 0; }
+
         .slider-arrow {
           position: absolute; top: 50%; transform: translateY(-50%);
           width: 44px; height: 44px; border-radius: 50%;
-          background: rgba(15, 23, 42, 0.6);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: white;
+          background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.1); color: white;
           display: flex; align-items: center; justify-content: center;
-          cursor: pointer; z-index: 10; transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          cursor: pointer; z-index: 10; transition: all 0.3s;
         }
-        .slider-arrow:hover {
-          background: var(--color-accent-primary);
-          border-color: var(--color-accent-primary);
-          box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
-          transform: translateY(-50%) scale(1.1);
-        }
-        .arrow-left { left: -22px; }
-        .arrow-right { right: -22px; }
-        
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        .project-img-bg:hover { transform: scale(1.05); }
+        .slider-arrow:hover { background: var(--color-accent-primary); color: #000; }
+        .arrow-left { left: -20px; }
+        .arrow-right { right: -20px; }
+
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        @media (max-width: 480px) {
-          .project-card { min-width: 85vw; max-width: 85vw; }
-          .slider-arrow { display: none; }
+
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 768px) {
+          .project-card { min-width: 280px; }
+          .arrow-left, .arrow-right { display: none; }
         }
       `}</style>
     </>

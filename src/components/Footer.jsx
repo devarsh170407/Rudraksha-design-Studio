@@ -108,7 +108,7 @@ export default function Footer() {
     <footer style={styles.footer}>
       {/* ── GET ESTIMATE SECTION (Home Only) ── */}
       {isHomePage && (
-        <section style={styles.estimateSection}>
+        <section id="estimate-section" style={styles.estimateSection}>
           <div style={styles.container}>
             {step === 0 && (
               <>

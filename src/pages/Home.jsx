@@ -122,7 +122,7 @@ export default function Home() {
             <button
               className="btn-primary"
               style={{ padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px' }}
-              onClick={() => navigate('/projects?scroll=explore-gallery')}
+              onClick={() => { const el = document.getElementById('estimate-section'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
             >
               Explore Designs
             </button>
