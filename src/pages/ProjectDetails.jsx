@@ -118,9 +118,9 @@ export default function ProjectDetails() {
           border-radius: 10px;
         }
       `}</style>
-    <div className="container-fluid" style={{ padding: '8rem 0 4rem', minHeight: '100vh', background: 'var(--color-bg-primary)', maxWidth: '100%', width: '100%' }}>
+    <div className="container" style={{ padding: '8rem 2rem 4rem', minHeight: '100vh', background: 'var(--color-bg-primary)', maxWidth: '1600px', margin: '0 auto' }}>
       {/* Breadcrumbs / Back */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '1.5rem 4rem', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '1.5rem 0', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
          <span onClick={() => navigate('/projects')} style={{ cursor: 'pointer', transition: 'color 0.3s' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color=''}>Explore</span>
          <span style={{ opacity: 0.4 }}>/</span>
          <span onClick={() => navigate('/projects')} style={{ cursor: 'pointer', transition: 'color 0.3s' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color=''}>{project.category}</span>
@@ -135,10 +135,9 @@ export default function ProjectDetails() {
           gridTemplateColumns: '1.6fr 1fr', 
           gap: '0',
           background: 'var(--color-bg-secondary)',
-          borderRadius: '0',
+          borderRadius: '32px',
           overflow: 'hidden',
-          borderTop: '1px solid rgba(255,255,255,0.03)',
-          borderBottom: '1px solid rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.03)',
           boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
           marginBottom: '2rem'
         }}
@@ -265,7 +264,7 @@ export default function ProjectDetails() {
 
       {/* Videos Section Below Main Grid */}
       {(project.completedVideo || project.threeDVideo) && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '4rem', padding: '0 4rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '4rem' }}>
            {project.completedVideo && (
              <div className="vid-container">
                 <span className="vid-label">LIVE SITE WALKTHROUGH</span>
