@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -246,59 +247,95 @@ export default function Projects() {
                 acc[p.category].push(p);
                 return acc;
               }, {})
-            ).map(([category, catProjects]) => (
-              <section key={category}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
-                  <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
-                  <button
-                    onClick={() => setFilterRoom(category)}
-                    style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
-                  >
-                    See All →
-                  </button>
-                </div>
-                <div style={{
-                  display: 'flex', gap: '1.5rem',
-                  overflowX: 'auto', paddingBottom: '1rem',
-                  scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch',
-                }} className="hide-scrollbar">
-                  {catProjects.map((project, i) => (
-                    <div
-                      key={project.id}
-                      onClick={() => handleProjectClick(project.id)}
-                      className="project-card"
-                      style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}
-                    >
-                      <div style={{
-                        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
-                        backgroundSize: 'cover', backgroundPosition: 'center',
-                        transition: 'transform 0.6s ease',
-                      }} className="project-img-bg" />
-                      
-                      {/* Status Badge */}
-                      <div style={{
-                        position: 'absolute', top: '12px', right: '12px',
-                        padding: '0.3rem 0.7rem', borderRadius: '6px',
-                        fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-                        letterSpacing: '0.05em', zIndex: 2,
-                        background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.9)' : 'rgba(34, 197, 94, 0.9)',
-                        color: project.projectStatus === 'In Progress' ? '#000' : '#fff',
-                        backdropFilter: 'blur(4px)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                      }}>
-                        {project.projectStatus || 'Completed'}
-                      </div>
+            ).map(([category, catProjects]) => {
+              const scrollRef = useRef(null);
+              const scroll = (direction) => {
+                if (scrollRef.current) {
+                  const scrollAmount = direction === 'left' ? -420 : 420;
+                  scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+              };
 
-                      <div className="project-card-overlay">
-                        <h4 className="project-card-title">{project.title}</h4>
-                        <p className="project-card-subtitle">{project.style}</p>
+              return (
+                <section key={category} style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
+                    <button
+                      onClick={() => setFilterRoom(category)}
+                      style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+                    >
+                      See All →
+                    </button>
+                  </div>
+                  
+                  <div style={{ position: 'relative', width: '100%', group: 'hover' }}>
+                    {/* Navigation Arrows - Only show for 5+ cards */}
+                    {catProjects.length > 5 && (
+                      <div className="scroll-arrows-container">
+                        <button 
+                          onClick={() => scroll('left')}
+                          className="slider-arrow arrow-left"
+                          aria-label="Scroll Left"
+                        >
+                          <ChevronLeft size={22} />
+                        </button>
+                        <button 
+                          onClick={() => scroll('right')}
+                          className="slider-arrow arrow-right"
+                          aria-label="Scroll Right"
+                        >
+                          <ChevronRight size={22} />
+                        </button>
                       </div>
+                    )}
+
+                    <div 
+                      ref={scrollRef}
+                      style={{
+                        display: 'flex', gap: '1.5rem',
+                        overflowX: 'auto', paddingBottom: '1rem',
+                        scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch',
+                      }} className="hide-scrollbar"
+                    >
+                      {catProjects.map((project, i) => (
+                        <div
+                          key={project.id}
+                          onClick={() => handleProjectClick(project.id)}
+                          className="project-card"
+                          style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}
+                        >
+                          <div style={{
+                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                            backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
+                            backgroundSize: 'cover', backgroundPosition: 'center',
+                            transition: 'transform 0.6s ease',
+                          }} className="project-img-bg" />
+                          
+                          {/* Status Badge */}
+                          <div style={{
+                            position: 'absolute', top: '12px', right: '12px',
+                            padding: '0.3rem 0.7rem', borderRadius: '6px',
+                            fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
+                            letterSpacing: '0.05em', zIndex: 2,
+                            background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.9)' : 'rgba(34, 197, 94, 0.9)',
+                            color: project.projectStatus === 'In Progress' ? '#000' : '#fff',
+                            backdropFilter: 'blur(4px)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                          }}>
+                            {project.projectStatus || 'Completed'}
+                          </div>
+    
+                          <div className="project-card-overlay">
+                            <h4 className="project-card-title">{project.title}</h4>
+                            <p className="project-card-subtitle">{project.style}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </section>
-            ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         )}
       </div>
@@ -320,12 +357,34 @@ export default function Projects() {
         }
         .project-card-title { font-size: 1.1rem; font-weight: 600; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 0.2rem; }
         .project-card-subtitle { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+        
+        .slider-arrow {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          width: 44px; height: 44px; border-radius: 50%;
+          background: rgba(15, 23, 42, 0.6);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: white;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; z-index: 10; transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .slider-arrow:hover {
+          background: var(--color-accent-primary);
+          border-color: var(--color-accent-primary);
+          box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+          transform: translateY(-50%) scale(1.1);
+        }
+        .arrow-left { left: -22px; }
+        .arrow-right { right: -22px; }
+        
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         .project-img-bg:hover { transform: scale(1.05); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         @media (max-width: 480px) {
           .project-card { min-width: 85vw; max-width: 85vw; }
+          .slider-arrow { display: none; }
         }
       `}</style>
     </>
