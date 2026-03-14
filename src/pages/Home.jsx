@@ -122,7 +122,7 @@ export default function Home() {
             <button
               className="btn-primary"
               style={{ padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px' }}
-              onClick={() => { const el = document.getElementById('estimate-section'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
+              onClick={() => { const el = document.getElementById('why-choose-rudraksha'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
             >
               Explore Designs
             </button>
@@ -212,7 +212,7 @@ export default function Home() {
       </section>
 
       {/* ── WHY CHOOSE US AUTO-SCROLLER ── */}
-      <section style={{ 
+      <section id="why-choose-rudraksha" style={{ 
         padding: '6rem 0', background: 'var(--color-bg-primary)', position: 'relative',
         overflow: 'hidden'
       }}>
@@ -293,7 +293,7 @@ export default function Home() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
                     <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
                     <button
-                      onClick={() => setFilterRoom(category)}
+                      onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
                       style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
                     >
                       See All →
