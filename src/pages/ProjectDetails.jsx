@@ -110,7 +110,7 @@ export default function ProjectDetails() {
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: '1.5fr 1fr', 
+        gridTemplateColumns: '1.8fr 1fr', 
         gap: '3rem',
         background: 'var(--color-bg-secondary)',
         borderRadius: '32px',
@@ -124,7 +124,7 @@ export default function ProjectDetails() {
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           {/* Main Carousel Wrapper */}
-          <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', height: '650px', background: '#000', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', height: '500px', background: '#000', border: '1px solid rgba(255,255,255,0.05)' }}>
             {project.images && project.images.map((src, i) => (
               <div 
                 key={i}
