@@ -126,9 +126,15 @@ export default function Projects() {
               }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
-              onClick={() => navigate('/login')}
+              onClick={() => {
+                if (currentUser) {
+                  window.open('https://wa.me/919898384133?text=Hi! I would like to consult about a modular interior design project.', '_blank');
+                } else {
+                  navigate('/login');
+                }
+              }}
             >
-              Get Started Free
+              {currentUser ? 'Consult on WhatsApp' : 'Get Started Free'}
             </button>
           </div>
         </div>

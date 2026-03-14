@@ -122,7 +122,7 @@ export default function Home() {
             <button
               className="btn-primary"
               style={{ padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px' }}
-              onClick={() => { const el = document.getElementById('gallery'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
+              onClick={() => { const el = document.getElementById('explore-gallery'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
             >
               Explore Designs
             </button>
@@ -135,9 +135,9 @@ export default function Home() {
               }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(currentUser ? '/projects' : '/login')}
             >
-              Get Started Free
+              {currentUser ? 'View Projects' : 'Get Started Free'}
             </button>
           </div>
         </div>
