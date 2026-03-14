@@ -213,8 +213,8 @@ export default function ProjectDetails() {
           style={{ 
             display: 'flex', 
             flexDirection: 'column', 
-            gap: '2.5rem',
-            padding: '4rem 3.5rem',
+            gap: '1.5rem',
+            padding: '2.5rem 3rem',
             minHeight: '700px',
             background: 'linear-gradient(to right, rgba(0,0,0,0.1), transparent)'
           }}
@@ -236,11 +236,11 @@ export default function ProjectDetails() {
           </div>
 
           <div>
-             <h3 style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '1.5rem' }}>STUDIO EXCELLENCE</h3>
-             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div className="guar-item"><Sparkles size={24} className="gold" /><span>MODERN AESTHETICS</span></div>
-                <div className="guar-item"><Paintbrush size={24} className="gold" /><span>EXPERT EXECUTION</span></div>
-                <div className="guar-item"><Heart size={24} className="gold" /><span>PERSONALIZED</span></div>
+             <h3 style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2rem', marginBottom: '1rem' }}>STUDIO EXCELLENCE</h3>
+             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '1.2rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="guar-item" style={{ flexDirection: 'column', gap: '0.5rem', textAlign: 'center' }}><Sparkles size={20} className="gold" /><span style={{ fontSize: '0.6rem', letterSpacing: '0.05rem' }}>MODERN</span></div>
+                <div className="guar-item" style={{ flexDirection: 'column', gap: '0.5rem', textAlign: 'center' }}><Paintbrush size={20} className="gold" /><span style={{ fontSize: '0.6rem', letterSpacing: '0.05rem' }}>EXPERT</span></div>
+                <div className="guar-item" style={{ flexDirection: 'column', gap: '0.5rem', textAlign: 'center' }}><Heart size={20} className="gold" /><span style={{ fontSize: '0.6rem', letterSpacing: '0.05rem' }}>PERSONAL</span></div>
              </div>
           </div>
 
