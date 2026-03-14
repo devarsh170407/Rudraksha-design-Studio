@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, ShieldCheck, Clock, Users, Wrench, Share2, Facebook, Instagram } from 'lucide-react';
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, ShieldCheck, Clock, Users, Wrench, Share2, Facebook, Instagram, MessageCircle } from 'lucide-react';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -410,6 +410,15 @@ export default function ProjectDetails() {
       .share-icon:hover { color: var(--color-accent-secondary); }
 
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.1);
+        border-top-color: var(--color-accent-secondary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
       @media (max-width: 768px) {
         button { display: none !important; }
         .carousel-btn { display: flex !important; }
