@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   const [allProjects, setAllProjects] = useState([]);
   const [estimates, setEstimates] = useState([]);
   const [usersMap, setUsersMap] = useState({});
+  const [editingProject, setEditingProject] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -344,6 +345,76 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleEditInit = (project) => {
+    setEditingProject(project);
+    setFormData({
+      title: project.title,
+      category: project.category,
+      style: project.style,
+      projectStatus: project.projectStatus || 'Completed'
+    });
+    setImages([]); // This will be for NEW images added during edit
+    setThumbnailIndex(project.thumbnailIndex || 0);
+  };
+
+  const handleRemoveExistingImage = (imgUrl) => {
+    const newImages = editingProject.images.filter(url => url !== imgUrl);
+    setEditingProject({ ...editingProject, images: newImages });
+    if (thumbnailIndex >= newImages.length) {
+        setThumbnailIndex(0);
+    }
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    setUploading(true);
+    setProgress(0);
+    try {
+      let finalImages = [...editingProject.images];
+      
+      if (images.length > 0) {
+        setMessage({ text: 'Uploading new images...', type: '' });
+        const projectId = editingProject.localId || `proj_edit_${Date.now()}`;
+        for (const img of images) {
+          const compressedImg = await compressImage(img);
+          const url = await handlegithubUpload(compressedImg, `public/uploads/${projectId}/images`);
+          finalImages.push(url);
+          setProgress((finalImages.length / (images.length + editingProject.images.length)) * 100);
+        }
+      }
+
+      const updatedProject = {
+        title: formData.title,
+        category: formData.category,
+        style: formData.style,
+        projectStatus: formData.projectStatus,
+        images: finalImages,
+        thumbnailIndex: thumbnailIndex,
+        updatedAt: serverTimestamp()
+      };
+
+      await updateDoc(doc(db, 'projects', editingProject.id), updatedProject);
+      
+      setMessage({ text: 'Project updated successfully!', type: 'success' });
+      setEditingProject(null);
+      fetchProjects();
+      
+      // Reset
+      setTimeout(() => {
+        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed' });
+        setImages([]);
+        setThumbnailIndex(0);
+        setMessage({ text: '', type: '' });
+        setUploading(false);
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Save edit error:", error);
+      setMessage({ text: `Update Failed: ${error.message}`, type: 'error' });
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
       <h1 style={{ fontSize: '2.5rem', marginBottom: '2.5rem' }}>Admin Dashboard</h1>
@@ -591,9 +662,128 @@ export default function AdminDashboard() {
                   <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
                   <p style={{ color: 'var(--color-text-secondary)' }}>Syncing with cloud database...</p>
                 </div>
-              ) : allProjects.length === 0 ? (
+            ) : allProjects.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
                   <p style={{ color: 'var(--color-text-secondary)' }}>No projects found on the server. Post your first design!</p>
+                </div>
+              ) : editingProject ? (
+                /* EDIT UI */
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.8rem' }}>Edit Project: {editingProject.title}</h2>
+                    <button onClick={() => setEditingProject(null)} className="btn-outline" style={{ padding: '0.5rem 1rem' }}>Cancel</button>
+                  </div>
+                  
+                  <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div>
+                      <label style={styles.label}>Project Title</label>
+                      <input name="title" className="input-field" required value={formData.title} onChange={handleChange} />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
+                      <div>
+                        <label style={styles.label}>Category</label>
+                        <select name="category" className="input-field" value={formData.category} onChange={handleChange}>
+                          <option>Home Interiors</option>
+                          <option>Modular Kitchen</option>
+                          <option>Living Room</option>
+                          <option>Bedroom</option>
+                          <option>Wardrobe</option>
+                          <option>Space Saving Furniture</option>
+                          <option>Home Office</option>
+                          <option>Bathroom</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={styles.label}>Style</label>
+                        <select name="style" className="input-field" value={formData.style} onChange={handleChange}>
+                          <option>Modern</option>
+                          <option>Classic</option>
+                          <option>Minimalist</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={styles.label}>Project Status</label>
+                        <select name="projectStatus" className="input-field" value={formData.projectStatus} onChange={handleChange}>
+                          <option>Completed</option>
+                          <option>In Progress</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Current Images Management */}
+                    <div>
+                      <label style={styles.label}>Current Images (Click to set Primary)</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem', marginTop: '0.8rem' }}>
+                        {editingProject.images.map((img, idx) => (
+                          <div 
+                            key={`existing-${idx}`}
+                            onClick={() => setThumbnailIndex(idx)}
+                            style={{ 
+                              height: '100px', 
+                              backgroundImage: `url(${img})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              border: thumbnailIndex === idx ? '3px solid var(--color-accent-primary)' : '2px solid rgba(255,255,255,0.1)',
+                              position: 'relative'
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); handleRemoveExistingImage(img); }}
+                              style={{
+                                position: 'absolute', top: '-8px', right: '-8px', width: '24px', height: '24px',
+                                background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                              }}
+                            >
+                              ×
+                            </button>
+                            {thumbnailIndex === idx && (
+                              <div style={{ position: 'absolute', bottom: 0, width: '100%', background: 'var(--color-accent-primary)', color: '#000', fontSize: '0.6rem', textAlign: 'center', fontWeight: 'bold' }}>PRIMARY</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Add More Images */}
+                    <div className="file-upload-zone">
+                      <div className="file-upload-icon">➕</div>
+                      <label className="file-upload-text">
+                        <span>Add Newer Photos</span>
+                        <p style={{ marginTop: '0.4rem', fontSize: '0.8rem' }}>Drop images here or click to browse</p>
+                      </label>
+                      <input type="file" multiple accept="image/*" onChange={handleImagesChange} />
+                      
+                      {images.length > 0 && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '0.8rem', marginTop: '1rem', width: '100%' }}>
+                          {images.map((img, idx) => (
+                            <div key={`new-${idx}`} style={{ height: '80px', backgroundImage: `url(${URL.createObjectURL(img)})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '8px', position: 'relative' }}>
+                               <button type="button" onClick={() => removeImage(idx)} style={{ position: 'absolute', top: '-5px', right: '-5px', width: '20px', height: '20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', fontSize: '10px' }}>×</button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {uploading && (
+                      <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', height: '8px' }}>
+                        <div style={{ width: `${progress}%`, background: 'var(--color-accent-primary)', height: '100%', transition: 'width 0.2s' }} />
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <button type="submit" disabled={uploading} className="btn-primary" style={{ flex: 1 }}>
+                        {uploading ? 'Updating Project...' : 'Save All Changes'}
+                      </button>
+                      <button type="button" onClick={() => setEditingProject(null)} className="btn-outline" style={{ flex: 1 }}>
+                        Discard & Back
+                      </button>
+                    </div>
+                  </form>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -621,17 +811,29 @@ export default function AdminDashboard() {
                       
                       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                          <button 
-                            onClick={() => handleToggleProjectStatus(project)}
-                            style={{
-                              background: project.projectStatus === 'Completed' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
-                              color: project.projectStatus === 'Completed' ? '#22c55e' : '#eab308',
-                              border: `1px solid ${project.projectStatus === 'Completed' ? 'rgba(34,197,94,0.2)' : 'rgba(234,179,8,0.2)'}`,
-                              padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
-                            }}
-                          >
-                            {project.projectStatus || 'Completed'}
-                          </button>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button 
+                                onClick={() => handleEditInit(project)}
+                                style={{
+                                    background: 'rgba(37, 99, 235, 0.1)', color: '#2563eb',
+                                    border: '1px solid rgba(37, 99, 235, 0.2)',
+                                    padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                }}
+                            >
+                                Edit Details
+                            </button>
+                            <button 
+                                onClick={() => handleToggleProjectStatus(project)}
+                                style={{
+                                background: project.projectStatus === 'Completed' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                                color: project.projectStatus === 'Completed' ? '#22c55e' : '#eab308',
+                                border: `1px solid ${project.projectStatus === 'Completed' ? 'rgba(34,197,94,0.2)' : 'rgba(234,179,8,0.2)'}`,
+                                padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                }}
+                            >
+                                {project.projectStatus || 'Completed'}
+                            </button>
+                          </div>
                           <button 
                             onClick={() => {
                               if (window.confirm('Delete this project?')) {
