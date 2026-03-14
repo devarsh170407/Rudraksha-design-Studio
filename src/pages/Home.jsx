@@ -17,6 +17,51 @@ const CATEGORIES = [
   { name: 'Bathroom',               image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
 ];
 
+const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
+  const scrollRef = useRef(null);
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = direction === 'left' ? -420 : 420;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section key={category} style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
+        <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
+        <button
+          onClick={() => onSeeAll(category)}
+          style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+        >
+          See All →
+        </button>
+      </div>
+      
+      <div style={{ position: 'relative', width: '100%' }}>
+        {catProjects.length > 3 && (
+          <div className="scroll-arrows-container">
+            <button onClick={() => scroll('left')} className="slider-arrow arrow-left"><ChevronLeft size={22} /></button>
+            <button onClick={() => scroll('right')} className="slider-arrow arrow-right"><ChevronRight size={22} /></button>
+          </div>
+        )}
+
+        <div ref={scrollRef} className="hide-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', scrollSnapType: 'x mandatory' }}>
+          {catProjects.map((project, i) => (
+            <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card" style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}>
+              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.6s ease' }} className="project-img-bg" />
+              <div className="project-card-overlay">
+                <h4 className="project-card-title">{project.title}</h4>
+                <p className="project-card-subtitle">{project.style}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const STYLES = ['All', 'Modern', 'Classic', 'Minimalist'];
 
 export default function Home() {
@@ -27,6 +72,7 @@ export default function Home() {
   const [searchParams]                = useSearchParams();
   const [filterRoom,  setFilterRoom]  = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
+  const [searchQuery]                 = useState(''); // Placeholder for future if needed
 
   useEffect(() => {
     const cat = searchParams.get('category');
@@ -284,47 +330,19 @@ export default function Home() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
               {Object.entries(
                 filteredProjects.reduce((acc, p) => {
-                  if (!acc[p.category]) acc[p.category] = [];
-                  acc[p.category].push(p);
+                  const cat = p.category || 'Other';
+                  if (!acc[cat]) acc[cat] = [];
+                  acc[cat].push(p);
                   return acc;
                 }, {})
               ).map(([category, catProjects]) => (
-                <section key={category}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
-                    <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
-                    <button
-                      onClick={() => navigate(`/projects?category=${encodeURIComponent(category)}`)}
-                      style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
-                    >
-                      See All →
-                    </button>
-                  </div>
-                  <div style={{
-                    display: 'flex', gap: '1.5rem',
-                    overflowX: 'auto', paddingBottom: '1rem',
-                    scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch',
-                  }} className="hide-scrollbar">
-                    {catProjects.map((project, i) => (
-                      <div
-                        key={project.id}
-                        onClick={() => handleProjectClick(project.id)}
-                        className="project-card"
-                        style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}
-                      >
-                        <div style={{
-                          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                          backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
-                          backgroundSize: 'cover', backgroundPosition: 'center',
-                          transition: 'transform 0.6s ease',
-                        }} className="project-img-bg" />
-                        <div className="project-card-overlay">
-                          <h4 className="project-card-title">{project.title}</h4>
-                          <p className="project-card-subtitle">{project.style}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                <CategoryRow 
+                  key={category} 
+                  category={category} 
+                  catProjects={catProjects} 
+                  onProjectClick={handleProjectClick}
+                  onSeeAll={(cat) => navigate(`/projects?category=${encodeURIComponent(cat)}`)}
+                />
               ))}
             </div>
           )}
@@ -361,8 +379,27 @@ export default function Home() {
         .project-img-bg:hover { transform: scale(1.05); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .slider-arrow {
+          position: absolute; top: 45%; transform: translateY(-50%);
+          width: 48px; height: 48px; border-radius: 50%;
+          background: white; border: 1px solid rgba(0, 0, 0, 0.08);
+          color: #1e293b; display: flex; align-items: center; justify-content: center;
+          cursor: pointer; z-index: 20; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+        .slider-arrow:hover {
+          background: var(--color-accent-primary);
+          color: white;
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+          transform: translateY(-50%) scale(1.1);
+        }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
+
         @media (max-width: 480px) {
           .project-card { min-width: 85vw; max-width: 85vw; }
+          .slider-arrow { display: none; }
         }
       `}</style>
     </>
