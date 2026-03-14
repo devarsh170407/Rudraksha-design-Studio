@@ -76,10 +76,25 @@ export default function ProjectDetails() {
   };
 
   if (loading) {
-    return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Loading project details...</div>;
+    return (
+      <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center', background: 'var(--color-bg-primary)', color: 'white', minHeight: '100vh' }}>
+        <div className="spinner" style={{ margin: '0 auto 2rem' }}></div>
+        <p style={{ letterSpacing: '0.1rem', opacity: 0.6 }}>CURATING DESIGN DETAILS...</p>
+      </div>
+    );
   }
 
-  if (!project) return null;
+  if (!project) {
+    return (
+      <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center', background: 'var(--color-bg-primary)', color: 'white', minHeight: '100vh' }}>
+        <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Design Not Found</h2>
+        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>We couldn't locate the specific project details you're looking for.</p>
+        <button onClick={() => navigate('/projects')} className="cta-outline" style={{ margin: '0 auto', width: 'auto', padding: '1rem 2rem' }}>
+          Back to Projects
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
