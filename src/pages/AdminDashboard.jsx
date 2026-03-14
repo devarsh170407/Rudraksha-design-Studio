@@ -290,16 +290,16 @@ export default function AdminDashboard() {
         updateProgress();
       }
 
-      // 3. Save to Firestore
+      // 3. Save to Firestore (Sanitized to avoid undefined fields)
       const newProject = {
-        title: formData.title,
-        category: formData.category,
-        style: formData.style,
+        title: formData.title || 'Untitled Project',
+        category: formData.category || 'Home Interiors',
+        style: formData.style || 'Modern',
         images: imageUrls, 
         thumbnailIndex: thumbnailIndex,
-        threeDVideo: threeDVideoUrl,
-        completedVideo: completedVideoUrl,
-        projectStatus: formData.projectStatus,
+        threeDVideo: threeDVideoUrl || '',
+        completedVideo: completedVideoUrl || '',
+        projectStatus: formData.projectStatus || 'Completed',
         description: formData.description || '',
         createdAt: serverTimestamp(),
         localId: projectId
@@ -389,10 +389,10 @@ export default function AdminDashboard() {
       }
 
       const updatedProject = {
-        title: formData.title,
-        category: formData.category,
-        style: formData.style,
-        projectStatus: formData.projectStatus,
+        title: formData.title || editingProject.title || 'Untitled Project',
+        category: formData.category || editingProject.category || 'Home Interiors',
+        style: formData.style || editingProject.style || 'Modern',
+        projectStatus: formData.projectStatus || editingProject.projectStatus || 'Completed',
         description: formData.description || '',
         images: finalImages,
         thumbnailIndex: thumbnailIndex,
