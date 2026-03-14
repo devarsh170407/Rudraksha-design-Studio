@@ -352,23 +352,19 @@ export default function Projects() {
             )}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
-            {Object.entries(
-              filteredProjects.reduce((acc, p) => {
-                const cat = p.category || 'Other';
-                if (!acc[cat]) acc[cat] = [];
-                acc[cat].push(p);
-                return acc;
-              }, {})
-            ).map(([category, catProjects]) => (
-              <CategoryRow 
-                key={category} 
-                category={category} 
-                catProjects={catProjects} 
-                onProjectClick={handleProjectClick}
-                onSeeAll={setFilterRoom}
-              />
-            ))}
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '6rem 2rem', 
+            background: 'rgba(255,255,255,0.02)', 
+            borderRadius: '24px',
+            border: '1px dashed rgba(255,255,255,0.1)',
+            animation: 'fadeIn 0.8s ease'
+          }}>
+            <div style={{ fontSize: '3.5rem', marginBottom: '1.5rem', filter: 'grayscale(1) opacity(0.5)' }}>✨</div>
+            <h3 style={{ fontSize: '1.6rem', fontWeight: 600, marginBottom: '1rem', color: 'white' }}>Ready to Explore?</h3>
+            <p style={{ color: 'rgba(255,255,255,0.5)', maxWidth: '420px', margin: '0 auto', fontSize: '1rem', lineHeight: 1.6 }}>
+              Select a room category from the dropdown menu above to view our curated collection of luxury interior designs.
+            </p>
           </div>
         )}
       </div>
