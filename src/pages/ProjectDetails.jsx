@@ -221,10 +221,10 @@ export default function ProjectDetails() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
-             <div className="spec-card"><span className="spec-title">LAYOUT</span><span className="spec-val">{project.layout || 'N/A'}</span></div>
-             <div className="spec-card"><span className="spec-title">DIMENSION</span><span className="spec-val">{project.dimension || 'N/A'}</span></div>
-             <div className="spec-card"><span className="spec-title">COLOUR</span><span className="spec-val">{project.color || 'N/A'}</span></div>
-             <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">{project.material || 'N/A'}</span></div>
+             {project.layout && <div className="spec-card"><span className="spec-title">LAYOUT</span><span className="spec-val">{project.layout}</span></div>}
+             {project.dimension && <div className="spec-card"><span className="spec-title">DIMENSION</span><span className="spec-val">{project.dimension}</span></div>}
+             {project.color && <div className="spec-card"><span className="spec-title">COLOUR</span><span className="spec-val">{project.color}</span></div>}
+             {project.material && <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">{project.material}</span></div>}
           </div>
 
           {/* Studio Values */}
