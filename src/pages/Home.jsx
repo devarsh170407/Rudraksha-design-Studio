@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle } from 'lucide-react';
+import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const CATEGORIES = [
   { name: 'All',                    image: '' },
