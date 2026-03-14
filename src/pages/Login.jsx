@@ -113,13 +113,15 @@ export default function Login() {
           {/* Studio branding — top */}
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <div style={{
-                width: '36px', height: '36px',
-                background: 'linear-gradient(135deg, #2563eb, #1e3a8a)',
-                borderRadius: '8px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 800, fontSize: '1rem', color: 'white'
-              }}>R</div>
+              <img 
+                src="/logomain.png" 
+                alt="Rudraksha Logo" 
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  objectFit: 'contain'
+                }} 
+              />
               <div>
                 <div style={{ color: 'white', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.06em', lineHeight: 1 }}>RUDRAKSHA</div>
                 <div style={{ color: '#d4af37', fontSize: '0.6rem', letterSpacing: '0.14em' }}>DESIGN STUDIO</div>
