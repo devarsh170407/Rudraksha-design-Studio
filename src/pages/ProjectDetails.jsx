@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, ShieldCheck, Clock, Users, Wrench, Share2, Facebook, Instagram, MessageCircle } from 'lucide-react';
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, X, Sparkles, Paintbrush, Share2, Facebook, Instagram, MessageCircle } from 'lucide-react';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -110,13 +110,13 @@ export default function ProjectDetails() {
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: '1fr 400px', 
-        gap: '2.5rem',
+        gridTemplateColumns: '1.5fr 1fr', 
+        gap: '3rem',
         background: 'var(--color-bg-secondary)',
         borderRadius: '32px',
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.03)',
-        padding: '2.5rem',
+        padding: '3rem',
         boxShadow: '0 40px 100px rgba(0,0,0,0.5)'
       }}>
         
@@ -124,7 +124,7 @@ export default function ProjectDetails() {
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           {/* Main Carousel Wrapper */}
-          <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', height: '550px', background: '#000', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', height: '650px', background: '#000', border: '1px solid rgba(255,255,255,0.05)' }}>
             {project.images && project.images.map((src, i) => (
               <div 
                 key={i}
@@ -144,19 +144,29 @@ export default function ProjectDetails() {
               </div>
             ))}
 
-            {/* Carousel Controls */}
-            <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', display: 'flex', gap: '0.8rem', zIndex: 10 }}>
-              <button onClick={handlePrev} className="carousel-btn"><ChevronLeft size={20} /></button>
-              <button onClick={handleNext} className="carousel-btn"><ChevronRight size={20} /></button>
-            </div>
+            {/* Carousel Controls - Centered on sides */}
+            <button 
+              onClick={handlePrev} 
+              className="carousel-btn-float" 
+              style={{ left: '1.5rem' }}
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button 
+              onClick={handleNext} 
+              className="carousel-btn-float" 
+              style={{ right: '1.5rem' }}
+            >
+              <ChevronRight size={24} />
+            </button>
 
             {/* Indicators */}
-            <div style={{ position: 'absolute', bottom: '2rem', right: '2rem', display: 'flex', gap: '0.5rem', zIndex: 10 }}>
+            <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.6rem', zIndex: 10 }}>
               {project.images?.map((_, i) => (
                 <div 
                   key={i} 
                   style={{ 
-                    width: i === activeSlide ? '24px' : '8px', 
+                    width: i === activeSlide ? '32px' : '8px', 
                     height: '8px', 
                     borderRadius: '4px',
                     background: i === activeSlide ? 'var(--color-accent-secondary)' : 'rgba(255,255,255,0.3)',
@@ -193,10 +203,21 @@ export default function ProjectDetails() {
         {/* Right Column: Interaction Panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '0.5rem' }}>{project.title}</h1>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', marginBottom: '1.5rem' }}>
-              A signature {(project?.style || 'Modern').toLowerCase()} approach to modern {(project?.category || 'Interiors').toLowerCase()} design.
-            </p>
+            <h1 style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1rem' }}>{project.title}</h1>
+            <div style={{ color: 'var(--color-accent-secondary)', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.1rem', marginBottom: '1.5rem' }}>
+               {(project?.category || 'Interiors').toUpperCase()} / {(project?.style || 'Modern').toUpperCase()}
+            </div>
+            
+            {project.description && (
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: '2rem' }}>
+                {project.description}
+              </p>
+            )}
+            {!project.description && (
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', marginBottom: '2rem' }}>
+                A signature {(project?.style || 'Modern').toLowerCase()} approach to modern {(project?.category || 'Interior').toLowerCase()} design.
+              </p>
+            )}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
@@ -206,17 +227,17 @@ export default function ProjectDetails() {
              <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">BWR Plywood</span></div>
           </div>
 
-          {/* Guarantees */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px' }}>
-             <div className="guar-item"><ShieldCheck size={18} className="gold" /><span>10 YEAR WARRANTY</span></div>
-             <div className="guar-item"><Clock size={18} className="gold" /><span>45 DAYS DELIVERY</span></div>
-             <div className="guar-item"><Users size={18} className="gold" /><span>750+ EXPERTS</span></div>
-             <div className="guar-item"><Wrench size={18} className="gold" /><span>POST INSTALL</span></div>
+          {/* Studio Values */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+             <div className="guar-item"><Sparkles size={24} className="gold" /><span>MODERN AESTHETICS</span></div>
+             <div className="guar-item"><Paintbrush size={24} className="gold" /><span>EXPERT EXECUTION</span></div>
+             <div className="guar-item"><Heart size={24} className="gold" /><span>PERSONALIZED</span></div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-             <button className="cta-primary">BOOK FREE DESIGN SESSION</button>
-             <button className="cta-outline"><Heart size={18} /> SAVE TO WISHLIST</button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: 'auto' }}>
+             <button className="cta-outline" style={{ height: '60px', fontSize: '1rem', fontWeight: 700 }}>
+                <Heart size={20} /> SAVE TO COLLECTION
+             </button>
           </div>
 
           {/* Share */}
@@ -317,6 +338,30 @@ export default function ProjectDetails() {
     )}
 
     <style>{`
+      .carousel-btn-float {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.3);
+        backdrop-filter: blur(15px);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.1);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 10;
+      }
+      .carousel-btn-float:hover {
+        background: var(--color-accent-secondary);
+        color: black;
+        border-color: var(--color-accent-secondary);
+        transform: translateY(-50%) scale(1.1);
+      }
       .carousel-btn {
         background: rgba(255,255,255,0.1);
         backdrop-filter: blur(10px);

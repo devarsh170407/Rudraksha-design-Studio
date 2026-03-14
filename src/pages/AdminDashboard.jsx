@@ -27,10 +27,8 @@ export default function AdminDashboard() {
   const [editingProject, setEditingProject] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    category: 'Home Interiors',
-    style: 'Modern',
-    projectStatus: 'Completed'
+    projectStatus: 'Completed',
+    description: ''
   });
   
   const [images, setImages] = useState([]);
@@ -299,6 +297,7 @@ export default function AdminDashboard() {
         threeDVideo: threeDVideoUrl,
         completedVideo: completedVideoUrl,
         projectStatus: formData.projectStatus,
+        description: formData.description || '',
         createdAt: serverTimestamp(),
         localId: projectId
       };
@@ -309,7 +308,7 @@ export default function AdminDashboard() {
       
       // Reset
       setTimeout(() => {
-        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed' });
+        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: '' });
         setImages([]);
         setThumbnailIndex(0);
         setThreeDVideo(null);
@@ -351,7 +350,8 @@ export default function AdminDashboard() {
       title: project.title,
       category: project.category,
       style: project.style,
-      projectStatus: project.projectStatus || 'Completed'
+      projectStatus: project.projectStatus || 'Completed',
+      description: project.description || ''
     });
     setImages([]); // This will be for NEW images added during edit
     setThumbnailIndex(project.thumbnailIndex || 0);
@@ -388,6 +388,7 @@ export default function AdminDashboard() {
         category: formData.category,
         style: formData.style,
         projectStatus: formData.projectStatus,
+        description: formData.description || '',
         images: finalImages,
         thumbnailIndex: thumbnailIndex,
         updatedAt: serverTimestamp()
@@ -401,7 +402,7 @@ export default function AdminDashboard() {
       
       // Reset
       setTimeout(() => {
-        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed' });
+        setFormData({ title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: '' });
         setImages([]);
         setThumbnailIndex(0);
         setMessage({ text: '', type: '' });
@@ -484,6 +485,18 @@ export default function AdminDashboard() {
                 <div>
                   <label style={styles.label}>Project Title</label>
                   <input name="title" className="input-field" placeholder="e.g. Minimalist Urban Condo" required value={formData.title} onChange={handleChange} />
+                </div>
+                
+                <div>
+                  <label style={styles.label}>Project Description</label>
+                  <textarea 
+                    name="description" 
+                    className="input-field" 
+                    placeholder="Describe the design story, key features, and material choices..." 
+                    style={{ minHeight: '120px', resize: 'vertical', paddingTop: '1rem' }}
+                    value={formData.description} 
+                    onChange={handleChange} 
+                  />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
@@ -678,6 +691,17 @@ export default function AdminDashboard() {
                     <div>
                       <label style={styles.label}>Project Title</label>
                       <input name="title" className="input-field" required value={formData.title} onChange={handleChange} />
+                    </div>
+
+                    <div>
+                      <label style={styles.label}>Project Description</label>
+                      <textarea 
+                        name="description" 
+                        className="input-field" 
+                        style={{ minHeight: '120px', resize: 'vertical', paddingTop: '1rem' }}
+                        value={formData.description} 
+                        onChange={handleChange} 
+                      />
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
