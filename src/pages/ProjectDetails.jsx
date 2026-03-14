@@ -109,8 +109,9 @@ export default function ProjectDetails() {
       </div>
 
       <div style={{ 
-        display: 'flex',
-        flexDirection: 'column',
+        display: 'grid', 
+        gridTemplateColumns: '1.6fr 1fr', 
+        gap: '0',
         background: 'var(--color-bg-secondary)',
         borderRadius: '32px',
         overflow: 'hidden',
@@ -119,7 +120,7 @@ export default function ProjectDetails() {
         marginBottom: '2rem'
       }}>
         
-        {/* TOP: Cinematic Full-Width Header */}
+        {/* Left Column: Massive Cinematic Media Feature */}
         <div style={{ position: 'relative', width: '100%', height: '700px', background: '#000' }}>
           {project.images && project.images.map((src, i) => (
             <div 
@@ -179,83 +180,80 @@ export default function ProjectDetails() {
             fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.15rem',
             border: '1px solid rgba(255,255,255,0.1)'
           }}>
-            ✦ FULL SCREEN VIEW {activeSlide + 1}/{project.images?.length}
+            ✦ FULL VIEW {activeSlide + 1}/{project.images?.length}
           </div>
         </div>
 
-        {/* BOTTOM: Detail Content Area */}
+        {/* Right Column: Interaction & Story Panel */}
         <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1.4fr 1fr', 
-          gap: '5rem',
-          padding: '4rem 4rem 5rem',
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '2.5rem',
+          padding: '4rem 3.5rem',
+          height: '700px',
+          overflowY: 'auto',
+          background: 'linear-gradient(to right, rgba(0,0,0,0.1), transparent)'
         }}>
           
-          {/* Bottom Left: Title & Story */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            <div>
-              <h1 style={{ fontSize: '4rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>{project.title}</h1>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <span style={{ color: 'var(--color-accent-secondary)', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.2rem' }}>{(project?.category || 'Interiors').toUpperCase()}</span>
-                <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.15rem' }}>{(project?.style || 'Modern').toUpperCase()}</span>
-              </div>
-              
-              {project.description && (
-                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem', lineHeight: 1.8, marginBottom: '3rem' }}>
-                  {project.description}
-                </p>
-              )}
+          <div>
+            <h1 style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>{project.title}</h1>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <span style={{ color: 'var(--color-accent-secondary)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.2rem' }}>{(project?.category || 'Interiors').toUpperCase()}</span>
+              <div style={{ width: '30px', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '0.8rem', letterSpacing: '0.15rem' }}>{(project?.style || 'Modern').toUpperCase()}</span>
             </div>
-
-            {/* Videos Grid Below Story */}
-            {(project.completedVideo || project.threeDVideo) && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                 {project.completedVideo && (
-                   <div className="vid-container">
-                      <span className="vid-label">LIVE SITE WALKTHROUGH</span>
-                      <video src={project.completedVideo} controls muted style={{ width: '100%', borderRadius: '16px' }} />
-                   </div>
-                 )}
-                 {project.threeDVideo && (
-                   <div className="vid-container" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
-                      <span className="vid-label" style={{ color: 'var(--color-accent-secondary)' }}>3D ARCHITECTURAL VIEW</span>
-                      <video src={project.threeDVideo} controls loop muted style={{ width: '100%', borderRadius: '16px' }} />
-                   </div>
-                 )}
-              </div>
+            
+            {project.description && (
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+                {project.description}
+              </p>
             )}
           </div>
 
-          {/* Bottom Right: Specifications & Values */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-            <div>
-               <h3 style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '2rem' }}>STUDIO EXCELLENCE</h3>
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.2rem', background: 'rgba(255,255,255,0.02)', padding: '2.5rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div className="guar-item"><Sparkles size={28} className="gold" /><span>MODERN AESTHETICS</span></div>
-                  <div className="guar-item"><Paintbrush size={28} className="gold" /><span>EXPERT EXECUTION</span></div>
-                  <div className="guar-item"><Heart size={28} className="gold" /><span>PERSONALIZED</span></div>
-               </div>
-            </div>
-
-            <button className="cta-outline" style={{ padding: '1.5rem', fontSize: '1rem', fontWeight: 700, borderRadius: '20px' }}>
-                <Heart size={24} /> SAVE TO MY COLLECTION
-            </button>
-
-            {/* Share */}
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-               <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2rem', display: 'block', marginBottom: '1.5rem' }}>SHARE DESIGN STORY</span>
-               <div style={{ display: 'flex', gap: '2rem' }}>
-                  <Share2 size={24} className="share-icon" />
-                  <Instagram size={24} className="share-icon" />
-                  <Facebook size={24} className="share-icon" />
-                  <MessageCircle size={24} className="share-icon" />
-               </div>
-            </div>
+          <div>
+             <h3 style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '1.5rem' }}>STUDIO EXCELLENCE</h3>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="guar-item"><Sparkles size={24} className="gold" /><span>MODERN AESTHETICS</span></div>
+                <div className="guar-item"><Paintbrush size={24} className="gold" /><span>EXPERT EXECUTION</span></div>
+                <div className="guar-item"><Heart size={24} className="gold" /><span>PERSONALIZED</span></div>
+             </div>
           </div>
 
+          <button className="cta-outline" style={{ padding: '1.2rem', fontSize: '0.9rem', fontWeight: 700, borderRadius: '16px', display: 'flex', gap: '0.8rem', alignItems: 'center', justifyContent: 'center' }}>
+              <Heart size={20} /> SAVE TO COLLECTION
+          </button>
+
+          {/* Share */}
+          <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
+             <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2rem', display: 'block', marginBottom: '1.2rem' }}>SHARE THIS STORY</span>
+             <div style={{ display: 'flex', gap: '1.5rem' }}>
+                <Share2 size={22} className="share-icon" />
+                <Instagram size={22} className="share-icon" />
+                <Facebook size={22} className="share-icon" />
+                <MessageCircle size={22} className="share-icon" />
+             </div>
+          </div>
         </div>
+
       </div>
+
+      {/* Videos Section Below Main Grid */}
+      {(project.completedVideo || project.threeDVideo) && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '4rem' }}>
+           {project.completedVideo && (
+             <div className="vid-container">
+                <span className="vid-label">LIVE SITE WALKTHROUGH</span>
+                <video src={project.completedVideo} controls muted style={{ width: '100%', borderRadius: '24px' }} />
+             </div>
+           )}
+           {project.threeDVideo && (
+             <div className="vid-container" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
+                <span className="vid-label" style={{ color: 'var(--color-accent-secondary)' }}>3D ARCHITECTURAL VIEW</span>
+                <video src={project.threeDVideo} controls loop muted style={{ width: '100%', borderRadius: '24px' }} />
+             </div>
+           )}
+        </div>
+      )}
     </div>
 
     {/* Lightbox Modal */}
