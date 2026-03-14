@@ -188,7 +188,7 @@ export default function ProjectDetails() {
         
         {/* Left Column: Massive Cinematic Media Feature */}
         <div style={{ position: 'relative', width: '100%', height: '700px', background: '#000' }}>
-          {project.images && project.images.map((src, i) => (
+          {project?.images && project.images.map((src, i) => (
             <div 
               key={i}
               style={{
@@ -198,12 +198,18 @@ export default function ProjectDetails() {
                 pointerEvents: i === activeSlide ? 'auto' : 'none'
               }}
             >
-              <img 
-                src={src} 
-                alt={`Slide ${i}`} 
-                onClick={() => setSelectedImageIndex(i)}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }} 
-              />
+              {src ? (
+                <img 
+                  src={src} 
+                  alt={`Slide ${i}`} 
+                  onClick={() => setSelectedImageIndex(i)}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }} 
+                />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)' }}>
+                  IMAGE NOT AVAILABLE
+                </div>
+              )}
             </div>
           ))}
 
@@ -413,17 +419,21 @@ export default function ProjectDetails() {
         >
           <X size={24} />
         </button>        <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
-          <img 
-            src={project.images[selectedImageIndex]} 
-            alt="Fullscreen" 
-            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }} 
-          />
+          {project.images && project.images[selectedImageIndex] ? (
+            <img 
+              src={project.images[selectedImageIndex]} 
+              alt="Fullscreen" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }} 
+            />
+          ) : (
+            <div style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>Image not found</div>
+          )}
           {/* Index Indicator */}
           <div style={{
             position: 'absolute', bottom: '-40px', left: '50%', transform: 'translateX(-50%)',
             color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', fontWeight: 500
           }}>
-            {selectedImageIndex + 1} / {project.images.length}
+            {selectedImageIndex + 1} / {project.images?.length || 0}
           </div>
         </div>
       </div>
