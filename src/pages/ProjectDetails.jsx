@@ -180,7 +180,7 @@ export default function ProjectDetails() {
           <div>
             <h1 style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '0.5rem' }}>{project.title}</h1>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', marginBottom: '1.5rem' }}>
-              A signature {project.style.toLowerCase()} approach to modern {project.category.toLowerCase()} design.
+              A signature {(project?.style || 'Modern').toLowerCase()} approach to modern {(project?.category || 'Interiors').toLowerCase()} design.
             </p>
           </div>
 
@@ -236,7 +236,11 @@ export default function ProjectDetails() {
       >
         {/* Navigation Buttons */}
         <button 
-          onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            if (!project?.images) return;
+            setSelectedImageIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
+          }}
           style={{
             position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)',
             background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)',
@@ -251,7 +255,11 @@ export default function ProjectDetails() {
         </button>
 
         <button 
-          onClick={(e) => { e.stopPropagation(); handleNext(); }}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            if (!project?.images) return;
+            setSelectedImageIndex((prev) => (prev + 1) % project.images.length);
+          }}
           style={{
             position: 'absolute', right: '1.5rem', top: '50%', transform: 'translateY(-50%)',
             background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)',
@@ -276,9 +284,7 @@ export default function ProjectDetails() {
           }}
         >
           <X size={24} />
-        </button>
-
-        <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+        </button>        <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
           <img 
             src={project.images[selectedImageIndex]} 
             alt="Fullscreen" 
@@ -292,110 +298,109 @@ export default function ProjectDetails() {
             {selectedImageIndex + 1} / {project.images.length}
           </div>
         </div>
-
-        <style>{`
-          .carousel-btn {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            alignItems: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-          .carousel-btn:hover {
-            background: var(--color-accent-secondary);
-            color: black;
-            border-color: var(--color-accent-secondary);
-            transform: scale(1.1);
-          }
-          .vid-container {
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 1rem;
-            background: rgba(255,255,255,0.02);
-          }
-          .vid-label {
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.15rem;
-            display: block;
-            margin-bottom: 0.8rem;
-            opacity: 0.8;
-          }
-          .spec-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 1.2rem;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-          }
-          .spec-title { font-size: 0.65rem; color: var(--color-text-secondary); letter-spacing: 0.1rem; }
-          .spec-val { font-size: 0.9rem; font-weight: 600; color: white; }
-          .guar-item {
-             display: flex;
-             flex-direction: column;
-             align-items: center;
-             text-align: center;
-             gap: 0.5rem;
-          }
-          .guar-item span { font-size: 0.55rem; font-weight: 700; color: var(--color-text-secondary); letter-spacing: 0.05rem; }
-          .gold { color: var(--color-accent-secondary); }
-          .cta-primary {
-             background: #ff0000; /* Homelane Red but maybe use accent primary better? User said don't change theme. Let's use accent primary blue */
-             background: var(--color-accent-primary);
-             color: white;
-             border: none;
-             padding: 1.2rem;
-             border-radius: 12px;
-             font-weight: 700;
-             letter-spacing: 0.05rem;
-             cursor: pointer;
-             transition: all 0.3s;
-          }
-          .cta-primary:hover {
-             filter: brightness(1.2);
-             transform: translateY(-2px);
-             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-          }
-          .cta-outline {
-             background: transparent;
-             border: 1px solid rgba(255,255,255,0.2);
-             color: white;
-             padding: 1.2rem;
-             border-radius: 12px;
-             font-weight: 600;
-             letter-spacing: 0.05rem;
-             cursor: pointer;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             gap: 0.8rem;
-             transition: all 0.3s;
-          }
-          .cta-outline:hover {
-             background: rgba(255,255,255,0.05);
-             border-color: white;
-          }
-          .share-icon { color: var(--color-text-secondary); cursor: pointer; transition: color 0.3s; }
-          .share-icon:hover { color: var(--color-accent-secondary); }
-
-          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-          @media (max-width: 768px) {
-            button { display: none !important; }
-            .carousel-btn { display: flex !important; }
-            .close-btn { display: flex !important; }
-          }
-        `}</style>
       </div>
     )}
+
+    <style>{`
+      .carousel-btn {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .carousel-btn:hover {
+        background: var(--color-accent-secondary);
+        color: black;
+        border-color: var(--color-accent-secondary);
+        transform: scale(1.1);
+      }
+      .vid-container {
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 20px;
+        padding: 1rem;
+        background: rgba(255,255,255,0.02);
+      }
+      .vid-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.15rem;
+        display: block;
+        margin-bottom: 0.8rem;
+        opacity: 0.8;
+      }
+      .spec-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 1.2rem;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .spec-title { font-size: 0.65rem; color: var(--color-text-secondary); letter-spacing: 0.1rem; }
+      .spec-val { font-size: 0.9rem; font-weight: 600; color: white; }
+      .guar-item {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         text-align: center;
+         gap: 0.5rem;
+      }
+      .guar-item span { font-size: 0.55rem; font-weight: 700; color: var(--color-text-secondary); letter-spacing: 0.05rem; }
+      .gold { color: var(--color-accent-secondary); }
+      .cta-primary {
+         background: var(--color-accent-primary);
+         color: white;
+         border: none;
+         padding: 1.2rem;
+         border-radius: 12px;
+         font-weight: 700;
+         letter-spacing: 0.05rem;
+         cursor: pointer;
+         transition: all 0.3s;
+      }
+      .cta-primary:hover {
+         filter: brightness(1.2);
+         transform: translateY(-2px);
+         box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+      }
+      .cta-outline {
+         background: transparent;
+         border: 1px solid rgba(255,255,255,0.2);
+         color: white;
+         padding: 1.2rem;
+         border-radius: 12px;
+         font-weight: 600;
+         letter-spacing: 0.05rem;
+         cursor: pointer;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         gap: 0.8rem;
+         transition: all 0.3s;
+      }
+      .cta-outline:hover {
+         background: rgba(255,255,255,0.05);
+         border-color: white;
+      }
+      .share-icon { color: var(--color-text-secondary); cursor: pointer; transition: color 0.3s; }
+      .share-icon:hover { color: var(--color-accent-secondary); }
+
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @media (max-width: 768px) {
+        button { display: none !important; }
+        .carousel-btn { display: flex !important; }
+        .close-btn { display: flex !important; }
+      }
+    `}</style>
     </>
   );
 }
