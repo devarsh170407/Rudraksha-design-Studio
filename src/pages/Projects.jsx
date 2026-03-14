@@ -30,6 +30,14 @@ export default function Projects() {
   useEffect(() => {
     const cat = searchParams.get('category');
     if (cat) setFilterRoom(cat);
+
+    const scroll = searchParams.get('scroll');
+    if (scroll) {
+      setTimeout(() => {
+        const el = document.getElementById(scroll);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
   }, [searchParams]);
 
   useEffect(() => {

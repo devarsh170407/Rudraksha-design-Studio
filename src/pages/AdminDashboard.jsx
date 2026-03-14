@@ -27,6 +27,9 @@ export default function AdminDashboard() {
   const [editingProject, setEditingProject] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
+    title: '',
+    category: 'Home Interiors',
+    style: 'Modern',
     projectStatus: 'Completed',
     description: ''
   });
