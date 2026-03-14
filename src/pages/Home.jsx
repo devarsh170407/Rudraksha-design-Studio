@@ -96,12 +96,12 @@ export default function Home() {
         }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.4)',
+            background: 'rgba(37, 99, 235, 0.15)', border: '1px solid rgba(37, 99, 235, 0.4)',
             borderRadius: '50px', padding: '0.3rem 0.9rem',
             marginBottom: '1.25rem', width: 'fit-content'
           }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d4af37' }} />
-            <span style={{ color: '#d4af37', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-accent-primary)' }} />
+            <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
               PREMIUM INTERIOR DESIGN
             </span>
           </div>
@@ -110,7 +110,7 @@ export default function Home() {
             lineHeight: 1.2, marginBottom: '0.75rem', letterSpacing: '-0.02em',
           }}>
             Interiors you'll<br />
-            <span style={{ color: '#d4af37' }}>absolutely love.</span>
+            <span style={{ color: 'var(--color-accent-primary)' }}>absolutely love.</span>
           </h1>
           <p style={{
             color: 'rgba(255,255,255,0.75)', fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
@@ -172,11 +172,11 @@ export default function Home() {
 
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <div style={{ width: '40px', height: '1px', background: '#d4af37' }} />
-              <span style={{ color: '#d4af37', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.2em' }}>OUR STORY</span>
+              <div style={{ width: '40px', height: '1px', background: 'var(--color-accent-primary)' }} />
+              <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.2em' }}>OUR STORY</span>
             </div>
             <h2 style={{ fontSize: '3.5rem', fontWeight: 700, marginBottom: '2.5rem', lineHeight: 1, letterSpacing: '-0.02em' }}>
-              Designing spaces that <span style={{ color: '#d4af37' }}>tell your story.</span>
+              Designing spaces that <span style={{ color: 'var(--color-accent-primary)' }}>tell your story.</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2.5rem' }}>
               At Rudraksha Design Studio, we are a fresh team of designers fueled by passion and a commitment to excellence. We believe that your home should be a direct reflection of your personality and aspirations. 
@@ -186,14 +186,14 @@ export default function Home() {
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: '#d4af37', fontSize: '1.5rem' }}>✦</div>
+                <div style={{ color: 'var(--color-accent-primary)', fontSize: '1.5rem' }}>✦</div>
                 <div>
                   <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '0.4rem' }}>Exquisite Detail</h4>
                   <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Every corner is curated with precision and premium materials.</p>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: '#d4af37', fontSize: '1.5rem' }}>✦</div>
+                <div style={{ color: 'var(--color-accent-primary)', fontSize: '1.5rem' }}>✦</div>
                 <div>
                   <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '0.4rem' }}>Timely Delivery</h4>
                   <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Your dream space, completed on schedule, without compromises.</p>
@@ -218,7 +218,7 @@ export default function Home() {
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', padding: '0 4rem' }}>
           <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '5rem', letterSpacing: '-0.02em' }}>
-            Why Choose <span style={{ color: '#d4af37' }}>Rudraksha</span>
+            Why Choose <span style={{ color: 'var(--color-accent-primary)' }}>Rudraksha</span>
           </h2>
         </div>
 
@@ -294,7 +294,7 @@ export default function Home() {
                     <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
                     <button
                       onClick={() => setFilterRoom(category)}
-                      style={{ color: '#d4af37', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+                      style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
                     >
                       See All →
                     </button>

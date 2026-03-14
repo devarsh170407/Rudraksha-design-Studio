@@ -124,7 +124,7 @@ export default function Login() {
               />
               <div>
                 <div style={{ color: 'white', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.06em', lineHeight: 1 }}>RUDRAKSHA</div>
-                <div style={{ color: '#d4af37', fontSize: '0.6rem', letterSpacing: '0.14em' }}>DESIGN STUDIO</div>
+                <div style={{ color: 'var(--color-accent-primary)', fontSize: '0.6rem', letterSpacing: '0.14em' }}>DESIGN STUDIO</div>
               </div>
             </div>
           </div>
@@ -132,8 +132,8 @@ export default function Login() {
           {/* Quote block — bottom */}
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.85rem' }}>
-              <div style={{ width: '30px', height: '2.5px', background: '#d4af37', borderRadius: '2px' }} />
-              <span style={{ color: '#d4af37', fontSize: '0.62rem', letterSpacing: '0.14em', fontWeight: 600 }}>
+              <div style={{ width: '30px', height: '2.5px', background: 'var(--color-accent-primary)', borderRadius: '2px' }} />
+              <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.62rem', letterSpacing: '0.14em', fontWeight: 600 }}>
                 DESIGN PHILOSOPHY
               </span>
             </div>
@@ -403,7 +403,7 @@ export default function Login() {
               type="button"
               onClick={() => { setIsLogin(v => !v); setError(''); }}
               style={{
-                color: '#d4af37', fontWeight: 600,
+                color: 'var(--color-accent-primary)', fontWeight: 600,
                 fontFamily: "'Outfit', sans-serif", fontSize: '0.82rem',
                 textDecoration: 'underline', textUnderlineOffset: '3px', cursor: 'pointer'
               }}

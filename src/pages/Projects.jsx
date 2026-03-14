@@ -87,12 +87,12 @@ export default function Projects() {
         }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.4)',
+            background: 'rgba(37, 99, 235, 0.15)', border: '1px solid rgba(37, 99, 235, 0.4)',
             borderRadius: '50px', padding: '0.3rem 0.9rem',
             marginBottom: '1.25rem', width: 'fit-content'
           }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d4af37' }} />
-            <span style={{ color: '#d4af37', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-accent-primary)' }} />
+            <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
               PREMIUM INTERIOR DESIGN
             </span>
           </div>
@@ -101,7 +101,7 @@ export default function Projects() {
             lineHeight: 1.2, marginBottom: '0.75rem', letterSpacing: '-0.02em',
           }}>
             Interiors you'll<br />
-            <span style={{ color: '#d4af37' }}>absolutely love.</span>
+            <span style={{ color: 'var(--color-accent-primary)' }}>absolutely love.</span>
           </h1>
           <p style={{
             color: 'rgba(255,255,255,0.75)', fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
@@ -238,7 +238,7 @@ export default function Projects() {
                   <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
                   <button
                     onClick={() => setFilterRoom(category)}
-                    style={{ color: '#d4af37', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+                    style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
                   >
                     See All →
                   </button>

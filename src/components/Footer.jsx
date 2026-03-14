@@ -231,7 +231,7 @@ export default function Footer() {
             <div style={styles.brandCol}>
               <Link to="/" style={styles.footerLogoContainer}>
                 <img src="/logomain.png" alt="Logo" style={styles.footerLogoImg} />
-                <h2 style={styles.footerLogoText}>Rudraksha <span style={{ color: '#d4af37' }}>Design Studio</span></h2>
+                <h2 style={styles.footerLogoText}>Rudraksha <span style={{ color: 'var(--color-accent-primary)' }}>Design Studio</span></h2>
               </Link>
               <p style={styles.footerAbout}>
                 Turning visions into breathtaking reality. We are a fresh team of designers dedicated to creating spaces that tell your unique story.
@@ -252,7 +252,7 @@ export default function Footer() {
 
             <div style={styles.linkCol}>
               <h4 style={styles.linkTitle}>Contact</h4>
-              <div style={styles.contactItem}><Phone size={16} /> +91 XXXXXXXXXX</div>
+              <div style={styles.contactItem}><Phone size={16} /> +91 98983 84133</div>
               <div style={styles.contactItem}><Mail size={16} /> contact@rudrakshadesign.com</div>
             </div>
           </div>
@@ -531,7 +531,7 @@ const styles = {
     fontSize: '1.1rem',
     fontWeight: 600,
     marginBottom: '0.5rem',
-    color: '#d4af37',
+    color: 'var(--color-accent-primary)',
   },
   footerLink: {
     color: 'rgba(255,255,255,0.6)',
