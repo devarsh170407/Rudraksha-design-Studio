@@ -109,149 +109,162 @@ export default function ProjectDetails() {
       </div>
 
       <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1.8fr 1fr', 
-        gap: '3rem',
+        display: 'flex',
+        flexDirection: 'column',
         background: 'var(--color-bg-secondary)',
         borderRadius: '32px',
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.03)',
-        padding: '3rem',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.5)'
+        boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
+        marginBottom: '2rem'
       }}>
         
-        {/* Left Column: Media Feature */}
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          
-          {/* Main Carousel Wrapper */}
-          <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', height: '500px', background: '#000', border: '1px solid rgba(255,255,255,0.05)' }}>
-            {project.images && project.images.map((src, i) => (
+        {/* TOP: Cinematic Full-Width Header */}
+        <div style={{ position: 'relative', width: '100%', height: '700px', background: '#000' }}>
+          {project.images && project.images.map((src, i) => (
+            <div 
+              key={i}
+              style={{
+                position: 'absolute', inset: 0,
+                opacity: i === activeSlide ? 1 : 0,
+                transition: 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)',
+                pointerEvents: i === activeSlide ? 'auto' : 'none'
+              }}
+            >
+              <img 
+                src={src} 
+                alt={`Slide ${i}`} 
+                onClick={() => setSelectedImageIndex(i)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }} 
+              />
+            </div>
+          ))}
+
+          {/* Carousel Controls - Centered on sides */}
+          <button 
+            onClick={handlePrev} 
+            className="carousel-btn-float" 
+            style={{ left: '2rem' }}
+          >
+            <ChevronLeft size={28} />
+          </button>
+          <button 
+            onClick={handleNext} 
+            className="carousel-btn-float" 
+            style={{ right: '2rem' }}
+          >
+            <ChevronRight size={28} />
+          </button>
+
+          {/* Indicators */}
+          <div style={{ position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.8rem', zIndex: 10 }}>
+            {project.images?.map((_, i) => (
               <div 
-                key={i}
-                style={{
-                  position: 'absolute', inset: 0,
-                  opacity: i === activeSlide ? 1 : 0,
-                  transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-                  pointerEvents: i === activeSlide ? 'auto' : 'none'
-                }}
-              >
-                <img 
-                  src={src} 
-                  alt={`Slide ${i}`} 
-                  onClick={() => setSelectedImageIndex(i)}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }} 
-                />
-              </div>
+                key={i} 
+                style={{ 
+                  width: i === activeSlide ? '40px' : '10px', 
+                  height: '10px', 
+                  borderRadius: '5px',
+                  background: i === activeSlide ? 'var(--color-accent-secondary)' : 'rgba(255,255,255,0.3)',
+                  transition: 'all 0.4s ease'
+                }} 
+              />
             ))}
-
-            {/* Carousel Controls - Centered on sides */}
-            <button 
-              onClick={handlePrev} 
-              className="carousel-btn-float" 
-              style={{ left: '1.5rem' }}
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button 
-              onClick={handleNext} 
-              className="carousel-btn-float" 
-              style={{ right: '1.5rem' }}
-            >
-              <ChevronRight size={24} />
-            </button>
-
-            {/* Indicators */}
-            <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.6rem', zIndex: 10 }}>
-              {project.images?.map((_, i) => (
-                <div 
-                  key={i} 
-                  style={{ 
-                    width: i === activeSlide ? '32px' : '8px', 
-                    height: '8px', 
-                    borderRadius: '4px',
-                    background: i === activeSlide ? 'var(--color-accent-secondary)' : 'rgba(255,255,255,0.3)',
-                    transition: 'all 0.3s ease'
-                  }} 
-                />
-              ))}
-            </div>
-
-            <div style={{ position: 'absolute', top: '2rem', left: '2rem', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', color: 'white', padding: '0.5rem 1rem', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1rem' }}>
-              ✦ PREMIUM VIEW {activeSlide + 1}/{project.images?.length}
-            </div>
           </div>
 
-          {/* Videos Grid Below Carousel */}
-          {(project.completedVideo || project.threeDVideo) && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-               {project.completedVideo && (
-                 <div className="vid-container">
-                    <span className="vid-label">LIVE SITE WALKTHROUGH</span>
-                    <video src={project.completedVideo} controls muted style={{ width: '100%', borderRadius: '16px' }} />
-                 </div>
-               )}
-               {project.threeDVideo && (
-                 <div className="vid-container" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
-                    <span className="vid-label" style={{ color: 'var(--color-accent-secondary)' }}>3D ARCHITECTURAL VIEW</span>
-                    <video src={project.threeDVideo} controls loop muted style={{ width: '100%', borderRadius: '16px' }} />
-                 </div>
-               )}
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Interaction Panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div>
-            <h1 style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1rem' }}>{project.title}</h1>
-            <div style={{ color: 'var(--color-accent-secondary)', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.1rem', marginBottom: '1.5rem' }}>
-               {(project?.category || 'Interiors').toUpperCase()} / {(project?.style || 'Modern').toUpperCase()}
-            </div>
-            
-            {project.description && (
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: '2rem' }}>
-                {project.description}
-              </p>
-            )}
-            {!project.description && (
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', marginBottom: '2rem' }}>
-                A signature {(project?.style || 'Modern').toLowerCase()} approach to modern {(project?.category || 'Interior').toLowerCase()} design.
-              </p>
-            )}
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
-             {project.layout && <div className="spec-card"><span className="spec-title">LAYOUT</span><span className="spec-val">{project.layout}</span></div>}
-             {project.dimension && <div className="spec-card"><span className="spec-title">DIMENSION</span><span className="spec-val">{project.dimension}</span></div>}
-             {project.color && <div className="spec-card"><span className="spec-title">COLOUR</span><span className="spec-val">{project.color}</span></div>}
-             {project.material && <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">{project.material}</span></div>}
-          </div>
-
-          {/* Studio Values */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-             <div className="guar-item"><Sparkles size={24} className="gold" /><span>MODERN AESTHETICS</span></div>
-             <div className="guar-item"><Paintbrush size={24} className="gold" /><span>EXPERT EXECUTION</span></div>
-             <div className="guar-item"><Heart size={24} className="gold" /><span>PERSONALIZED</span></div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: 'auto' }}>
-             <button className="cta-outline" style={{ height: '60px', fontSize: '1rem', fontWeight: 700 }}>
-                <Heart size={20} /> SAVE TO COLLECTION
-             </button>
-          </div>
-
-          {/* Share */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
-             <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', letterSpacing: '0.1rem', display: 'block', marginBottom: '1rem' }}>SHARE THIS DESIGN</span>
-             <div style={{ display: 'flex', gap: '1.5rem' }}>
-                <Share2 size={20} className="share-icon" />
-                <Instagram size={20} className="share-icon" />
-                <Facebook size={20} className="share-icon" />
-                <MessageCircle size={20} className="share-icon" />
-             </div>
+          <div style={{ 
+            position: 'absolute', top: '2.5rem', left: '2.5rem', 
+            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(20px)', 
+            color: 'white', padding: '0.6rem 1.2rem', borderRadius: '40px', 
+            fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.15rem',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            ✦ FULL SCREEN VIEW {activeSlide + 1}/{project.images?.length}
           </div>
         </div>
 
+        {/* BOTTOM: Detail Content Area */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1.4fr 1fr', 
+          gap: '5rem',
+          padding: '4rem 4rem 5rem',
+        }}>
+          
+          {/* Bottom Left: Title & Story */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+            <div>
+              <h1 style={{ fontSize: '4rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>{project.title}</h1>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2.5rem' }}>
+                <span style={{ color: 'var(--color-accent-secondary)', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.2rem' }}>{(project?.category || 'Interiors').toUpperCase()}</span>
+                <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.15rem' }}>{(project?.style || 'Modern').toUpperCase()}</span>
+              </div>
+              
+              {project.description && (
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem', lineHeight: 1.8, marginBottom: '3rem' }}>
+                  {project.description}
+                </p>
+              )}
+            </div>
+
+            {/* Videos Grid Below Story */}
+            {(project.completedVideo || project.threeDVideo) && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                 {project.completedVideo && (
+                   <div className="vid-container">
+                      <span className="vid-label">LIVE SITE WALKTHROUGH</span>
+                      <video src={project.completedVideo} controls muted style={{ width: '100%', borderRadius: '16px' }} />
+                   </div>
+                 )}
+                 {project.threeDVideo && (
+                   <div className="vid-container" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
+                      <span className="vid-label" style={{ color: 'var(--color-accent-secondary)' }}>3D ARCHITECTURAL VIEW</span>
+                      <video src={project.threeDVideo} controls loop muted style={{ width: '100%', borderRadius: '16px' }} />
+                   </div>
+                 )}
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Right: Specifications & Values */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', pb: '2rem' }}>
+               <h3 style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '2rem' }}>TECHNICAL SPECIFICATIONS</h3>
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  {project.layout && <div className="spec-card"><span className="spec-title">LAYOUT</span><span className="spec-val">{project.layout}</span></div>}
+                  {project.dimension && <div className="spec-card"><span className="spec-title">DIMENSION</span><span className="spec-val">{project.dimension}</span></div>}
+                  {project.color && <div className="spec-card"><span className="spec-title">COLOUR</span><span className="spec-val">{project.color}</span></div>}
+                  {project.material && <div className="spec-card"><span className="spec-title">MATERIAL</span><span className="spec-val">{project.material}</span></div>}
+               </div>
+            </div>
+
+            <div>
+               <h3 style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2rem', marginBottom: '2rem' }}>STUDIO EXCELLENCE</h3>
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.2rem', background: 'rgba(255,255,255,0.02)', padding: '2.5rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className="guar-item"><Sparkles size={28} className="gold" /><span>MODERN AESTHETICS</span></div>
+                  <div className="guar-item"><Paintbrush size={28} className="gold" /><span>EXPERT EXECUTION</span></div>
+                  <div className="guar-item"><Heart size={28} className="gold" /><span>PERSONALIZED</span></div>
+               </div>
+            </div>
+
+            <button className="cta-outline" style={{ padding: '1.5rem', fontSize: '1rem', fontWeight: 700, borderRadius: '20px' }}>
+                <Heart size={24} /> SAVE TO MY COLLECTION
+            </button>
+
+            {/* Share */}
+            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+               <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2rem', display: 'block', marginBottom: '1.5rem' }}>SHARE DESIGN STORY</span>
+               <div style={{ display: 'flex', gap: '2rem' }}>
+                  <Share2 size={24} className="share-icon" />
+                  <Instagram size={24} className="share-icon" />
+                  <Facebook size={24} className="share-icon" />
+                  <MessageCircle size={24} className="share-icon" />
+               </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
 
