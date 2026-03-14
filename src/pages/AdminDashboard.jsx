@@ -23,6 +23,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
   const [allProjects, setAllProjects] = useState([]);
   const [estimates, setEstimates] = useState([]);
+  const [usersMap, setUsersMap] = useState({});
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -65,12 +66,21 @@ export default function AdminDashboard() {
   const fetchLeads = async () => {
     setFetching(true);
     try {
+      // Fetch Users for phone mapping
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const uMap = {};
+      usersSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.phone) uMap[doc.id] = data.phone;
+      });
+      setUsersMap(uMap);
+
       // Fetch Inquiries / Estimates
       const estimatesQ = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
       const estimatesSnap = await getDocs(estimatesQ);
       setEstimates(estimatesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (e) {
-      console.error('Error fetching estimates:', e);
+      console.error('Error fetching estimates/users:', e);
       setMessage({ text: 'Error fetching data from cloud.', type: 'error' });
     } finally {
       setFetching(false);
@@ -722,6 +732,17 @@ export default function AdminDashboard() {
                             </td>
                             <td style={{ padding: '1rem' }}>
                               <div style={{ display: 'flex', gap: '0.8rem' }}>
+                                {usersMap[est.userId] && (
+                                  <a 
+                                    href={`https://wa.me/91${usersMap[est.userId].replace(/\D/g, '')}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    title="WhatsApp Client"
+                                    style={{ color: '#25D366' }}
+                                  >
+                                    <MessageCircle size={18} />
+                                  </a>
+                                )}
                                 <a 
                                   href={`mailto:${est.userEmail}`} 
                                   title="Email Client"
