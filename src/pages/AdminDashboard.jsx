@@ -23,6 +23,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
   const [allProjects, setAllProjects] = useState([]);
   const [leads, setLeads] = useState([]);
+  const [estimates, setEstimates] = useState([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -65,11 +66,18 @@ export default function AdminDashboard() {
   const fetchLeads = async () => {
     setFetching(true);
     try {
-      const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      // Fetch Registered Users
+      const usersQ = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const usersSnap = await getDocs(usersQ);
+      setLeads(usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      // Fetch Inquiries / Estimates
+      const estimatesQ = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
+      const estimatesSnap = await getDocs(estimatesQ);
+      setEstimates(estimatesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (e) {
-      console.error('Error fetching leads:', e);
+      console.error('Error fetching leads/estimates:', e);
+      setMessage({ text: 'Error fetching data from cloud.', type: 'error' });
     } finally {
       setFetching(false);
     }
@@ -83,6 +91,8 @@ export default function AdminDashboard() {
       // Update local state
       if (collectionName === 'users') {
         setLeads(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
+      } else if (collectionName === 'estimates') {
+        setEstimates(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
       }
       
       setMessage({ text: 'Status updated successfully!', type: 'success' });
@@ -739,6 +749,80 @@ export default function AdminDashboard() {
                         {leads.length === 0 && (
                           <tr>
                             <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No registered users found.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Estimates Section */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Project Inquiries (Estimates)</h3>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{estimates.length} Inquiries</span>
+                  </div>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <th style={{ padding: '1rem' }}>User Email</th>
+                          <th style={{ padding: '1rem' }}>Rooms</th>
+                          <th style={{ padding: '1rem' }}>Style</th>
+                          <th style={{ padding: '1rem' }}>Date</th>
+                          <th style={{ padding: '1rem' }}>Status</th>
+                          <th style={{ padding: '1rem' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {estimates
+                          .filter(est => showCompleted || est.status !== 'done')
+                          .map(est => (
+                          <tr key={est.id} style={{ 
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            opacity: est.status === 'done' ? 0.6 : 1,
+                            background: est.status === 'done' ? 'rgba(0,0,0,0.2)' : 'transparent'
+                          }}>
+                            <td style={{ padding: '1rem' }}>{est.userEmail}</td>
+                            <td style={{ padding: '1rem', fontSize: '0.85rem', maxWidth: '200px' }}>{est.roomsFormatted || est.rooms?.join(', ')}</td>
+                            <td style={{ padding: '1rem' }}>{est.styleFormatted || est.style}</td>
+                            <td style={{ padding: '1rem', fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
+                              {est.createdAt?.seconds ? new Date(est.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                            </td>
+                            <td style={{ padding: '1rem' }}>
+                              <button 
+                                onClick={() => handleUpdateStatus('estimates', est.id, est.status === 'done' ? 'pending' : 'done')}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  color: est.status === 'done' ? 'var(--color-success)' : 'var(--color-text-secondary)',
+                                  fontSize: '0.85rem'
+                                }}
+                              >
+                                {est.status === 'done' ? <CheckCircle size={18} /> : <Circle size={18} />}
+                                {est.status === 'done' ? 'Done' : 'Pending'}
+                              </button>
+                            </td>
+                            <td style={{ padding: '1rem' }}>
+                              <div style={{ display: 'flex', gap: '0.8rem' }}>
+                                <a 
+                                  href={`mailto:${est.userEmail}`} 
+                                  title="Email Client"
+                                  style={{ color: 'var(--color-accent-primary)' }}
+                                >
+                                  <Mail size={18} />
+                                </a>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        {estimates.length === 0 && (
+                          <tr>
+                            <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No inquiries found.</td>
                           </tr>
                         )}
                       </tbody>
