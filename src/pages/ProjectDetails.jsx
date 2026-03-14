@@ -98,7 +98,27 @@ export default function ProjectDetails() {
 
   return (
     <>
-    <div className="container" style={{ padding: '1rem 1.5rem 4rem', minHeight: '100vh', background: 'var(--color-bg-primary)' }}>
+      <style>{`
+        .project-details-grid {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .project-details-grid::-webkit-scrollbar {
+          display: none;
+        }
+        .interaction-panel {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+        .interaction-panel::-webkit-scrollbar {
+          width: 4px;
+        }
+        .interaction-panel::-webkit-scrollbar-thumb {
+          background-color: rgba(255,255,255,0.1);
+          border-radius: 10px;
+        }
+      `}</style>
+    <div className="container" style={{ padding: '8rem 1.5rem 4rem', minHeight: '100vh', background: 'var(--color-bg-primary)' }}>
       {/* Breadcrumbs / Back */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '1.5rem 0', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
          <span onClick={() => navigate('/projects')} style={{ cursor: 'pointer', transition: 'color 0.3s' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color=''}>Explore</span>
@@ -108,17 +128,20 @@ export default function ProjectDetails() {
          <span style={{ opacity: 0.6 }}>{project.title}</span>
       </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1.6fr 1fr', 
-        gap: '0',
-        background: 'var(--color-bg-secondary)',
-        borderRadius: '32px',
-        overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.03)',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
-        marginBottom: '2rem'
-      }}>
+      <div 
+        className="project-details-grid"
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1.6fr 1fr', 
+          gap: '0',
+          background: 'var(--color-bg-secondary)',
+          borderRadius: '32px',
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.03)',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
+          marginBottom: '2rem'
+        }}
+      >
         
         {/* Left Column: Massive Cinematic Media Feature */}
         <div style={{ position: 'relative', width: '100%', height: '700px', background: '#000' }}>
@@ -185,15 +208,17 @@ export default function ProjectDetails() {
         </div>
 
         {/* Right Column: Interaction & Story Panel */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '2.5rem',
-          padding: '4rem 3.5rem',
-          height: '700px',
-          overflowY: 'auto',
-          background: 'linear-gradient(to right, rgba(0,0,0,0.1), transparent)'
-        }}>
+        <div 
+          className="interaction-panel"
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '2.5rem',
+            padding: '4rem 3.5rem',
+            minHeight: '700px',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.1), transparent)'
+          }}
+        >
           
           <div>
             <h1 style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1.1, marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>{project.title}</h1>
