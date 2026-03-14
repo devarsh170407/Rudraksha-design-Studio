@@ -22,7 +22,6 @@ import {
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
   const [allProjects, setAllProjects] = useState([]);
-  const [leads, setLeads] = useState([]);
   const [estimates, setEstimates] = useState([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formData, setFormData] = useState({
@@ -66,17 +65,12 @@ export default function AdminDashboard() {
   const fetchLeads = async () => {
     setFetching(true);
     try {
-      // Fetch Registered Users
-      const usersQ = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-      const usersSnap = await getDocs(usersQ);
-      setLeads(usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
       // Fetch Inquiries / Estimates
       const estimatesQ = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
       const estimatesSnap = await getDocs(estimatesQ);
       setEstimates(estimatesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (e) {
-      console.error('Error fetching leads/estimates:', e);
+      console.error('Error fetching estimates:', e);
       setMessage({ text: 'Error fetching data from cloud.', type: 'error' });
     } finally {
       setFetching(false);
@@ -89,9 +83,7 @@ export default function AdminDashboard() {
       await updateDoc(docRef, { status: newStatus });
       
       // Update local state
-      if (collectionName === 'users') {
-        setLeads(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
-      } else if (collectionName === 'estimates') {
+      if (collectionName === 'estimates') {
         setEstimates(prev => prev.map(item => item.id === docId ? { ...item, status: newStatus } : item));
       }
       
@@ -677,85 +669,6 @@ export default function AdminDashboard() {
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-                {/* Users Section */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Registered Users</h3>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{leads.length} Users</span>
-                  </div>
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                      <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                          <th style={{ padding: '1rem' }}>Email</th>
-                          <th style={{ padding: '1rem' }}>Phone</th>
-                          <th style={{ padding: '1rem' }}>Status</th>
-                          <th style={{ padding: '1rem' }}>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {leads
-                          .filter(lead => showCompleted || lead.status !== 'done')
-                          .map(lead => (
-                          <tr key={lead.id} style={{ 
-                            borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            opacity: lead.status === 'done' ? 0.6 : 1,
-                            background: lead.status === 'done' ? 'rgba(0,0,0,0.2)' : 'transparent'
-                          }}>
-                            <td style={{ padding: '1rem' }}>{lead.email}</td>
-                            <td style={{ padding: '1rem' }}>{lead.phone || 'N/A'}</td>
-                            <td style={{ padding: '1rem' }}>
-                              <button 
-                                onClick={() => handleUpdateStatus('users', lead.id, lead.status === 'done' ? 'pending' : 'done')}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '0.5rem',
-                                  color: lead.status === 'done' ? 'var(--color-success)' : 'var(--color-text-secondary)',
-                                  fontSize: '0.85rem'
-                                }}
-                              >
-                                {lead.status === 'done' ? <CheckCircle size={18} /> : <Circle size={18} />}
-                                {lead.status === 'done' ? 'Done' : 'Pending'}
-                              </button>
-                            </td>
-                            <td style={{ padding: '1rem' }}>
-                              <div style={{ display: 'flex', gap: '0.8rem' }}>
-                                {lead.phone && (
-                                  <a 
-                                    href={`https://wa.me/91${lead.phone.replace(/\D/g, '')}`} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    title="WhatsApp User"
-                                    style={{ color: '#25D366' }}
-                                  >
-                                    <MessageCircle size={18} />
-                                  </a>
-                                )}
-                                <a 
-                                  href={`mailto:${lead.email}`} 
-                                  title="Email User"
-                                  style={{ color: 'var(--color-accent-primary)' }}
-                                >
-                                  <Mail size={18} />
-                                </a>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                        {leads.length === 0 && (
-                          <tr>
-                            <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No registered users found.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
                 {/* Estimates Section */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
