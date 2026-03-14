@@ -416,16 +416,23 @@ export default function Projects() {
         .project-card-subtitle { color: rgba(255,255,255,0.6); font-size: 0.8rem; margin: 0.2rem 0 0; }
 
         .slider-arrow {
-          position: absolute; top: 50%; transform: translateY(-50%);
-          width: 44px; height: 44px; border-radius: 50%;
-          background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.1); color: white;
+          position: absolute; top: 45%; transform: translateY(-50%);
+          width: 48px; height: 48px; border-radius: 50%;
+          background: white;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          color: #1e293b;
           display: flex; align-items: center; justify-content: center;
-          cursor: pointer; z-index: 10; transition: all 0.3s;
+          cursor: pointer; z-index: 20; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 14px rgba(0,0,0,0.15);
         }
-        .slider-arrow:hover { background: var(--color-accent-primary); color: #000; }
-        .arrow-left { left: -20px; }
-        .arrow-right { right: -20px; }
+        .slider-arrow:hover {
+          background: var(--color-accent-primary);
+          color: white;
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+          transform: translateY(-50%) scale(1.1);
+        }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
