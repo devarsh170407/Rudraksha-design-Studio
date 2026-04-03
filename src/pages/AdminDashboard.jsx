@@ -993,7 +993,7 @@ const dashboardCSS = `
   .admin-select {
     width: 100%;
     appearance: none;
-    background: rgba(255, 255, 255, 0.03);
+    background: #1a1a1a;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
     padding: 0.8rem 1rem;
@@ -1002,6 +1002,11 @@ const dashboardCSS = `
     font-size: 0.95rem;
     cursor: pointer;
     outline: none;
+  }
+
+  .admin-select option {
+    background: #1a1a1a;
+    color: white;
   }
 
   .select-icon {
