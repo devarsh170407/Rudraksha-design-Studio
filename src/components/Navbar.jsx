@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
-import { Home, Compass, User as UserIcon, LogOut, Settings } from 'lucide-react';
-
+import { Home, Compass, User as UserIcon, LogOut, Settings, Menu, X } from 'lucide-react';
+import './Navbar.css';
 
 export default function Navbar() {
   const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -19,21 +20,30 @@ export default function Navbar() {
     }
   };
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
   return (
-    <nav style={styles.nav} className="glass-panel">
-      <div style={styles.logoContainer}>
-        <Link to="/" style={styles.logoLink}>
-          <img src="/logomain.png" alt="Rudraksha Logo" style={styles.logoImage} />
-          <span style={styles.logoText}>
-            Rudraksha <span style={styles.logoAccent}>Design Studio</span>
+    <nav className="navbar glass-panel">
+      <div className="navbar-logo-container">
+        <Link to="/" className="navbar-logo-link">
+          <img src="/logomain.png" alt="Rudraksha Logo" className="navbar-logo-image" />
+          <span className="navbar-logo-text">
+            Rudraksha <span className="navbar-logo-accent">Design Studio</span>
           </span>
         </Link>
       </div>
       
-      <div style={styles.links}>
-        <Link to="/" style={styles.link}><Home size={18} /> Home</Link>
+      <div className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
+        <Link 
+          to="/" 
+          className="navbar-link" 
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <Home size={18} /> Home
+        </Link>
         <button 
           onClick={() => {
+            setIsMenuOpen(false);
             if (window.location.pathname !== '/') {
               navigate('/?scroll=about');
             } else {
@@ -41,12 +51,13 @@ export default function Navbar() {
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }
           }} 
-          style={styles.link}
+          className="navbar-link"
         >
           <Compass size={18} style={{ transform: 'rotate(90deg)' }} /> About
         </button>
         <button 
           onClick={() => {
+            setIsMenuOpen(false);
             if (window.location.pathname !== '/') {
               navigate('/projects');
             } else {
@@ -58,7 +69,7 @@ export default function Navbar() {
               }
             }
           }} 
-          style={styles.link}
+          className="navbar-link"
         >
           <Compass size={18} /> Explore
         </button>
@@ -66,80 +77,40 @@ export default function Navbar() {
         {currentUser ? (
           <>
             {isAdmin && (
-              <Link to="/admin" style={styles.link}><Settings size={18} /> Admin</Link>
+              <Link 
+                to="/admin" 
+                className="navbar-link"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Settings size={18} /> Admin
+              </Link>
             )}
-            <button onClick={handleLogout} className="btn-outline" style={styles.logoutBtn}>
+            <button 
+              onClick={() => {
+                setIsMenuOpen(false);
+                handleLogout();
+              }} 
+              className="btn-outline logout-btn"
+              style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
               <LogOut size={16} /> Logout
             </button>
           </>
         ) : (
-          <Link to="/login" className="btn-primary">
+          <Link 
+            to="/login" 
+            className="btn-primary"
+            onClick={() => setIsMenuOpen(false)}
+          >
             <UserIcon size={18} /> Login
           </Link>
         )}
+      </div>
+
+      <div className="mobile-menu-btn" onClick={toggleMenu}>
+        {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
       </div>
     </nav>
   );
 }
 
-const styles = {
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1rem 2rem',
-    margin: '1rem',
-    position: 'sticky',
-    top: '1rem',
-    zIndex: 100,
-  },
-  logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  logoLink: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    textDecoration: 'none',
-    transition: 'color var(--transition-fast)',
-  },
-  logoImage: {
-    height: '40px',
-    width: 'auto',
-    objectFit: 'contain',
-  },
-  logoText: {
-    fontSize: '1.4rem',
-    fontWeight: 700,
-    letterSpacing: '-0.5px',
-    fontFamily: "'Outfit', sans-serif",
-  },
-  logoAccent: {
-    color: 'var(--color-accent-primary)',
-  },
-  links: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '2rem',
-  },
-  link: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    fontWeight: 500,
-    fontSize: '0.95rem',
-    color: 'white',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    padding: 0,
-  },
-  logoutBtn: {
-    padding: '0.5rem 1rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-  }
-};

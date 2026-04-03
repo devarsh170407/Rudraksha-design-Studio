@@ -4,18 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-
-const CATEGORIES = [
-  { name: 'All',                    image: '' },
-  { name: 'Home Interiors',         image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Modular Kitchen',        image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Living Room',            image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Bedroom',                image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Wardrobe',               image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Space Saving Furniture', image: 'https://images.unsplash.com/photo-1583847268964-b28e2023d537?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Home Office',            image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Bathroom',               image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-];
+import './Home.css';
 
 const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
   const scrollRef = useRef(null);
@@ -27,12 +16,13 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
   };
 
   return (
-    <section key={category} style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
+    <section key={category} className="category-row reveal">
+      <div className="category-header">
+        <h3 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{category} <span className="gold-text">Designs</span></h3>
         <button
           onClick={() => onSeeAll(category)}
-          style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+          className="navbar-link"
+          style={{ color: 'var(--color-accent-primary)', fontSize: '0.95rem', fontWeight: 600 }}
         >
           See All →
         </button>
@@ -40,16 +30,16 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
       
       <div style={{ position: 'relative', width: '100%' }}>
         {catProjects.length > 3 && (
-          <div className="scroll-arrows-container">
+          <>
             <button onClick={() => scroll('left')} className="slider-arrow arrow-left"><ChevronLeft size={22} /></button>
             <button onClick={() => scroll('right')} className="slider-arrow arrow-right"><ChevronRight size={22} /></button>
-          </div>
+          </>
         )}
 
-        <div ref={scrollRef} className="hide-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', scrollSnapType: 'x mandatory' }}>
+        <div ref={scrollRef} className="hide-scrollbar" style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '2rem', scrollSnapType: 'x mandatory' }}>
           {catProjects.map((project, i) => (
-            <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card" style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}>
-              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.6s ease' }} className="project-img-bg" />
+            <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }} className="project-img-bg" />
               <div className="project-card-overlay">
                 <h4 className="project-card-title">{project.title}</h4>
                 <p className="project-card-subtitle">{project.style}</p>
@@ -62,8 +52,6 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
   );
 };
 
-const STYLES = ['All', 'Modern', 'Classic', 'Minimalist'];
-
 export default function Home() {
   const [projects, setProjects]       = useState([]);
   const [loading, setLoading]         = useState(true);
@@ -72,14 +60,13 @@ export default function Home() {
   const [searchParams]                = useSearchParams();
   const [filterRoom,  setFilterRoom]  = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
-  const [searchQuery]                 = useState(''); // Placeholder for future if needed
 
   useEffect(() => {
     const cat = searchParams.get('category');
     if (cat) setFilterRoom(cat);
     
-    const scroll = searchParams.get('scroll');
-    if (scroll === 'about') {
+    const scrollVal = searchParams.get('scroll');
+    if (scrollVal === 'about') {
       setTimeout(() => {
         const el = document.getElementById('about');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -95,7 +82,7 @@ export default function Home() {
         const docs = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          displayThumbnail: doc.data().images[doc.data().thumbnailIndex]
+          displayThumbnail: (doc.data().images && doc.data().images[doc.data().thumbnailIndex]) || 'https://via.placeholder.com/400x300?text=No+Image'
         }));
         setProjects(docs);
       } catch (e) {
@@ -119,188 +106,117 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="home-container">
       {/* ── HERO BANNER ── */}
-      <section style={{
-        width: '100%', position: 'relative',
-        height: 'clamp(420px, 60vh, 680px)', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'url("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=85")',
-          backgroundSize: 'cover', backgroundPosition: 'center 40%',
-          transform: 'scale(1.03)', transition: 'transform 8s ease',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(5,5,20,0.82) 0%, rgba(5,5,20,0.45) 55%, rgba(5,5,20,0.05) 100%)',
-        }} />
-        <div style={{
-          position: 'relative', zIndex: 1, height: '100%',
-          display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          padding: '0 4rem', maxWidth: '700px',
-        }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(212, 175, 55, 0.15)', border: '1px solid rgba(212, 175, 55, 0.4)',
-            borderRadius: '50px', padding: '0.3rem 0.9rem',
-            marginBottom: '1.25rem', width: 'fit-content'
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-accent-secondary)' }} />
-            <span style={{ color: 'var(--color-accent-secondary)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
-              PREMIUM INTERIOR DESIGN
-            </span>
+      <section className="hero-section">
+        <div className="hero-bg" />
+        <div className="hero-overlay" />
+        
+        <div className="hero-content slide-right">
+          <div className="hero-badge">
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
+            Premium Interior Design Studio
           </div>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', fontWeight: 700, color: 'white',
-            lineHeight: 1.2, marginBottom: '0.75rem', letterSpacing: '-0.02em',
-          }}>
+          
+          <h1 className="hero-title">
             Interiors you'll<br />
-            <span style={{ color: 'var(--color-accent-secondary)' }}>absolutely love.</span>
+            <span className="gold-text">absolutely love.</span>
           </h1>
-          <p style={{
-            color: 'rgba(255,255,255,0.75)', fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
-            lineHeight: 1.65, marginBottom: '2rem', maxWidth: '480px',
-          }}>
-            From modular kitchens to luxury living rooms — we craft spaces that reflect your lifestyle. Without the stress.
+          
+          <p className="hero-description">
+            From modular kitchens to luxury living rooms — we craft bespoke spaces that reflect your unique lifestyle.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             <button
               className="btn-primary"
-              style={{ padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px' }}
-              onClick={() => { const el = document.getElementById('why-choose-rudraksha'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
+              onClick={() => { const el = document.getElementById('about'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
             >
-              Explore Designs
+              Start Your Journey
             </button>
             <button
-              style={{
-                padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px',
-                border: '1px solid rgba(255,255,255,0.3)', color: 'white',
-                background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(8px)',
-                fontFamily: "'Outfit', sans-serif", cursor: 'pointer', transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+              className="btn-gold"
               onClick={() => navigate(currentUser ? '/projects' : '/login')}
             >
-              {currentUser ? 'View Projects' : 'Get Started Free'}
+              {currentUser ? 'Explore Gallery' : 'Consult Now'}
             </button>
           </div>
         </div>
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '80px',
-          background: 'linear-gradient(to bottom, transparent, var(--color-bg-primary))',
-        }} />
+
+        <div className="scroll-indicator float">
+          <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.2rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>Scroll</span>
+          <div style={{ width: '2px', height: '40px', background: 'linear-gradient(to bottom, var(--color-accent-primary), transparent)', marginTop: '0.5rem' }} />
+        </div>
       </section>
 
       {/* ── ABOUT US SECTION ── */}
-      <section id="about" style={{ padding: '8rem 4rem', background: 'var(--color-bg-primary)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '4rem', alignItems: 'center' }}>
-          <div style={{ position: 'relative' }}>
-            <div style={{
-              width: '100%', height: '500px', borderRadius: '20px', overflow: 'hidden',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)'
-            }}>
-              <img 
-                src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                alt="Studio Interior" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-            <div className="glass-panel" style={{
-              position: 'absolute', bottom: '-2rem', right: '-2rem', padding: '1.5rem',
-              maxWidth: '220px', textAlign: 'center', border: '1px solid rgba(212,175,55,0.3)'
-            }}>
-              <h3 style={{ fontSize: '1.8rem', color: '#d4af37', fontWeight: 700, marginBottom: '0.2rem' }}>NEW</h3>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.05em' }}>FRESH PERSPECTIVE IN DESIGN</p>
-            </div>
+      <section id="about" className="about-section">
+        <div className="about-image-container reveal">
+          <img 
+            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+            alt="Studio Interior" 
+            className="about-image"
+          />
+          <div className="glass-panel about-floating-card reveal" style={{ animationDelay: '0.3s' }}>
+            <h3 className="gold-text" style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>100+</h3>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Dreams Realized</p>
           </div>
+        </div>
 
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <div style={{ width: '40px', height: '1px', background: 'var(--color-accent-primary)' }} />
-              <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.2em' }}>OUR STORY</span>
+        <div className="slide-right">
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ width: '50px', height: '2px', background: 'var(--color-accent-primary)' }} />
+            <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase' }}>Our Vision</span>
+          </div>
+          
+          <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 800, marginBottom: '2.5rem', lineHeight: 1.1 }}>
+            Designing spaces that <br/><span className="gold-text">tell your story.</span>
+          </h2>
+          
+          <p className="hero-description">
+            At Rudraksha Design Studio, we are a fresh team of designers fueled by passion and a commitment to excellence. We believe that your home should be a direct reflection of your personality and aspirations.
+          </p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem' }}>
+            <div className="reveal" style={{ animationDelay: '0.2s' }}>
+              <div style={{ color: 'var(--color-accent-primary)', fontSize: '2rem', marginBottom: '1rem' }}><Sparkles /></div>
+              <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.8rem', fontSize: '1.2rem' }}>Exquisite Detail</h4>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>Every corner is curated with precision and premium materials.</p>
             </div>
-            <h2 style={{ fontSize: '3.5rem', fontWeight: 700, marginBottom: '2.5rem', lineHeight: 1, letterSpacing: '-0.02em' }}>
-              Designing spaces that <span style={{ color: 'var(--color-accent-primary)' }}>tell your story.</span>
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2.5rem' }}>
-              At Rudraksha Design Studio, we are a fresh team of designers fueled by passion and a commitment to excellence. We believe that your home should be a direct reflection of your personality and aspirations. 
-              <br /><br />
-              As a growing studio, we bring a modern perspective and a tireless dedication to every project. We don't just design rooms; we create personal environments where your vision comes to life with genuine care and innovation.
-            </p>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: 'var(--color-accent-primary)', fontSize: '1.5rem' }}>✦</div>
-                <div>
-                  <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '0.4rem' }}>Exquisite Detail</h4>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Every corner is curated with precision and premium materials.</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: 'var(--color-accent-primary)', fontSize: '1.5rem' }}>✦</div>
-                <div>
-                  <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '0.4rem' }}>Timely Delivery</h4>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Your dream space, completed on schedule, without compromises.</p>
-                </div>
-              </div>
+            <div className="reveal" style={{ animationDelay: '0.4s' }}>
+              <div style={{ color: 'var(--color-accent-primary)', fontSize: '2rem', marginBottom: '1rem' }}><Clock /></div>
+              <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.8rem', fontSize: '1.2rem' }}>Timely Delivery</h4>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>Your dream space, completed on schedule, without compromises.</p>
             </div>
           </div>
         </div>
-        
-        {/* Background Accent */}
-        <div style={{ 
-          position: 'absolute', top: '10%', right: '-10%', width: '400px', height: '400px', 
-          background: 'radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)',
-          filter: 'blur(60px)', zIndex: 0
-        }} />
       </section>
 
       {/* ── WHY CHOOSE US AUTO-SCROLLER ── */}
-      <section id="why-choose-rudraksha" style={{ 
-        padding: '6rem 0', background: 'var(--color-bg-primary)', position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', padding: '0 4rem' }}>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '5rem', letterSpacing: '-0.02em' }}>
-            Why Choose <span style={{ color: 'var(--color-accent-primary)' }}>Rudraksha</span>
+      <section id="why-choose-rudraksha" style={{ padding: '8rem 0', background: 'var(--color-bg-secondary)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ textAlign: 'center', marginBottom: '5rem', padding: '0 2rem' }}>
+          <h2 className="reveal" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800 }}>
+            Why Choose <span className="gold-text">Rudraksha</span>
           </h2>
         </div>
 
-        {/* Slider Track with Fading Masks */}
-        <div style={{ 
-          position: 'relative', width: '100%', overflow: 'hidden',
-          maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
-        }}>
-          <div className="slider-track" style={{ 
-            display: 'flex', width: 'max-content', gap: '6rem',
-            animation: 'scroll 30s linear infinite'
-          }}>
+        <div style={{ position: 'relative', width: '100%', overflow: 'hidden', maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)' }}>
+          <div className="feature-slider-track">
             {[...Array(2)].map((_, i) => (
-              <div key={i} style={{ display: 'flex', gap: '6rem', alignItems: 'center' }}>
+              <div key={i} style={{ display: 'flex', gap: '5rem', alignItems: 'center' }}>
                 {[
-                  { icon: <Heart size={48} />, label: "Personalized Design", color: "#ff4d4d" },
-                  { icon: <Shield size={48} />, label: "Quality Materials", color: "#4d94ff" },
-                  { icon: <IndianRupee size={48} />, label: "Honest Pricing", color: "#22c55e" },
-                  { icon: <Sparkles size={48} />, label: "Modern Aesthetics", color: "#ffcc00" },
-                  { icon: <Clock size={48} />, label: "Timely Delivery", color: "#ff66b2" },
-                  { icon: <Layers size={48} />, label: "3D Visuals", color: "#a64dff" },
-                  { icon: <Paintbrush size={48} />, label: "Expert Execution", color: "#00cccc" },
-                  { icon: <CheckCircle size={48} />, label: "Genuine Care", color: "#ff8533" }
+                  { icon: <Heart size={40} />, label: "Personalized Design" },
+                  { icon: <Shield size={40} />, label: "Quality Materials" },
+                  { icon: <IndianRupee size={40} />, label: "Honest Pricing" },
+                  { icon: <Sparkles size={40} />, label: "Modern Aesthetics" },
+                  { icon: <Clock size={40} />, label: "Timely Delivery" },
+                  { icon: <Layers size={40} />, label: "3D Visuals" },
+                  { icon: <Paintbrush size={40} />, label: "Expert Execution" },
+                  { icon: <CheckCircle size={40} />, label: "Genuine Care" }
                 ].map((item, idx) => (
-                  <div key={idx} className="feature-item-slider" style={{ 
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem',
-                    minWidth: '240px'
-                  }}>
-                    <div style={{ color: item.color }}>{item.icon}</div>
-                    <h4 style={{ 
-                      color: 'white', fontSize: '1rem', fontWeight: 500, margin: 0, 
-                      letterSpacing: '0.02em', whiteSpace: 'nowrap'
-                    }}>
-                      {item.label}
-                    </h4>
+                  <div key={idx} className="feature-slider-item">
+                    <div className="feature-icon-wrapper" style={{ color: 'var(--color-accent-primary)' }}>{item.icon}</div>
+                    <span style={{ color: 'white', fontSize: '1.1rem', fontWeight: 600, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{item.label}</span>
                   </div>
                 ))}
               </div>
@@ -310,98 +226,38 @@ export default function Home() {
       </section>
 
       {/* ── GALLERY SECTION ── */}
-      <div id="explore-gallery" className="projects-page">
-
-
-
-
-
-        {/* Projects */}
-        <section style={{ padding: '0 3% 4rem' }}>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)' }}>
-              Loading breathtaking designs...
-            </div>
-          ) : filteredProjects.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
-              No projects found for this category yet.
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
-              {Object.entries(
-                filteredProjects.reduce((acc, p) => {
-                  const cat = p.category || 'Other';
-                  if (!acc[cat]) acc[cat] = [];
-                  acc[cat].push(p);
-                  return acc;
-                }, {})
-              ).map(([category, catProjects]) => (
-                <CategoryRow 
-                  key={category} 
-                  category={category} 
-                  catProjects={catProjects} 
-                  onProjectClick={handleProjectClick}
-                  onSeeAll={(cat) => navigate(`/projects?category=${encodeURIComponent(cat)}`)}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+      <div id="explore-gallery" style={{ padding: '8rem 5% 4rem', minHeight: '60vh' }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '4rem' }}>
+            <div className="spinner" style={{ margin: '0 auto 1.5rem' }} />
+            <p style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>Loading breathtaking designs...</p>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '6rem', background: 'var(--color-bg-secondary)', borderRadius: '30px', border: '1px solid var(--glass-border)' }}>
+             <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>No projects found</h3>
+             <p style={{ color: 'var(--color-text-secondary)' }}>We're working on gathering more beautiful designs for this category.</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6rem' }}>
+            {Object.entries(
+              filteredProjects.reduce((acc, p) => {
+                const cat = p.category || 'Other';
+                if (!acc[cat]) acc[cat] = [];
+                acc[cat].push(p);
+                return acc;
+              }, {})
+            ).map(([category, catProjects]) => (
+              <CategoryRow 
+                key={category} 
+                category={category} 
+                catProjects={catProjects} 
+                onProjectClick={handleProjectClick}
+                onSeeAll={(cat) => navigate(`/projects?category=${encodeURIComponent(cat)}`)}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      <style>{`
-        .projects-page { min-height: 60vh; width: 100%; max-width: 100%; }
-        
-        @keyframes scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-
-        .slider-track:hover { animation-play-state: paused; }
-        
-        .project-card {
-          min-width: 320px; max-width: 400px; flex: 0 0 auto;
-          scroll-snap-align: start; position: relative;
-          height: 240px; border-radius: 12px; overflow: hidden;
-          cursor: pointer; transition: all var(--transition-smooth);
-          opacity: 0; transform: translateY(20px);
-        }
-        .project-card:hover { transform: translateY(-6px) !important; box-shadow: 0 12px 24px rgba(0,0,0,0.4); }
-        .project-card-overlay {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          padding: 2rem 1.5rem 1.2rem;
-          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-          display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none;
-        }
-        .project-card-title { font-size: 1.1rem; font-weight: 600; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 0.2rem; }
-        .project-card-subtitle { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        .project-img-bg:hover { transform: scale(1.05); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .slider-arrow {
-          position: absolute; top: 45%; transform: translateY(-50%);
-          width: 48px; height: 48px; border-radius: 50%;
-          background: white; border: 1px solid rgba(0, 0, 0, 0.08);
-          color: #1e293b; display: flex; align-items: center; justify-content: center;
-          cursor: pointer; z-index: 20; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-        }
-        .slider-arrow:hover {
-          background: var(--color-accent-primary);
-          color: white;
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
-          transform: translateY(-50%) scale(1.1);
-        }
-        .arrow-left { left: 10px; }
-        .arrow-right { right: 10px; }
-
-        @media (max-width: 480px) {
-          .project-card { min-width: 85vw; max-width: 85vw; }
-          .slider-arrow { display: none; }
-        }
-      `}</style>
-    </>
+    </div>
   );
 }

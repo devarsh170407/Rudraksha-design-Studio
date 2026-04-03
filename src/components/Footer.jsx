@@ -4,22 +4,7 @@ import { Home, Coffee, Info, Mail, Phone, Instagram, Facebook, Twitter, Check, C
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-
-const WhatsAppIcon = ({ size = 20, color = "currentColor" }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke={color} 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-7.6 8.38 8.38 0 0 1 3.8.9L22 4l-1.5 5.5Z" />
-    <path d="M17 10c-.2-.4-.5-.8-1-1-.4-.1-.7 0-1 .2l-.3.3c-.3.3-.3.8 0 1.1l1.5 1.5c.3.3.8.3 1.1 0l.3-.3c.2-.3.3-.6.2-1Z" />
-  </svg>
-);
+import './Footer.css';
 
 const WhatsAppLogoFull = ({ size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -105,183 +90,173 @@ export default function Footer() {
   };
 
   return (
-    <footer style={styles.footer}>
+    <footer className="footer">
       {/* ── GET ESTIMATE SECTION (Home Only) ── */}
       {isHomePage && (
-        <section id="estimate-section" style={styles.estimateSection}>
-          <div style={styles.container}>
+        <section id="estimate-section" className="estimate-section">
+          <div className="container">
             {step === 0 && (
-              <>
-                <h2 style={styles.estimateTitle}>Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
-                <p style={styles.estimateSubtitle}>Professional interior cost calculator for your dream space.</p>
+              <div className="reveal">
+                <h2 className="estimate-title">Get an estimate for your <span style={{ color: 'var(--color-accent-primary)' }}>Home.</span></h2>
+                <p className="estimate-subtitle">Professional interior cost calculator for your dream space.</p>
                 
-                <div style={styles.cardGrid}>
-                  <div className="glass-panel" style={{ ...styles.estimateCard, maxWidth: '500px', margin: '0 auto' }}>
-                    <div style={styles.iconContainer}>
-                      <Home size={40} color="var(--color-accent-primary)" />
-                      <div style={styles.plusOverlay}>＋</div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <div className="glass-panel estimate-card" style={{ maxWidth: '500px' }}>
+                    <div className="estimate-icon-container">
+                      <Home size={40} />
+                      <div style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '1.2rem', opacity: 0.3 }}>＋</div>
                     </div>
-                    <h3 style={styles.cardTitle}>Full Home Interiors</h3>
-                    <p style={styles.cardDesc}>Select your rooms and style to get a personalized cost estimate.</p>
-                    <button onClick={handleStartCalculation} style={styles.estimateBtn}>Start Calculation</button>
+                    <h3 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1rem' }}>Full Home Interiors</h3>
+                    <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2.5rem', lineHeight: 1.6 }}>Select your rooms and style to get a personalized cost estimate.</p>
+                    <button onClick={handleStartCalculation} className="btn-primary" style={{ padding: '1rem 2.5rem' }}>Start Calculation</button>
                   </div>
                 </div>
-              </>
+              </div>
             )}
 
-          {step === 1 && (
-            <div style={styles.stepContainer}>
-              <h2 style={styles.stepTitle}>Which <span style={{ color: 'var(--color-accent-primary)' }}>Rooms</span> are we designing?</h2>
-              <div style={styles.optionGrid}>
-                {rooms.map(room => (
-                  <div 
-                    key={room.id}
-                    onClick={() => toggleRoom(room.id)}
-                    className="glass-panel"
-                    style={{
-                      ...styles.optionCard,
-                      border: selectedRooms.includes(room.id) ? '2px solid var(--color-accent-primary)' : '1px solid rgba(255,255,255,0.1)',
-                      background: selectedRooms.includes(room.id) ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)'
-                    }}
-                  >
-                    <div style={{ color: selectedRooms.includes(room.id) ? 'var(--color-accent-primary)' : 'rgba(255,255,255,0.4)' }}>
-                      {room.icon}
+            {step === 1 && (
+              <div className="reveal">
+                <h2 className="estimate-title">Which <span style={{ color: 'var(--color-accent-primary)' }}>Rooms</span> are we designing?</h2>
+                <div className="option-grid">
+                  {rooms.map(room => (
+                    <div 
+                      key={room.id}
+                      onClick={() => toggleRoom(room.id)}
+                      className={`glass-panel option-card ${selectedRooms.includes(room.id) ? 'selected' : ''}`}
+                    >
+                      <div style={{ color: selectedRooms.includes(room.id) ? 'var(--color-accent-primary)' : 'rgba(255,255,255,0.4)' }}>
+                        {room.icon}
+                      </div>
+                      <span style={{ fontWeight: 600 }}>{room.label}</span>
+                      {selectedRooms.includes(room.id) && <Check size={18} color="var(--color-accent-primary)" style={{ marginLeft: 'auto' }} />}
                     </div>
-                    <span>{room.label}</span>
-                    {selectedRooms.includes(room.id) && <Check size={16} color="var(--color-accent-primary)" />}
-                  </div>
-                ))}
-              </div>
-              <div style={styles.navBtns}>
-                <button onClick={() => setStep(0)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
-                <button 
-                  disabled={selectedRooms.length === 0} 
-                  onClick={() => setStep(2)} 
-                  style={{ ...styles.estimateBtn, opacity: selectedRooms.length === 0 ? 0.5 : 1 }}
-                >
-                  Next Step <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div style={styles.stepContainer}>
-              <h2 style={styles.stepTitle}>Choose your <span style={{ color: 'var(--color-accent-primary)' }}>Style</span> preference</h2>
-              <div style={styles.styleGrid}>
-                {styles_list.map(s => (
-                  <div 
-                    key={s.id}
-                    onClick={() => setSelectedStyle(s.id)}
-                    className="glass-panel"
-                    style={{
-                      ...styles.styleCard,
-                      border: selectedStyle === s.id ? '2px solid var(--color-accent-primary)' : '1px solid rgba(255,255,255,0.1)',
-                      background: selectedStyle === s.id ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)'
-                    }}
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', alignItems: 'center' }}>
+                  <button onClick={() => setStep(0)} style={{ color: 'var(--color-text-secondary)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><ChevronLeft size={18} /> Back</button>
+                  <button 
+                    disabled={selectedRooms.length === 0} 
+                    onClick={() => setStep(2)} 
+                    className="btn-primary"
+                    style={{ opacity: selectedRooms.length === 0 ? 0.5 : 1, padding: '0.8rem 2rem' }}
                   >
-                    <h4 style={{ color: selectedStyle === s.id ? 'var(--color-accent-primary)' : '#fff', marginBottom: '0.4rem' }}>{s.label}</h4>
-                    <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>{s.desc}</p>
-                  </div>
-                ))}
+                    Next Step <ChevronRight size={18} />
+                  </button>
+                </div>
               </div>
-              <div style={styles.navBtns}>
-                <button onClick={() => setStep(1)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
-                <button 
-                  disabled={!selectedStyle || isSubmitting} 
-                  onClick={handleGenerateEstimate} 
-                  style={{ ...styles.estimateBtn, opacity: (!selectedStyle || isSubmitting) ? 0.5 : 1 }}
-                >
-                  {isSubmitting ? <><Loader2 size={18} className="spin-animation" /> Saving...</> : <>Generate Estimate <Sparkles size={18} /></>}
-                </button>
-              </div>
-            </div>
-          )}
+            )}
 
-          {step === 3 && (
-            <div style={{ ...styles.stepContainer, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={styles.successIcon}>✓</div>
-              <h2 style={styles.stepTitle}>Estimate <span style={{ color: 'var(--color-accent-primary)' }}>Request Sent!</span></h2>
-              <p style={{ ...styles.estimateSubtitle, margin: '0 auto 3rem' }}>Thank you! Our design team will analyze your preferences and contact you within 24 hours with a personalized quote.</p>
-              
-              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <button 
-                  onClick={() => {
-                    const roomsText = selectedRooms.map(r => rooms.find(room => room.id === r)?.label).join(', ');
-                    const styleText = styles_list.find(s => s.id === selectedStyle)?.label;
-                    const message = encodeURIComponent(`Hi Rudraksha Design Studio! I'm interested in an interior estimate.\n\nRooms: ${roomsText}\nStyle: ${styleText}`);
-                    window.open(`https://wa.me/919898384133?text=${message}`, '_blank');
-                  }}
-                  style={{ ...styles.estimateBtn, background: '#25D366', color: '#fff' }}
-                >
-                  <WhatsAppLogoFull size={20} /> Talk on WhatsApp
-                </button>
-                <button onClick={() => { setStep(0); setSelectedRooms([]); setSelectedStyle(null); }} style={styles.estimateBtn}>Calculate Another</button>
+            {step === 2 && (
+              <div className="reveal">
+                <h2 className="estimate-title">Choose your <span style={{ color: 'var(--color-accent-primary)' }}>Style</span> preference</h2>
+                <div className="option-grid">
+                  {styles_list.map(s => (
+                    <div 
+                      key={s.id}
+                      onClick={() => setSelectedStyle(s.id)}
+                      className={`glass-panel option-card ${selectedStyle === s.id ? 'selected' : ''}`}
+                      style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem', padding: '1.5rem' }}
+                    >
+                      <h4 style={{ color: selectedStyle === s.id ? 'var(--color-accent-primary)' : '#fff', fontSize: '1.2rem', fontWeight: 700 }}>{s.label}</h4>
+                      <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>{s.desc}</p>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', alignItems: 'center' }}>
+                  <button onClick={() => setStep(1)} style={{ color: 'var(--color-text-secondary)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><ChevronLeft size={18} /> Back</button>
+                  <button 
+                    disabled={!selectedStyle || isSubmitting} 
+                    onClick={handleGenerateEstimate} 
+                    className="btn-primary"
+                    style={{ opacity: (!selectedStyle || isSubmitting) ? 0.5 : 1, padding: '0.8rem 2rem' }}
+                  >
+                    {isSubmitting ? <><Loader2 size={18} className="spin-animation" /> Saving...</> : <>Generate Estimate <Sparkles size={18} /></>}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+
+            {step === 3 && (
+              <div className="reveal" style={{ textAlign: 'center' }}>
+                <div style={{ width: '80px', height: '80px', background: 'var(--color-accent-primary)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', color: '#fff', margin: '0 auto 2rem', boxShadow: '0 10px 20px rgba(37, 99, 235, 0.3)' }}>✓</div>
+                <h2 className="estimate-title">Estimate <span style={{ color: 'var(--color-accent-primary)' }}>Request Sent!</span></h2>
+                <p className="estimate-subtitle">Thank you! Our design team will analyze your preferences and contact you within 24 hours with a personalized quote.</p>
+                
+                <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button 
+                    onClick={() => {
+                      const roomsText = selectedRooms.map(r => rooms.find(room => room.id === r)?.label).join(', ');
+                      const styleText = styles_list.find(s => s.id === selectedStyle)?.label;
+                      const message = encodeURIComponent(`Hi Rudraksha Design Studio! I'm interested in an interior estimate.\n\nRooms: ${roomsText}\nStyle: ${styleText}`);
+                      window.open(`https://wa.me/919898384133?text=${message}`, '_blank');
+                    }}
+                    className="btn-primary"
+                    style={{ background: '#25D366', border: 'none', color: '#fff' }}
+                  >
+                    <WhatsAppLogoFull size={20} /> Talk on WhatsApp
+                  </button>
+                  <button onClick={() => { setStep(0); setSelectedRooms([]); setSelectedStyle(null); }} className="btn-outline">Calculate Another</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
       )}
 
       {/* ── MAIN FOOTER ── */}
-      <section style={styles.mainFooter}>
-        <div style={styles.footerContainer}>
-          <div style={styles.footerGrid}>
-            <div style={styles.brandCol}>
-              <Link to="/" style={styles.footerLogoContainer}>
-                <img src="/logomain.png" alt="Logo" style={styles.footerLogoImg} />
-                <h2 style={styles.footerLogoText}>Rudraksha <span style={{ color: 'var(--color-accent-primary)' }}>Design Studio</span></h2>
-              </Link>
-              <p style={styles.footerAbout}>
-                Turning visions into breathtaking reality. We are a fresh team of designers dedicated to creating spaces that tell your unique story.
-              </p>
-              <div style={styles.socialLinks}>
-                <a href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}><Instagram size={20} /></a>
-                <a href="#" style={styles.socialIcon}><Facebook size={20} /></a>
-                <a href="#" style={styles.socialIcon}><Twitter size={20} /></a>
-              </div>
-            </div>
-
-            <div style={styles.linkCol}>
-              <h4 style={styles.linkTitle}>Quick Links</h4>
-              <Link to="/" style={styles.footerLink}>Home</Link>
-              <Link to="/?scroll=about" style={styles.footerLink}>About Us</Link>
-              <Link to="/projects" style={styles.footerLink}>Explore Designs</Link>
-            </div>
-
-            <div style={styles.linkCol}>
-              <h4 style={styles.linkTitle}>Contact</h4>
-              <div style={styles.contactItem}><Phone size={16} /> +91 98983 84133</div>
-              <div style={styles.contactItem}><Mail size={16} /> contact@rudrakshadesign.com</div>
+      <section className="main-footer">
+        <div className="footer-grid">
+          <div className="footer-brand-col">
+            <Link to="/" className="footer-logo-container">
+              <img src="/logomain.png" alt="Logo" className="footer-logo-img" />
+              <h2 className="footer-logo-text">Rudraksha <span className="navbar-logo-accent">Design Studio</span></h2>
+            </Link>
+            <p className="footer-about">
+              Turning visions into breathtaking reality. We are a fresh team of designers dedicated to creating spaces that tell your unique story.
+            </p>
+            <div className="footer-social-links">
+              <a href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" target="_blank" rel="noopener noreferrer" className="footer-social-icon"><Instagram size={20} /></a>
+              <a href="#" className="footer-social-icon"><Facebook size={20} /></a>
+              <a href="#" className="footer-social-icon"><Twitter size={20} /></a>
             </div>
           </div>
 
-          <div style={styles.bottomBar}>
-            <p style={styles.copyright}>
-              © {currentYear} Rudraksha Design Studio. All rights reserved.
-            </p>
-            <div style={styles.legalLinks}>
-              <a href="#" style={styles.legalLink}>Privacy Policy</a>
-              <a href="#" style={styles.legalLink}>Terms of Use</a>
-            </div>
+          <div className="footer-link-col">
+            <h4 className="footer-link-title">Quick Links</h4>
+            <Link to="/" className="footer-link">Home</Link>
+            <Link to="/?scroll=about" className="footer-link">About Us</Link>
+            <Link to="/projects" className="footer-link">Explore Designs</Link>
+          </div>
+
+          <div className="footer-link-col">
+            <h4 className="footer-link-title">Contact</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}><Phone size={16} /> +91 98983 84133</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--color-text-secondary)', fontSize: '0.95rem', wordBreak: 'break-all' }}><Mail size={16} /> contact@rudrakshadesign.com</div>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p className="footer-copyright">
+            © {currentYear} Rudraksha Design Studio. All rights reserved.
+          </p>
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <a href="#" className="footer-link" style={{ fontSize: '0.9rem' }}>Privacy Policy</a>
+            <a href="#" className="footer-link" style={{ fontSize: '0.9rem' }}>Terms of Use</a>
           </div>
         </div>
 
         {/* Floating Social Buttons */}
-        <div style={styles.floatingButtonsContainer}>
+        <div className="floating-actions">
           {/* WhatsApp Floating Icon */}
           <a 
             href="https://wa.me/919898384133" 
             target="_blank" 
             rel="noopener noreferrer"
-            style={styles.whatsappFloat}
+            className="float-btn"
+            style={{ background: '#25D366' }}
             title="Chat on WhatsApp"
           >
-            <div style={{ position: 'relative' }}>
-              <div style={styles.whatsappPulse}></div>
-              <WhatsAppLogoFull size={32} />
-            </div>
+            <WhatsAppLogoFull size={32} />
           </a>
 
           {/* Instagram Floating Icon */}
@@ -289,13 +264,11 @@ export default function Footer() {
             href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" 
             target="_blank" 
             rel="noopener noreferrer"
-            style={styles.instagramFloat}
+            className="float-btn"
+            style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
             title="Follow on Instagram"
           >
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={styles.instagramPulse}></div>
-              <InstagramLogoOfficial size={34} />
-            </div>
+            <InstagramLogoOfficial size={34} />
           </a>
         </div>
       </section>
@@ -303,319 +276,3 @@ export default function Footer() {
   );
 }
 
-const styles = {
-  footer: {
-    width: '100%',
-    background: '#fff',
-  },
-  estimateSection: {
-    padding: '8rem 2rem',
-    background: 'var(--color-bg-primary)',
-    textAlign: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    position: 'relative',
-    zIndex: 1,
-  },
-  estimateTitle: {
-    fontSize: '3rem',
-    fontWeight: 700,
-    color: '#fff',
-    marginBottom: '1rem',
-    letterSpacing: '-0.02em',
-  },
-  estimateSubtitle: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: '1.1rem',
-    marginBottom: '4rem',
-    fontWeight: 500,
-  },
-  cardGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    gap: '3rem',
-    justifyContent: 'center',
-    maxWidth: '900px',
-    margin: '0 auto',
-  },
-  estimateCard: {
-    padding: '3rem 2.5rem',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-  },
-  iconContainer: {
-    position: 'relative',
-    marginBottom: '2rem',
-    padding: '1.5rem',
-    background: 'rgba(212,175,55,0.08)',
-    borderRadius: '8px',
-    border: '1px solid rgba(212,175,55,0.2)',
-  },
-  plusOverlay: {
-    position: 'absolute',
-    top: '5px',
-    right: '5px',
-    fontSize: '1.2rem',
-    color: 'rgba(212,175,55,0.3)',
-  },
-  cardTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    color: '#fff',
-    marginBottom: '1rem',
-  },
-  cardDesc: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: '1rem',
-    marginBottom: '2.5rem',
-    lineHeight: 1.6,
-  },
-  estimateBtn: {
-    background: 'var(--color-accent-primary)',
-    color: '#000',
-    border: 'none',
-    padding: '1rem 2.5rem',
-    borderRadius: '4px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    fontSize: '0.95rem',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    transition: 'all 0.3s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-  },
-  stepContainer: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    animation: 'fadeIn 0.5s ease',
-  },
-  stepTitle: {
-    fontSize: '2.5rem',
-    fontWeight: 700,
-    color: '#fff',
-    marginBottom: '3rem',
-    letterSpacing: '-0.02em',
-  },
-  optionGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: '1rem',
-    marginBottom: '3rem',
-  },
-  optionCard: {
-    padding: '1.2rem',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    transition: 'all 0.2s ease',
-    textAlign: 'left',
-    borderRadius: '4px',
-    background: 'rgba(255,255,255,0.05)',
-    backdropFilter: 'blur(10px)',
-  },
-  styleGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '1.5rem',
-    marginBottom: '3rem',
-  },
-  styleCard: {
-    padding: '1.5rem',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    borderRadius: '4px',
-    background: 'rgba(255,255,255,0.05)',
-    backdropFilter: 'blur(10px)',
-  },
-  navBtns: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '2rem',
-    alignItems: 'center',
-  },
-  backBtn: {
-    background: 'none',
-    border: 'none',
-    color: 'rgba(255,255,255,0.4)',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    transition: 'color 0.3s',
-  },
-  successIcon: {
-    width: '80px',
-    height: '80px',
-    background: 'var(--color-accent-primary)',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '2.5rem',
-    color: '#000',
-    margin: '0 auto 2rem',
-  },
-  mainFooter: {
-    background: 'var(--color-bg-primary)',
-    padding: '5rem 2rem 2rem',
-    color: '#fff',
-  },
-  footerContainer: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-  },
-  footerGrid: {
-    display: 'grid',
-    gridTemplateColumns: '2fr 1fr 1fr',
-    gap: '4rem',
-    paddingBottom: '4rem',
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
-  },
-  brandCol: {
-    maxWidth: '400px',
-  },
-  footerLogoContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    marginBottom: '1.5rem',
-    textDecoration: 'none',
-  },
-  footerLogoImg: {
-    height: '40px',
-    width: 'auto',
-  },
-  footerLogoText: {
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    color: '#fff',
-    margin: 0,
-  },
-  footerAbout: {
-    color: 'rgba(255,255,255,0.6)',
-    lineHeight: 1.8,
-    fontSize: '0.95rem',
-    marginBottom: '2rem',
-  },
-  socialLinks: {
-    display: 'flex',
-    gap: '1rem',
-  },
-  socialIcon: {
-    width: '40px',
-    height: '40px',
-    background: 'rgba(255,255,255,0.05)',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-    transition: 'all 0.3s ease',
-  },
-  linkCol: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.2rem',
-  },
-  linkTitle: {
-    fontSize: '1.1rem',
-    fontWeight: 600,
-    marginBottom: '0.5rem',
-    color: 'var(--color-accent-primary)',
-  },
-  footerLink: {
-    color: 'rgba(255,255,255,0.6)',
-    textDecoration: 'none',
-    fontSize: '0.95rem',
-    transition: 'color 0.3s ease',
-  },
-  contactItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.8rem',
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: '0.95rem',
-  },
-  bottomBar: {
-    paddingTop: '2rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '1rem',
-  },
-  copyright: {
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: '0.88rem',
-  },
-  legalLinks: {
-    display: 'flex',
-    gap: '2rem',
-  },
-  legalLink: {
-    color: 'rgba(255,255,255,0.4)',
-    textDecoration: 'none',
-    fontSize: '0.88rem',
-  },
-  floatingButtonsContainer: {
-    position: 'fixed',
-    bottom: '2.5rem',
-    right: '2.5rem',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.2rem',
-    zIndex: 1000,
-  },
-  instagramFloat: {
-    width: '58px',
-    height: '58px',
-    background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
-    color: 'white',
-    borderRadius: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 8px 20px rgba(220, 39, 67, 0.35)',
-    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-    cursor: 'pointer',
-  },
-  instagramPulse: {
-    position: 'absolute',
-    inset: '-6px',
-    border: '2px solid #dc2743',
-    borderRadius: '16px',
-    animation: 'pulse 2s infinite',
-    opacity: 0,
-  },
-  whatsappFloat: {
-    width: '58px',
-    height: '58px',
-    background: '#25D366',
-    color: 'white',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 8px 20px rgba(37, 211, 102, 0.35)',
-    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-    cursor: 'pointer',
-  },
-  whatsappPulse: {
-    position: 'absolute',
-    inset: '-10px',
-    border: '2px solid #25D366',
-    borderRadius: '50%',
-    animation: 'pulse 2s infinite',
-    opacity: 0,
-  }
-};

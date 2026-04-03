@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Heart, Play, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Play, ArrowLeft, Filter, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import './Projects.css';
 
 const CATEGORIES = [
   { name: 'All',                    image: '' },
@@ -17,53 +18,7 @@ const CATEGORIES = [
   { name: 'Bathroom',               image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
 ];
 
-const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
-  const scrollRef = useRef(null);
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -420 : 420;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <section key={category} style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem', marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.4rem', fontWeight: 600 }}>{category} Designs</h3>
-        <button
-          onClick={() => onSeeAll(category)}
-          style={{ color: 'var(--color-accent-primary)', fontSize: '0.88rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
-        >
-          See All →
-        </button>
-      </div>
-      
-      <div style={{ position: 'relative', width: '100%' }}>
-        {catProjects.length > 3 && (
-          <div className="scroll-arrows-container">
-            <button onClick={() => scroll('left')} className="slider-arrow arrow-left"><ChevronLeft size={22} /></button>
-            <button onClick={() => scroll('right')} className="slider-arrow arrow-right"><ChevronRight size={22} /></button>
-          </div>
-        )}
-
-        <div ref={scrollRef} className="hide-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', scrollSnapType: 'x mandatory' }}>
-          {catProjects.map((project, i) => (
-            <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card" style={{ animation: `fadeInUp 0.5s ease ${i * 0.08}s forwards` }}>
-              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.6s ease' }} className="project-img-bg" />
-              <div style={{ position: 'absolute', top: '12px', right: '12px', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', zIndex: 2, background: project.projectStatus === 'In Progress' ? 'rgba(234, 179, 8, 0.9)' : 'rgba(34, 197, 94, 0.9)', color: project.projectStatus === 'In Progress' ? '#000' : '#fff', backdropFilter: 'blur(4px)', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>{project.projectStatus || 'Completed'}</div>
-              <div className="project-card-overlay">
-                <h4 className="project-card-title">{project.title}</h4>
-                <p className="project-card-subtitle">{project.style}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const STYLES = ['All', 'Modern', 'Classic', 'Minimalist'];
+const STYLES = ['All', 'Modern', 'Classic', 'Minimalist', 'Luxury'];
 
 export default function Projects() {
   const [projects, setProjects]       = useState([]);
@@ -78,10 +33,10 @@ export default function Projects() {
     const cat = searchParams.get('category');
     if (cat) setFilterRoom(cat);
 
-    const scroll = searchParams.get('scroll');
-    if (scroll) {
+    const scrollVal = searchParams.get('scroll');
+    if (scrollVal) {
       setTimeout(() => {
-        const el = document.getElementById(scroll);
+        const el = document.getElementById(scrollVal);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 500);
     }
@@ -95,7 +50,7 @@ export default function Projects() {
         const docs = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          displayThumbnail: doc.data().images[doc.data().thumbnailIndex]
+          displayThumbnail: (doc.data().images && doc.data().images[doc.data().thumbnailIndex]) || 'https://via.placeholder.com/400x300?text=No+Image'
         }));
         setProjects(docs);
       } catch (e) {
@@ -119,339 +74,124 @@ export default function Projects() {
   };
 
   return (
-    <>
-      {/* ── HERO BANNER ── */}
-      <section style={{
-        width: '100%', position: 'relative',
-        height: 'clamp(380px, 50vh, 560px)', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'url("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=85")',
-          backgroundSize: 'cover', backgroundPosition: 'center 40%',
-          transform: 'scale(1.03)', transition: 'transform 8s ease',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(5,5,20,0.82) 0%, rgba(5,5,20,0.45) 55%, rgba(5,5,20,0.05) 100%)',
-        }} />
-        <div style={{
-          position: 'relative', zIndex: 1, height: '100%',
-          display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          padding: '0 4rem', maxWidth: '700px',
-        }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(212, 175, 55, 0.15)', border: '1px solid rgba(212, 175, 55, 0.4)',
-            borderRadius: '50px', padding: '0.3rem 0.9rem',
-            marginBottom: '1.25rem', width: 'fit-content'
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-accent-secondary)' }} />
-            <span style={{ color: 'var(--color-accent-secondary)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em' }}>
-              PREMIUM INTERIOR DESIGN
-            </span>
+    <div className="projects-container">
+      {/* ── PROJECTS HERO ── */}
+      <section className="projects-hero">
+        <div className="projects-hero-bg" />
+        <div className="projects-hero-overlay" />
+        
+        <div className="hero-content slide-right">
+          <div className="hero-badge">
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
+            Our Portfolio
           </div>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', fontWeight: 700, color: 'white',
-            lineHeight: 1.2, marginBottom: '0.75rem', letterSpacing: '-0.02em',
-          }}>
-            Interiors you'll<br />
-            <span style={{ color: 'var(--color-accent-secondary)' }}>absolutely love.</span>
+          
+          <h1 className="hero-title">
+            Curated Design<br />
+            <span className="gold-text">Masterpieces.</span>
           </h1>
-          <p style={{
-            color: 'rgba(255,255,255,0.75)', fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
-            lineHeight: 1.65, marginBottom: '2rem', maxWidth: '480px',
-          }}>
-            From modular kitchens to luxury living rooms — we craft spaces that reflect your lifestyle. Without the stress.
+          
+          <p className="hero-description">
+            Explore our collection of premium interior designs, from concept to completion.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button
-              className="btn-primary"
-              style={{ padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px' }}
-              onClick={() => { const el = document.getElementById('explore-gallery'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              Browse by Category
-            </button>
-            <button
-              style={{
-                padding: '0.85rem 2rem', fontSize: '0.95rem', borderRadius: '10px',
-                border: '1px solid rgba(255,255,255,0.3)', color: 'white',
-                background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(8px)',
-                fontFamily: "'Outfit', sans-serif", cursor: 'pointer', transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
-              onClick={() => {
-                if (currentUser) {
-                  window.open('https://wa.me/919898384133?text=Hi! I would like to consult about a modular interior design project.', '_blank');
-                } else {
-                  navigate('/login');
-                }
-              }}
-            >
-              {currentUser ? 'Consult on WhatsApp' : 'Get Started Free'}
-            </button>
-          </div>
         </div>
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '80px',
-          background: 'linear-gradient(to bottom, transparent, var(--color-bg-primary))',
-        }} />
       </section>
 
-      {/* ── BROWSE BY CATEGORY + GALLERY ── */}
-      <div id="explore-gallery" style={{ padding: '2.5rem 3% 4rem' }}>
+      {/* ── FILTERS SECTION ── */}
+      <section className="filters-section">
+        <div className="filters-wrapper">
+          <div className="filter-group">
+            <label className="filter-label"><Filter size={14} style={{ marginRight: '8px' }} /> Category</label>
+            <select
+              value={filterRoom}
+              onChange={e => setFilterRoom(e.target.value)}
+              className="filter-select"
+            >
+              <option value="All">All Categories</option>
+              {CATEGORIES.filter(c => c.name !== 'All').map(cat => (
+                <option key={cat.name} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
 
-        {/* Dropdown filters */}
-        <div style={{ marginBottom: '2.5rem' }}>
-          <h2 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#a1a1aa', letterSpacing: '0.08em', marginBottom: '1.25rem' }}>
-            BROWSE BY CATEGORY
-          </h2>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            {/* Category dropdown */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500 }}>Room Type</label>
-              <select
-                value={filterRoom}
-                onChange={e => setFilterRoom(e.target.value)}
-                style={{
-                  padding: '0.65rem 2.5rem 0.65rem 1rem',
-                  borderRadius: '10px',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  color: filterRoom === 'All' ? '#a1a1aa' : '#fff',
-                  fontSize: '0.9rem',
-                  fontFamily: "'Outfit', sans-serif",
-                  cursor: 'pointer',
-                  outline: 'none',
-                  minWidth: '200px',
-                  appearance: 'none',
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 0.85rem center',
-                }}
-              >
-                <option value="All" style={{ background: '#0f172a' }}>All Categories</option>
-                {CATEGORIES.filter(c => c.name !== 'All').map(cat => (
-                  <option key={cat.name} value={cat.name} style={{ background: '#0f172a' }}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Style dropdown */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={{ fontSize: '0.78rem', color: '#71717a', fontWeight: 500 }}>Style</label>
-              <select
-                value={filterStyle}
-                onChange={e => setFilterStyle(e.target.value)}
-                style={{
-                  padding: '0.65rem 2.5rem 0.65rem 1rem',
-                  borderRadius: '10px',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  color: filterStyle === 'All' ? '#a1a1aa' : '#fff',
-                  fontSize: '0.9rem',
-                  fontFamily: "'Outfit', sans-serif",
-                  cursor: 'pointer',
-                  outline: 'none',
-                  minWidth: '160px',
-                  appearance: 'none',
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 0.85rem center',
-                }}
-              >
-                {STYLES.map(s => (
-                  <option key={s} value={s} style={{ background: '#0f172a' }}>{s === 'All' ? 'All Styles' : s}</option>
-                ))}
-              </select>
-            </div>
+          <div className="filter-group">
+            <label className="filter-label"><Sparkles size={14} style={{ marginRight: '8px' }} /> Design Style</label>
+            <select
+              value={filterStyle}
+              onChange={e => setFilterStyle(e.target.value)}
+              className="filter-select"
+            >
+              {STYLES.map(s => (
+                <option key={s} value={s}>{s === 'All' ? 'All Styles' : s}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div style={{ marginLeft: 'auto', color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>
+            {filteredProjects.length} Projects found
           </div>
         </div>
+      </section>
 
-        {/* Projects Rendering Section */}
-        {filterRoom !== 'All' ? (
-          <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
-              <button 
-                onClick={() => setFilterRoom('All')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'white', padding: '0.5rem 1rem', borderRadius: '8px',
-                  cursor: 'pointer', fontSize: '0.85rem'
-                }}
-              >
-                <ArrowLeft size={16} /> Back to all Categories
-              </button>
-              <h2 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0 }}>{filterRoom} <span style={{ color: 'var(--color-accent-primary)' }}>Gallery</span></h2>
-            </div>
-
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)' }}>
-                Loading breathtaking designs...
-              </div>
-            ) : filteredProjects.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
-                No projects found for this category yet.
-              </div>
-            ) : (
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
-                gap: '2.5rem' 
-              }}>
-                {filteredProjects.map((project, i) => (
-                  <div key={project.id} 
-                    style={{ animation: `fadeInUp 0.6s ease ${i * 0.1}s forwards`, opacity: 0 }}
-                    className="gallery-grid-card"
-                  >
-                    <div 
-                      className="project-card-v2"
-                      onClick={() => handleProjectClick(project.id)}
-                    >
-                      <div style={{
-                        position: 'absolute', inset: 0,
-                        backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`,
-                        backgroundSize: 'cover', backgroundPosition: 'center',
-                        transition: 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)',
-                      }} className="project-img-bg" />
-                      
-                      <div className="card-top-overlays">
-                        <button className="heart-btn" onClick={(e) => { e.stopPropagation(); }}>
-                          <Heart size={20} />
-                        </button>
-                      </div>
-
-                      {(project.threeDVideo || project.completedVideo) && (
-                        <div className="play-icon-overlay">
-                          <Play size={32} fill="white" />
-                        </div>
-                      )}
-
-                      <div className="project-card-overlay-v2">
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'white', marginBottom: '0.25rem' }}>{project.title}</h4>
-                          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{project.style}</p>
-                        </div>
-                        <button 
-                          className="get-quote-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const msg = encodeURIComponent(`Hi Rudraksha Design! I'm interested in getting a quote for the "${project.title}" ${project.category} design.`);
-                            window.open(`https://wa.me/919898384133?text=${msg}`, '_blank');
-                          }}
-                        >
-                          Get Quote
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+      {/* ── PROJECTS GALLERY ── */}
+      <section className="projects-gallery" id="explore-gallery">
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '4rem' }}>
+            <div className="spinner" style={{ margin: '0 auto 1.5rem' }} />
+            <p style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>Loading breathtaking designs...</p>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '6rem', background: 'var(--color-bg-secondary)', borderRadius: '30px', border: '1px dashed var(--glass-border)' }}>
+             <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>No projects found</h3>
+             <p style={{ color: 'var(--color-text-secondary)' }}>Try adjusting your filters to see more designs.</p>
+             <button onClick={() => { setFilterRoom('All'); setFilterStyle('All'); }} className="btn-outline" style={{ marginTop: '2rem' }}>Reset Filters</button>
           </div>
         ) : (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '6rem 2rem', 
-            background: 'rgba(255,255,255,0.02)', 
-            borderRadius: '24px',
-            border: '1px dashed rgba(255,255,255,0.1)',
-            animation: 'fadeIn 0.8s ease'
-          }}>
-            <div style={{ fontSize: '3.5rem', marginBottom: '1.5rem', filter: 'grayscale(1) opacity(0.5)' }}>✨</div>
-            <h3 style={{ fontSize: '1.6rem', fontWeight: 600, marginBottom: '1rem', color: 'white' }}>Ready to Explore?</h3>
-            <p style={{ color: 'rgba(255,255,255,0.5)', maxWidth: '420px', margin: '0 auto', fontSize: '1rem', lineHeight: 1.6 }}>
-              Select a room category from the dropdown menu above to view our curated collection of luxury interior designs.
-            </p>
+          <div className="projects-grid">
+            {filteredProjects.map((project, i) => (
+              <div 
+                key={project.id} 
+                className="project-card-v2 reveal" 
+                style={{ animationDelay: `${i * 0.1}s` }}
+                onClick={() => handleProjectClick(project.id)}
+              >
+                <div 
+                  style={{ 
+                    position: 'absolute', inset: 0, 
+                    backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, 
+                    backgroundSize: 'cover', backgroundPosition: 'center', 
+                    transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)' 
+                  }} 
+                  className="project-img-bg" 
+                />
+                
+                <div className={`project-status-badge ${project.projectStatus === 'In Progress' ? 'status-progress' : 'status-completed'}`}>
+                  {project.projectStatus || 'Completed'}
+                </div>
+
+                <div className="project-card-overlay-v2">
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', marginBottom: '0.4rem' }}>{project.title}</h4>
+                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', fontWeight: 600 }}>{project.style} • {project.category}</p>
+                  </div>
+                  
+                  <button 
+                    className="btn-gold" 
+                    style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', borderRadius: '8px' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const msg = encodeURIComponent(`Hi! I'm interested in the "${project.title}" project. Can you provide more details?`);
+                      window.open(`https://wa.me/919898384133?text=${msg}`, '_blank');
+                    }}
+                  >
+                    Discuss Project
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
-      </div>
-
-      <style>{`
-        .project-card-v2 {
-          position: relative; height: 320px; border-radius: 16px; overflow: hidden;
-          cursor: pointer; background: #1e293b; border: 1px solid rgba(255,255,255,0.05);
-          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .project-card-v2:hover { transform: translateY(-8px); border-color: rgba(37,99,235,0.3); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.6); }
-        .project-card-v2:hover .project-img-bg { transform: scale(1.1); }
-
-        .project-card-overlay-v2 {
-          position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem;
-          background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
-          display: flex; align-items: flex-end; gap: 1rem;
-        }
-
-        .get-quote-btn {
-          background: var(--color-accent-primary); color: #000; border: none;
-          padding: 0.6rem 1.2rem; borderRadius: 8px; fontSize: 0.85rem; fontWeight: 700;
-          cursor: pointer; transition: all 0.2s;
-        }
-        .get-quote-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
-
-        .card-top-overlays { position: absolute; top: 1rem; right: 1rem; z-index: 2; }
-        .heart-btn {
-          background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white;
-          width: 40px; height: 40px; border-radius: 50%; display: flex;
-          align-items: center; justify-content: center; backdrop-filter: blur(8px);
-          cursor: pointer; transition: all 0.2s;
-        }
-        .heart-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
-
-        .play-icon-overlay {
-          position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-          width: 60px; height: 60px; border-radius: 50%; background: rgba(37,99,235,0.8);
-          display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);
-          color: white; box-shadow: 0 0 20px rgba(37,99,235,0.4);
-        }
-
-        .project-card {
-          min-width: 320px; max-width: 400px; flex: 0 0 auto;
-          scroll-snap-align: start; position: relative; height: 240px;
-          border-radius: 12px; overflow: hidden; cursor: pointer;
-          transition: all 0.4s ease; opacity: 0; transform: translateY(20px);
-        }
-        .project-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .project-card-overlay {
-          position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem;
-          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-          display: flex; flex-direction: column; justify-content: flex-end;
-        }
-        .project-card-title { color: white; margin: 0; font-size: 1rem; }
-        .project-card-subtitle { color: rgba(255,255,255,0.6); font-size: 0.8rem; margin: 0.2rem 0 0; }
-
-        .slider-arrow {
-          position: absolute; top: 45%; transform: translateY(-50%);
-          width: 48px; height: 48px; border-radius: 50%;
-          background: white;
-          border: 1px solid rgba(0, 0, 0, 0.08);
-          color: #1e293b;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; z-index: 20; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-        }
-        .slider-arrow:hover {
-          background: var(--color-accent-primary);
-          color: white;
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
-          transform: translateY(-50%) scale(1.1);
-        }
-        .arrow-left { left: 10px; }
-        .arrow-right { right: 10px; }
-
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        @media (max-width: 768px) {
-          .project-card { min-width: 280px; }
-          .arrow-left, .arrow-right { display: none; }
-        }
-      `}</style>
-    </>
+      </section>
+    </div>
   );
 }
