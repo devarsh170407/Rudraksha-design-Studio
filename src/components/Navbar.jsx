@@ -90,8 +90,7 @@ export default function Navbar() {
                 setIsMenuOpen(false);
                 handleLogout();
               }} 
-              className="btn-outline logout-btn"
-              style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              className="navbar-link logout-btn"
             >
               <LogOut size={16} /> Logout
             </button>

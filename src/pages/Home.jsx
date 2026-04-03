@@ -143,10 +143,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="scroll-indicator float">
-          <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.2rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>Scroll</span>
-          <div style={{ width: '2px', height: '40px', background: 'linear-gradient(to bottom, var(--color-accent-primary), transparent)', marginTop: '0.5rem' }} />
-        </div>
+
       </section>
 
       {/* ── ABOUT US SECTION ── */}
