@@ -7,6 +7,7 @@ import {
   deleteDoc, 
   doc, 
   updateDoc,
+  setDoc,
   serverTimestamp,
   query,
   orderBy
@@ -26,12 +27,13 @@ import {
 } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', or 'leads'
+  const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', 'leads', or 'settings'
   const [allProjects, setAllProjects] = useState([]);
   const [estimates, setEstimates] = useState([]);
   const [usersMap, setUsersMap] = useState({});
   const [editingProject, setEditingProject] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [siteSettings, setSiteSettings] = useState({ isLaunched: true });
   const [formData, setFormData] = useState({
     title: '',
     category: 'Home Interiors',
@@ -71,27 +73,42 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchLeads = async () => {
-    setFetching(true);
+  const fetchSettings = async () => {
     try {
-      // Fetch Users for phone mapping
-      const usersSnap = await getDocs(collection(db, 'users'));
-      const uMap = {};
-      usersSnap.docs.forEach(doc => {
-        const data = doc.data();
-        if (data.phone) uMap[doc.id] = data.phone;
-      });
-      setUsersMap(uMap);
-
-      // Fetch Inquiries / Estimates
-      const estimatesQ = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
-      const estimatesSnap = await getDocs(estimatesQ);
-      setEstimates(estimatesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const siteDoc = await getDocs(query(collection(db, 'settings')));
+      const siteData = siteDoc.docs.find(d => d.id === 'site')?.data();
+      if (siteData) {
+        setSiteSettings(siteData);
+      }
     } catch (e) {
-      console.error('Error fetching estimates/users:', e);
-      setMessage({ text: 'Error fetching data from cloud.', type: 'error' });
+      console.error('Error fetching settings:', e);
+    }
+  };
+
+  const toggleLaunch = async () => {
+    const newStatus = !siteSettings.isLaunched;
+    setUploading(true);
+    try {
+      await updateDoc(doc(db, 'settings', 'site'), { isLaunched: newStatus });
+      setSiteSettings({ ...siteSettings, isLaunched: newStatus });
+      setMessage({ text: `Site ${newStatus ? 'Launched' : 'put into Maintenance mode'} successfully!`, type: 'success' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+    } catch (e) {
+      console.error('Error updating launch status:', e);
+      // If document doesn't exist, try setting it
+      if (e.code === 'not-found') {
+        try {
+          await setDoc(doc(db, 'settings', 'site'), { isLaunched: newStatus });
+          setSiteSettings({ ...siteSettings, isLaunched: newStatus });
+          setMessage({ text: `Site ${newStatus ? 'Launched' : 'put into Maintenance mode'} successfully!`, type: 'success' });
+        } catch (e2) {
+          setMessage({ text: 'Error updating settings document.', type: 'error' });
+        }
+      } else {
+        setMessage({ text: 'Error updating settings. Please check Firestore rules.', type: 'error' });
+      }
     } finally {
-      setFetching(false);
+      setUploading(false);
     }
   };
 
@@ -119,6 +136,9 @@ export default function AdminDashboard() {
     }
     if (activeTab === 'leads') {
       fetchLeads();
+    }
+    if (activeTab === 'settings') {
+      fetchSettings();
     }
   }, [activeTab]);
 
@@ -473,6 +493,18 @@ export default function AdminDashboard() {
                 📊 Business Leads
               </button>
             </li>
+            <li>
+              <button 
+                onClick={() => setActiveTab('settings')}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
+                  background: activeTab === 'settings' ? 'var(--color-accent-primary)' : 'transparent',
+                  color: activeTab === 'settings' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
+                  border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
+                }}>
+                ⚙️ Site Settings
+              </button>
+            </li>
           </ul>
         </aside>
 
@@ -824,8 +856,44 @@ export default function AdminDashboard() {
                 </div>
               )}
             </>
+          ) : activeTab === 'settings' ? (
+            <div style={{ maxWidth: '600px' }}>
+              <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>Site Settings</h2>
+              <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem', background: 'rgba(255,255,255,0.03)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Site Launch Status</h3>
+                    <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
+                      {siteSettings.isLaunched 
+                        ? 'The website is currently LIVE for all users.' 
+                        : 'The website is currently in "Launching Soon" mode. Only admins can see the full site.'}
+                    </p>
+                  </div>
+                  <button 
+                    onClick={toggleLaunch}
+                    disabled={uploading}
+                    style={{
+                      background: siteSettings.isLaunched ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                      color: siteSettings.isLaunched ? '#ef4444' : '#22c55e',
+                      border: `1px solid ${siteSettings.isLaunched ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}`,
+                      padding: '0.8rem 1.5rem',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {siteSettings.isLaunched ? 'Go to Maintenance' : '🚀 Launch Site'}
+                  </button>
+                </div>
+                <div style={{ padding: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '10px', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
+                  <p style={{ fontSize: '0.85rem', color: '#60a5fa', margin: 0 }}>
+                    <strong>Note:</strong> Even in Maintenance mode, you can still access all features because you are logged in as an Admin.
+                  </p>
+                </div>
+              </div>
+            </div>
           ) : (
-            <>
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Business Leads & Estimates</h2>
@@ -851,7 +919,6 @@ export default function AdminDashboard() {
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-                {/* Estimates Section */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <h3 style={{ color: 'var(--color-accent-primary)', fontSize: '1.2rem' }}>Project Inquiries (Estimates)</h3>
@@ -905,31 +972,15 @@ export default function AdminDashboard() {
                             <td style={{ padding: '1rem' }}>
                               <div style={{ display: 'flex', gap: '0.8rem' }}>
                                 {usersMap[est.userId] && (
-                                  <a 
-                                    href={`https://wa.me/91${usersMap[est.userId].replace(/\D/g, '')}`} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    title="WhatsApp Client"
-                                    style={{ color: '#25D366' }}
-                                  >
-                                    <MessageCircle size={18} />
-                                  </a>
+                                  <a href={`https://wa.me/91${usersMap[est.userId].replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366' }}><MessageCircle size={18} /></a>
                                 )}
-                                <a 
-                                  href={`mailto:${est.userEmail}`} 
-                                  title="Email Client"
-                                  style={{ color: 'var(--color-accent-primary)' }}
-                                >
-                                  <Mail size={18} />
-                                </a>
+                                <a href={`mailto:${est.userEmail}`} style={{ color: 'var(--color-accent-primary)' }}><Mail size={18} /></a>
                               </div>
                             </td>
                           </tr>
                         ))}
                         {estimates.length === 0 && (
-                          <tr>
-                            <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No inquiries found.</td>
-                          </tr>
+                          <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>No inquiries found.</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -937,8 +988,8 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </>
-            </>
           )}
+
         </main>
       </div>
     </div>
