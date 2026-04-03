@@ -99,7 +99,7 @@
 
 /* Features Scroller */
 .features-section {
-  padding: 6rem 0;
+  padding: 4rem 0;
   background: var(--color-bg-secondary);
   overflow: hidden;
   position: relative;
@@ -114,7 +114,7 @@
 .features-track {
   display: flex;
   gap: 6rem;
-  padding: 3rem 0;
+  padding: 2rem 0;
   animation: scrollFeatures 40s linear infinite;
   white-space: nowrap;
 }
@@ -159,16 +159,16 @@
 
 /* Category Carousels */
 .category-row {
-  margin-bottom: 8rem;
+  margin-bottom: 4rem;
 }
 
 .category-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .see-all-btn {
@@ -195,7 +195,7 @@
   display: flex;
   gap: 2rem;
   overflow-X: auto;
-  padding: 1rem 0 3rem;
+  padding: 0.5rem 0 2rem;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 }
