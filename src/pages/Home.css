@@ -81,10 +81,11 @@
 
 .about-image {
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: 3/2;
   border-radius: 30px;
   object-fit: cover;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  max-height: 550px;
 }
 
 .about-floating-card {
@@ -314,4 +315,53 @@
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+@media (max-width: 992px) {
+  .about-section {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+    padding: 6rem 5%;
+    text-align: center;
+  }
+
+  .about-section > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about-image {
+    aspect-ratio: 16/9;
+    max-height: 400px;
+  }
+
+  .about-floating-card {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin-top: -3rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    width: 80%;
+    z-index: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: 90vh;
+    padding: 0 1.5rem;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .about-section {
+    padding: 4rem 1.5rem;
+  }
+
+  .about-image {
+    border-radius: 20px;
+  }
 }
