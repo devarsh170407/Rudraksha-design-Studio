@@ -97,29 +97,31 @@
   text-align: center;
 }
 
-/* Features Section */
+/* Features Scroller */
 .features-section {
-  padding: 8rem 0;
+  padding: 6rem 0;
   background: var(--color-bg-secondary);
-  text-align: center;
+  overflow: hidden;
+  position: relative;
 }
 
-.section-header {
-  margin-bottom: 4rem;
+.features-scroller {
+  width: 100%;
+  display: flex;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
 }
 
-.accent-text {
-  background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.features-track {
+  display: flex;
+  gap: 6rem;
+  padding: 3rem 0;
+  animation: scrollFeatures 40s linear infinite;
+  white-space: nowrap;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 3rem;
-  padding: 0 2rem;
+@keyframes scrollFeatures {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .feature-item {
@@ -127,30 +129,32 @@
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  min-width: 200px;
 }
 
 .feature-icon {
-  width: 70px;
-  height: 70px;
-  border: 2px solid;
+  width: 65px;
+  height: 65px;
+  border: 1.5px solid;
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.02);
-  transition: all var(--transition-bounce);
+  transition: transform var(--transition-bounce), background 0.3s ease;
 }
 
 .feature-item:hover .feature-icon {
   transform: translateY(-10px) rotate(5deg);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .feature-label {
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  opacity: 0.8;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
 }
 
 /* Category Carousels */

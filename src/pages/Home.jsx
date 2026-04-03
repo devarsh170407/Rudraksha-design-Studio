@@ -188,30 +188,30 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="why-choose-rudraksha" className="features-section">
-        <div className="section-header">
-          <h2 className="reveal">
-            Why Choose <span className="accent-text">Rudraksha</span>
-          </h2>
+        <div className="features-scroller">
+          <div className="features-track">
+            {/* Double the list for seamless infinite scroll */}
+            {[...Array(2)].map((_, i) => (
+              <React.Fragment key={i}>
+                {[
+                  { icon: <Sparkles size={32} />, label: "Modern Aesthetics", color: "#ffdf00" },
+                  { icon: <Clock size={32} />, label: "Timely Delivery", color: "#ff007f" },
+                  { icon: <Layers size={32} />, label: "3D Visuals", color: "#bf00ff" },
+                  { icon: <Paintbrush size={32} />, label: "Expert Execution", color: "#00f5ff" },
+                  { icon: <CheckCircle size={32} />, label: "Genuine Care", color: "#ff8c00" },
+                  { icon: <Heart size={32} />, label: "Personalized Design", color: "#ff0040" },
+                  { icon: <Shield size={32} />, label: "Quality Materials", color: "#007fff" },
+                  { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#00ff00" }
+                ].map((item, idx) => (
+                  <div key={`${i}-${idx}`} className="feature-item">
+                    <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>
+                    <span className="feature-label">{item.label}</span>
+                  </div>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
-
-        <div className="features-grid container">
-          {[
-            { icon: <Heart size={32} />, label: "Personalized Design", color: "#a855f7" },
-            { icon: <Shield size={32} />, label: "Quality Materials", color: "#3b82f6" },
-            { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#22c55e" },
-            { icon: <Sparkles size={32} />, label: "Modern Aesthetics", color: "#eab308" },
-            { icon: <Clock size={32} />, label: "Timely Delivery", color: "#ec4899" },
-            { icon: <Layers size={32} />, label: "3D Visuals", color: "#8b5cf6" },
-            { icon: <Paintbrush size={32} />, label: "Expert Execution", color: "#06b6d4" }
-          ].map((item, idx) => (
-            <div key={idx} className="feature-item reveal" style={{ animationDelay: `${idx * 0.1}s` }}>
-              <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>
-              <span className="feature-label">{item.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* ── GALLERY SECTION ── */}
       <div id="explore-gallery" style={{ padding: '8rem 5% 4rem', minHeight: '60vh' }}>
