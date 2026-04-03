@@ -39,7 +39,7 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
           {catProjects.map((project, i) => (
             <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
               <div className="project-card-image" style={{ backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})` }} />
-              <div className="project-card-info">
+              <div className="project-card-overlay">
                 <h4 className="project-card-name">{project.title}</h4>
                 <p className="project-card-tag">{project.style}</p>
               </div>
