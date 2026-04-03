@@ -61,7 +61,7 @@
 
 .filter-select {
   padding: 0.8rem 1.5rem;
-  background: var(--glass-bg);
+  background: #1a1a1a;
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   color: white;
@@ -70,6 +70,11 @@
   outline: none;
   transition: all var(--transition-fast);
   cursor: pointer;
+}
+
+.filter-select option {
+  background: #1a1a1a;
+  color: white;
 }
 
 .filter-select:focus {
