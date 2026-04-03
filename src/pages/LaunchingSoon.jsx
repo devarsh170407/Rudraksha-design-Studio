@@ -5,6 +5,7 @@ const LaunchingSoon = () => {
     <div className="launching-soon-container">
       <div className="overlay"></div>
       <div className="content">
+        <img src="/logomain.png" alt="Rudraksha Design Studio Logo" className="logo-img" />
         <h1 className="logo-text">Rudraksha Design Studio</h1>
         <div className="divider"></div>
         <h2 className="main-title">Crafting Excellence</h2>
@@ -57,12 +58,19 @@ const LaunchingSoon = () => {
           animation: fadeIn 1.5s ease-out;
         }
 
+        .logo-img {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 1rem;
+          filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+        }
+
         .logo-text {
-          font-size: 1.5rem;
-          letter-spacing: 0.5rem;
+          font-size: 1.2rem;
+          letter-spacing: 0.3rem;
           text-transform: uppercase;
           margin-bottom: 2rem;
-          font-weight: 300;
+          font-weight: 400;
           color: #e2e8f0;
         }
 
