@@ -16,8 +16,7 @@ const LaunchingSoon = () => {
         </div>
         
         <div className="contact-info">
-            <p>For inquiries: contact@rudrakshadesign.com</p>
-            <p style={{ marginTop: '0.5rem' }}>WhatsApp: +91 98983 84133</p>
+            <p>WhatsApp: +91 98983 84133</p>
         </div>
       </div>
       
@@ -28,7 +27,7 @@ const LaunchingSoon = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          background: url('/assets/launching_bg.png') no-repeat center center/cover;
           color: white;
           position: fixed;
           top: 0;
@@ -44,7 +43,8 @@ const LaunchingSoon = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+          background: rgba(15, 23, 42, 0.7);
+          backdrop-filter: blur(8px);
           pointer-events: none;
         }
 
