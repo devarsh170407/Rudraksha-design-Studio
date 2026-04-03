@@ -101,17 +101,18 @@ const LaunchingSoon = () => {
 
         .status-badge {
           display: inline-block;
-          padding: 0.5rem 1.5rem;
-          border: 1px solid rgba(59, 130, 246, 0.5);
+          padding: 1rem 2.5rem;
+          border: 2px solid rgba(59, 130, 246, 0.6);
           border-radius: 100px;
-          background: rgba(59, 130, 246, 0.1);
+          background: rgba(59, 130, 246, 0.15);
           color: #60a5fa;
-          font-size: 0.9rem;
-          font-weight: 600;
-          letter-spacing: 0.1rem;
+          font-size: 1.5rem;
+          font-weight: 800;
+          letter-spacing: 0.2rem;
           text-transform: uppercase;
           margin-bottom: 4rem;
-          backdrop-filter: blur(4px);
+          backdrop-filter: blur(8px);
+          box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
         }
 
         .contact-info {
