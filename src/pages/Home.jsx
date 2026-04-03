@@ -149,7 +149,7 @@ export default function Home() {
       <section id="about" className="about-section">
         <div className="about-image-container reveal">
           <img 
-            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+            src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
             alt="Studio Interior" 
             className="about-image"
           />
