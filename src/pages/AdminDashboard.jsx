@@ -16,7 +16,13 @@ import {
   Circle, 
   Mail, 
   MessageCircle, 
-  PhoneCall
+  PhoneCall,
+  Camera,
+  Video,
+  Clapperboard,
+  UploadCloud,
+  ChevronDown,
+  Plus
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -489,27 +495,14 @@ export default function AdminDashboard() {
             <>
               <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>Publish New Design</h2>
               <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <div>
-                  <label style={styles.label}>Project Title</label>
-                  <input name="title" className="input-field" placeholder="e.g. Minimalist Urban Condo" required value={formData.title} onChange={handleChange} />
+                <div className="admin-form-group">
+                  <label className="admin-label">Project Title</label>
+                  <input name="title" className="admin-input" placeholder="e.g. Minimalist Urban Condo" required value={formData.title} onChange={handleChange} />
                 </div>
                 
-                <div>
-                  <label style={styles.label}>Project Description</label>
-                  <textarea 
-                    name="description" 
-                    className="input-field" 
-                    placeholder="Describe the design story..." 
-                    style={{ minHeight: '120px', resize: 'vertical' }}
-                    value={formData.description} 
-                    onChange={handleChange} 
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-                  <div>
-                    <label style={styles.label}>Category</label>
-                    <select name="category" className="input-field" value={formData.category} onChange={handleChange}>
+                <div className="admin-form-row dropdown-row">
+                  <div className="admin-select-wrapper">
+                    <select name="category" className="admin-select" value={formData.category} onChange={handleChange}>
                       <option>Home Interiors</option>
                       <option>Modular Kitchen</option>
                       <option>Living Room</option>
@@ -519,144 +512,89 @@ export default function AdminDashboard() {
                       <option>Home Office</option>
                       <option>Bathroom</option>
                     </select>
+                    <ChevronDown className="select-icon" size={18} />
                   </div>
-                  <div>
-                    <label style={styles.label}>Style</label>
-                    <select name="style" className="input-field" value={formData.style} onChange={handleChange}>
+                  <div className="admin-select-wrapper">
+                    <select name="style" className="admin-select" value={formData.style} onChange={handleChange}>
                       <option>Modern</option>
                       <option>Classic</option>
                       <option>Minimalist</option>
                     </select>
+                    <ChevronDown className="select-icon" size={18} />
                   </div>
-                  <div>
-                    <label style={styles.label}>Project Status</label>
-                    <select name="projectStatus" className="input-field" value={formData.projectStatus} onChange={handleChange}>
+                  <div className="admin-select-wrapper">
+                    <select name="projectStatus" className="admin-select" value={formData.projectStatus} onChange={handleChange}>
                       <option>Completed</option>
                       <option>In Progress</option>
                     </select>
+                    <ChevronDown className="select-icon" size={18} />
                   </div>
                 </div>
 
-                <div className="file-upload-zone">
-                  <div className="file-upload-icon">📸</div>
-                  <label className="file-upload-text">
-                    <span>Project Images Gallery</span> (Required)
-                    <p style={{ marginTop: '0.4rem', fontSize: '0.8rem' }}>Drop images here or click to browse</p>
-                  </label>
-                  <input type="file" required multiple accept="image/*" onChange={handleImagesChange} />
+                <div className="admin-dropzone-large" onClick={() => document.getElementById('gallery-input').click()}>
+                  <div className="dropzone-content">
+                    <div className="dropzone-icon-main">
+                      <Camera size={40} strokeWidth={1.5} color="#2563eb" />
+                    </div>
+                    <div className="dropzone-text">
+                      <span className="required-label">Project Images Gallery </span>
+                      <span className="label-meta">(Required)</span>
+                      <p>Drop images here or click to browse</p>
+                    </div>
+                  </div>
+                  <input id="gallery-input" style={{ display: 'none' }} type="file" required multiple accept="image/*" onChange={handleImagesChange} />
                   
                   {images.length > 0 && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '0.8rem', marginTop: '1rem', width: '100%', pointerEvents: 'auto' }}>
+                    <div className="gallery-preview-grid">
                       {images.map((img, idx) => (
                         <div 
                           key={idx} 
                           onClick={(e) => { e.stopPropagation(); setThumbnailIndex(idx); }}
-                          style={{ 
-                            height: '80px', 
-                            backgroundImage: `url(${URL.createObjectURL(img)})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            border: thumbnailIndex === idx ? '3px solid var(--color-accent-primary)' : '2px solid rgba(255,255,255,0.1)',
-                            transition: 'all 0.2s',
-                            position: 'relative'
-                          }}
+                          className={`preview-item ${thumbnailIndex === idx ? 'active-thumb' : ''}`}
+                          style={{ backgroundImage: `url(${URL.createObjectURL(img)})` }}
                         >
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                            style={{
-                              position: 'absolute',
-                              top: '-8px',
-                              right: '-8px',
-                              width: '20px',
-                              height: '20px',
-                              background: '#ef4444',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '50%',
-                              fontSize: '12px',
-                              fontWeight: 'bold',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                              zIndex: 10
-                            }}
-                          >
-                            ×
-                          </button>
-                          {thumbnailIndex === idx && (
-                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--color-accent-primary)', color: 'var(--color-bg-primary)', fontSize: '0.6rem', textAlign: 'center', fontWeight: 'bold', padding: '2px 0' }}>PRIMARY</div>
-                          )}
+                          <button type="button" onClick={(e) => { e.stopPropagation(); removeImage(idx); }} className="remove-preview">×</button>
+                          {thumbnailIndex === idx && <div className="primary-tag">PRIMARY</div>}
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                  <div className="file-upload-zone" style={{ padding: '1.5rem', position: 'relative' }}>
-                    <div className="file-upload-icon" style={{ fontSize: '1.5rem' }}>🎥</div>
-                    <label className="file-upload-text" style={{ fontSize: '0.85rem' }}>
-                      3D Design Video <span>(Optional)</span>
-                    </label>
-                    <input type="file" accept="video/*" onChange={handleThreeDVideoChange} />
-                    {threeDVideo && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
-                          ✓ {threeDVideo.name}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setThreeDVideo(null)}
-                          style={{
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            color: '#ef4444',
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
-                            borderRadius: '4px',
-                            padding: '2px 8px',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Remove
-                        </button>
+                <div className="admin-form-row video-row">
+                  <div className="admin-dropzone-small" onClick={() => document.getElementById('v3d-input').click()}>
+                    <div className="dropzone-content">
+                      <Video size={24} strokeWidth={1.5} color="#666" />
+                      <div className="dropzone-text-small">
+                        3D Design Video <span className="label-meta">(Optional)</span>
                       </div>
-                    )}
+                    </div>
+                    <input id="v3d-input" style={{ display: 'none' }} type="file" accept="video/*" onChange={handleThreeDVideoChange} />
+                    {threeDVideo && <div className="file-ready">✓ {threeDVideo.name}</div>}
                   </div>
                   
-                  <div className="file-upload-zone" style={{ padding: '1.5rem', position: 'relative' }}>
-                    <div className="file-upload-icon" style={{ fontSize: '1.5rem' }}>🎬</div>
-                    <label className="file-upload-text" style={{ fontSize: '0.85rem' }}>
-                      Completed Video <span>(Optional)</span>
-                    </label>
-                    <input type="file" accept="video/*" onChange={handleCompletedVideoChange} />
-                    {completedVideo && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-accent-primary)', fontWeight: 600 }}>
-                          ✓ {completedVideo.name}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setCompletedVideo(null)}
-                          style={{
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            color: '#ef4444',
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
-                            borderRadius: '4px',
-                            padding: '2px 8px',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Remove
-                        </button>
+                  <div className="admin-dropzone-small" onClick={() => document.getElementById('vcomp-input').click()}>
+                    <div className="dropzone-content">
+                      <Clapperboard size={24} strokeWidth={1.5} color="#666" />
+                      <div className="dropzone-text-small">
+                        Completed Video <span className="label-meta">(Optional)</span>
                       </div>
-                    )}
+                    </div>
+                    <input id="vcomp-input" style={{ display: 'none' }} type="file" accept="video/*" onChange={handleCompletedVideoChange} />
+                    {completedVideo && <div className="file-ready">✓ {completedVideo.name}</div>}
                   </div>
+                </div>
+
+                <div>
+                  <label className="admin-label">Project Description</label>
+                  <textarea 
+                    name="description" 
+                    className="admin-input" 
+                    placeholder="Describe the design story..." 
+                    style={{ minHeight: '100px', resize: 'vertical' }}
+                    value={formData.description} 
+                    onChange={handleChange} 
+                  />
                 </div>
 
                 {uploading && (
@@ -665,7 +603,8 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
-                <button type="submit" disabled={uploading} className="btn-primary" style={{ padding: '1rem', fontSize: '1.1rem', marginTop: '1rem' }}>
+                <button type="submit" disabled={uploading} className="publish-project-btn">
+                  <UploadCloud size={20} />
                   {uploading ? `Uploading... ${Math.round(progress)}%` : 'Publish Project to Cloud'}
                 </button>
               </form>
@@ -1008,4 +947,249 @@ export default function AdminDashboard() {
 
 const styles = {
   label: { display: 'block', marginBottom: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontWeight: 500 }
+};
+
+// Admin Dashboard Exclusive Styles
+const dashboardCSS = `
+  .admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .admin-label {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  .admin-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.9rem 1.2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .admin-input:focus {
+    border-color: #2563eb;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .admin-form-row {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .dropdown-row .admin-select-wrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  .admin-select {
+    width: 100%;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.8rem 1rem;
+    padding-right: 2.5rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .select-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .admin-dropzone-large {
+    border: 2px dashed rgba(37, 99, 235, 0.3);
+    background: rgba(37, 99, 235, 0.02);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .admin-dropzone-large:hover {
+    background: rgba(37, 99, 235, 0.05);
+    border-color: #2563eb;
+  }
+
+  .dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .dropzone-icon-main {
+    width: 60px;
+    height: 60px;
+    background: rgba(37, 99, 235, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dropzone-text {
+    line-height: 1.4;
+  }
+
+  .required-label {
+    font-weight: 600;
+    color: white;
+    font-size: 1.1rem;
+  }
+
+  .label-meta {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+  }
+
+  .dropzone-text p {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .gallery-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    width: 100%;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1.5rem;
+  }
+
+  .preview-item {
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s;
+  }
+
+  .active-thumb {
+    border-color: #2563eb;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.3);
+  }
+
+  .remove-preview {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .primary-tag {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #2563eb;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .admin-dropzone-small {
+    flex: 1;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .admin-dropzone-small:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .dropzone-text-small {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+  }
+
+  .file-ready {
+    font-size: 0.75rem;
+    color: #2563eb;
+    font-weight: 600;
+    margin-top: 0.4rem;
+  }
+
+  .publish-project-btn {
+    background: #2563eb;
+    color: white;
+    padding: 1.2rem;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+  }
+
+  .publish-project-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  }
+
+  .publish-project-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const styleEl = document.createElement('style');
+  styleEl.innerHTML = dashboardCSS;
+  document.head.appendChild(styleEl);
 }
+
