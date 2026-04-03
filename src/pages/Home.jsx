@@ -21,28 +21,27 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
         <h3 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{category} <span className="gold-text">Designs</span></h3>
         <button
           onClick={() => onSeeAll(category)}
-          className="navbar-link"
-          style={{ color: 'var(--color-accent-primary)', fontSize: '0.95rem', fontWeight: 600 }}
+          className="see-all-btn"
         >
           See All →
         </button>
       </div>
       
-      <div style={{ position: 'relative', width: '100%' }}>
-        {catProjects.length > 3 && (
+      <div className="carousel-container">
+        {catProjects.length > 1 && (
           <>
-            <button onClick={() => scroll('left')} className="slider-arrow arrow-left"><ChevronLeft size={22} /></button>
-            <button onClick={() => scroll('right')} className="slider-arrow arrow-right"><ChevronRight size={22} /></button>
+            <button onClick={() => scroll('left')} className="carousel-arrow arrow-left"><ChevronLeft size={24} /></button>
+            <button onClick={() => scroll('right')} className="carousel-arrow arrow-right"><ChevronRight size={24} /></button>
           </>
         )}
 
-        <div ref={scrollRef} className="hide-scrollbar" style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '2rem', scrollSnapType: 'x mandatory' }}>
+        <div ref={scrollRef} className="carousel-track hide-scrollbar">
           {catProjects.map((project, i) => (
             <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
-              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }} className="project-img-bg" />
-              <div className="project-card-overlay">
-                <h4 className="project-card-title">{project.title}</h4>
-                <p className="project-card-subtitle">{project.style}</p>
+              <div className="project-card-image" style={{ backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})` }} />
+              <div className="project-card-info">
+                <h4 className="project-card-name">{project.title}</h4>
+                <p className="project-card-tag">{project.style}</p>
               </div>
             </div>
           ))}
@@ -189,36 +188,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── WHY CHOOSE US AUTO-SCROLLER ── */}
-      <section id="why-choose-rudraksha" style={{ padding: '8rem 0', background: 'var(--color-bg-secondary)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ textAlign: 'center', marginBottom: '5rem', padding: '0 2rem' }}>
-          <h2 className="reveal" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800 }}>
-            Why Choose <span className="gold-text">Rudraksha</span>
+      <section id="why-choose-rudraksha" className="features-section">
+        <div className="section-header">
+          <h2 className="reveal">
+            Why Choose <span className="accent-text">Rudraksha</span>
           </h2>
         </div>
 
-        <div style={{ position: 'relative', width: '100%', overflow: 'hidden', maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)' }}>
-          <div className="feature-slider-track">
-            {[...Array(2)].map((_, i) => (
-              <div key={i} style={{ display: 'flex', gap: '5rem', alignItems: 'center' }}>
-                {[
-                  { icon: <Heart size={40} />, label: "Personalized Design" },
-                  { icon: <Shield size={40} />, label: "Quality Materials" },
-                  { icon: <IndianRupee size={40} />, label: "Honest Pricing" },
-                  { icon: <Sparkles size={40} />, label: "Modern Aesthetics" },
-                  { icon: <Clock size={40} />, label: "Timely Delivery" },
-                  { icon: <Layers size={40} />, label: "3D Visuals" },
-                  { icon: <Paintbrush size={40} />, label: "Expert Execution" },
-                  { icon: <CheckCircle size={40} />, label: "Genuine Care" }
-                ].map((item, idx) => (
-                  <div key={idx} className="feature-slider-item">
-                    <div className="feature-icon-wrapper" style={{ color: 'var(--color-accent-primary)' }}>{item.icon}</div>
-                    <span style={{ color: 'white', fontSize: '1.1rem', fontWeight: 600, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{item.label}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+        <div className="features-grid container">
+          {[
+            { icon: <Heart size={32} />, label: "Personalized Design", color: "#a855f7" },
+            { icon: <Shield size={32} />, label: "Quality Materials", color: "#3b82f6" },
+            { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#22c55e" },
+            { icon: <Sparkles size={32} />, label: "Modern Aesthetics", color: "#eab308" },
+            { icon: <Clock size={32} />, label: "Timely Delivery", color: "#ec4899" },
+            { icon: <Layers size={32} />, label: "3D Visuals", color: "#8b5cf6" },
+            { icon: <Paintbrush size={32} />, label: "Expert Execution", color: "#06b6d4" }
+          ].map((item, idx) => (
+            <div key={idx} className="feature-item reveal" style={{ animationDelay: `${idx * 0.1}s` }}>
+              <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>
+              <span className="feature-label">{item.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
