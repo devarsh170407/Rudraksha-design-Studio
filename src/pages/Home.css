@@ -159,16 +159,16 @@
 
 /* Category Carousels */
 .category-row {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 .category-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 0.8rem;
+  padding-bottom: 0.5rem;
 }
 
 .see-all-btn {
