@@ -1015,51 +1015,46 @@ export default function AdminDashboard() {
                         }}
                       >
                         {siteSettings.isLaunched ? (
-                           <>⚙️ Enter Maintenance</>
+                           <>⚙️ Take Site Offline</>
                         ) : (
-                           <>⚡ Launch to Public</>
+                           <>🚀 Launch to Public</>
                         )}
                       </button>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', textAlign: 'center', opacity: 0.8 }}>
+                         {siteSettings.isLaunched ? 'Hides site from visitors' : 'Makes site public instantly'}
+                      </span>
                     </div>
                   </div>
 
-                  <div style={{ padding: '1.5rem', background: 'rgba(59, 130, 246, 0.08)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
-                    <div style={{ background: 'linear-gradient(135deg, #2563eb, #60a5fa)', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'bold', fontSize: '1.1rem' }}>i</div>
-                    <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.9)', margin: 0, lineHeight: 1.6 }}>
-                      <strong style={{ color: '#60a5fa', fontWeight: 700 }}>Administrator Access:</strong> Because you are logged in, you bypass the maintenance screen. To view what the visitors see, open an <strong style={{ color: 'white' }}>Incognito Window</strong>.
-                    </p>
+                  {/* ── CHECKBOX AND INFO ── */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+                    
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '1rem 1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={siteSettings.launchPermanent || false} 
+                        onChange={handleTogglePermanent} 
+                        style={{ width: '22px', height: '22px', cursor: 'pointer', accentColor: 'var(--color-accent-primary)' }}
+                      />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <strong style={{ fontSize: '1.1rem' }}>Permanent Launch</strong>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                           When checked, turning the site offline will show the "Under Maintenance" poster.<br/>
+                           When unchecked, turning the site offline will show the "Launching Soon" poster.
+                        </span>
+                      </div>
+                    </label>
+
+                    <div style={{ padding: '1rem 1.5rem', background: 'rgba(59, 130, 246, 0.08)', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
+                      <div style={{ background: 'linear-gradient(135deg, #2563eb, #60a5fa)', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'bold', fontSize: '0.9rem' }}>i</div>
+                      <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.9)', margin: 0, lineHeight: 1.5 }}>
+                        <strong style={{ color: '#60a5fa', fontWeight: 700 }}>Administrator Access:</strong> Because you are logged in, you bypass the offline screen automatically. Open an <strong style={{ color: 'white' }}>Incognito Window</strong> to view it.
+                      </p>
+                    </div>
+
                   </div>
                 </div>
               </div>
-
-              {!siteSettings.launchPermanent && (
-                <div style={{ marginTop: '2rem', padding: '2rem', background: 'rgba(139, 92, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(139, 92, 246, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                   <div style={{ flex: 1, minWidth: '300px' }}>
-                     <h4 style={{ margin: 0, fontSize: '1.2rem', marginBottom: '0.5rem', color: '#a78bfa' }}>Permanent Launch</h4>
-                     <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.95rem', maxWidth: '600px', lineHeight: 1.5 }}>
-                       Ready to officially announce your agency? Clicking this will permanently lock your site into production mode. 
-                       Turning the site offline afterwards will accurately display a "Maintenance" poster instead of a "Launching Soon" poster!
-                     </p>
-                   </div>
-                   <button 
-                     onClick={async () => {
-                       setIsLaunchingAnim(true);
-                       setTimeout(async () => {
-                         try {
-                           await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: true, status: 'live', launchPermanent: true });
-                           setSiteSettings({ ...siteSettings, isLaunched: true, status: 'live', launchPermanent: true });
-                         } catch(e) { console.error(e); }
-                         setIsLaunchingAnim(false);
-                       }, 4000);
-                     }}
-                     disabled={isLaunchingAnim}
-                     className="btn-primary" 
-                     style={{ background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', border: 'none', padding: '1.2rem 2.5rem', fontWeight: 800, fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(139, 92, 246, 0.3)' }}
-                   >
-                     🚀 INITIATE PERMANENT LAUNCH
-                   </button>
-                </div>
-              )}
             </div>
           ) : (
             <>
