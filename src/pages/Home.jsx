@@ -56,8 +56,6 @@ export default function Home() {
   const [loading, setLoading]         = useState(true);
   const { currentUser, isAdmin }      = useAuth();
   const navigate                      = useNavigate();
-  const [siteSettings, setSiteSettings] = useState(null);
-  const [isLaunchingAnim, setIsLaunchingAnim] = useState(false);
   const [searchParams]                = useSearchParams();
   const [filterRoom,  setFilterRoom]  = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
@@ -74,30 +72,6 @@ export default function Home() {
       }, 500);
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    if (!isAdmin) return;
-    const unsub = onSnapshot(doc(db, 'settings', 'site'), (docSnap) => {
-      if (docSnap.exists()) {
-        setSiteSettings(docSnap.data());
-      }
-    });
-    return () => unsub();
-  }, [isAdmin]);
-
-  const handleQuickLaunch = async () => {
-    setIsLaunchingAnim(true);
-    try {
-      setTimeout(async () => {
-        await updateDoc(doc(db, 'settings', 'site'), { status: 'live', isLaunched: true });
-        setTimeout(() => setIsLaunchingAnim(false), 800);
-      }, 3500); // 3.5s animation
-    } catch (e) {
-      console.error(e);
-      alert("Error launching site.");
-      setIsLaunchingAnim(false);
-    }
-  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -265,77 +239,6 @@ export default function Home() {
           </div>
         )}
       </div>
-      {/* ── FAST LAUNCH WIDGET (ADMIN ONLY) ── */}
-      {isAdmin && siteSettings && !siteSettings.launchPermanent && (
-        <div className="reveal" style={{
-           position: 'fixed', bottom: '2rem', left: '2rem', zIndex: 9999,
-           background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)',
-           padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(239, 68, 68, 0.3)',
-           boxShadow: '0 10px 40px rgba(0,0,0,0.5)', maxWidth: '300px'
-        }}>
-           <h4 style={{ margin: 0, marginBottom: '0.5rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-             <AlertTriangle size={18} /> Launch Control
-           </h4>
-           <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1.2rem', lineHeight: '1.4' }}>
-             Your site is currently: <strong style={{color: 'white'}}>{siteSettings.status === 'live' ? 'LIVE' : (siteSettings.status === 'maintenance' ? 'MAINTENANCE' : 'LAUNCHING SOON')}</strong>.
-             <br/><br/>
-             You can launch the site from here, or hide this widget permanently in Admin Settings.
-           </p>
-           <button 
-             onClick={handleQuickLaunch}
-             style={{ 
-               width: '100%', padding: '0.8rem', background: '#ef4444', color: 'white', 
-               border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
-               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-               transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
-             }}
-           >
-             🚀 Quick Launch Now
-           </button>
-        </div>
-      )}
-
-      {/* ── FULL SCREEN LAUNCH ANIMATION OVERLAY ── */}
-      {isLaunchingAnim && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-          background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(20px)',
-          zIndex: 100000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          animation: 'launchFadeIn 0.3s ease-out'
-        }}>
-          <div style={{ animation: 'launchRocket 3.5s ease-in forwards', fontSize: '6rem', marginBottom: '2rem', filter: 'drop-shadow(0 20px 20px rgba(239,68,68,0.5))' }}>
-            🚀
-          </div>
-          <h2 style={{ color: 'white', fontSize: '3.5rem', fontWeight: 800, background: 'linear-gradient(to right, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0, textAlign: 'center', animation: 'pulseText 1.5s infinite' }}>
-            Launching to the World...
-          </h2>
-          <p style={{ color: '#94a3b8', fontSize: '1.3rem', marginTop: '1rem' }}>
-            Preparing your servers for public access.
-          </p>
-          <div style={{ width: '400px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginTop: '3rem', overflow: 'hidden' }}>
-             <div style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, #3b82f6, #a78bfa)', animation: 'launchProgress 3.5s ease-in-out forwards' }} />
-          </div>
-          <style>{`
-            @keyframes launchFadeIn {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-            @keyframes launchRocket {
-              0% { transform: translateY(0) scale(1); opacity: 1; }
-              40% { transform: translateY(20px) scale(0.9); opacity: 1; }
-              100% { transform: translateY(-1000px) scale(1.5); opacity: 0; }
-            }
-            @keyframes launchProgress {
-              0% { width: 0%; }
-              100% { width: 100%; }
-            }
-            @keyframes pulseText {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.7; }
-            }
-          `}</style>
-        </div>
-      )}
     </div>
   );
 }
