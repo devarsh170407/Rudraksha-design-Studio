@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight, Sofa, Compass, Zap, Grid } from 'lucide-react';
+import { collection, getDocs, query, orderBy, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight, Sofa, Compass, Zap, Grid, AlertTriangle } from 'lucide-react';
 import './Home.css';
 
 const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
@@ -54,8 +54,9 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
 export default function Home() {
   const [projects, setProjects]       = useState([]);
   const [loading, setLoading]         = useState(true);
-  const { currentUser }               = useAuth();
+  const { currentUser, isAdmin }      = useAuth();
   const navigate                      = useNavigate();
+  const [siteSettings, setSiteSettings] = useState(null);
   const [searchParams]                = useSearchParams();
   const [filterRoom,  setFilterRoom]  = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
@@ -72,6 +73,25 @@ export default function Home() {
       }, 500);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    const unsub = onSnapshot(doc(db, 'settings', 'site'), (docSnap) => {
+      if (docSnap.exists()) {
+        setSiteSettings(docSnap.data());
+      }
+    });
+    return () => unsub();
+  }, [isAdmin]);
+
+  const handleQuickLaunch = async () => {
+    try {
+      await updateDoc(doc(db, 'settings', 'site'), { status: 'live', isLaunched: true });
+    } catch (e) {
+      console.error(e);
+      alert("Error launching site.");
+    }
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -239,6 +259,33 @@ export default function Home() {
           </div>
         )}
       </div>
+      {/* ── FAST LAUNCH WIDGET (ADMIN ONLY) ── */}
+      {isAdmin && siteSettings && !siteSettings.launchPermanent && siteSettings.status !== 'live' && (
+        <div className="reveal" style={{
+           position: 'fixed', bottom: '2rem', left: '2rem', zIndex: 9999,
+           background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)',
+           padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(239, 68, 68, 0.3)',
+           boxShadow: '0 10px 40px rgba(0,0,0,0.5)', maxWidth: '300px'
+        }}>
+           <h4 style={{ margin: 0, marginBottom: '0.5rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+             <AlertTriangle size={18} /> Hidden from Public
+           </h4>
+           <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1.2rem', lineHeight: '1.4' }}>
+             Your site is currently in {siteSettings.status === 'maintenance' ? 'maintenance' : 'launching soon'} mode.
+           </p>
+           <button 
+             onClick={handleQuickLaunch}
+             style={{ 
+               width: '100%', padding: '0.8rem', background: '#ef4444', color: 'white', 
+               border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
+               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+               transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+             }}
+           >
+             🚀 Quick Launch Now
+           </button>
+        </div>
+      )}
     </div>
   );
 }

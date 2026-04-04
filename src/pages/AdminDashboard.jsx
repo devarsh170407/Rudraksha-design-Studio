@@ -118,25 +118,30 @@ export default function AdminDashboard() {
     const newStatus = !siteSettings.isLaunched;
     setUploading(true);
     try {
-      await updateDoc(doc(db, 'settings', 'site'), { isLaunched: newStatus });
-      setSiteSettings({ ...siteSettings, isLaunched: newStatus });
-      setMessage({ text: `Site ${newStatus ? 'Launched' : 'put into Maintenance mode'} successfully!`, type: 'success' });
-      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: newStatus, status: newStatus ? 'live' : 'maintenance' });
+      setSiteSettings({ ...siteSettings, isLaunched: newStatus, status: newStatus ? 'live' : 'maintenance' });
+      setMessage({ text: `Site is now ${newStatus ? 'LIVE' : 'UNDER MAINTENANCE'}`, type: 'success' });
     } catch (e) {
-      console.error('Error updating launch status:', e);
-      // If document doesn't exist, try setting it
-      if (e.code === 'not-found') {
-        try {
-          await setDoc(doc(db, 'settings', 'site'), { isLaunched: newStatus });
-          setSiteSettings({ ...siteSettings, isLaunched: newStatus });
-          setMessage({ text: `Site ${newStatus ? 'Launched' : 'put into Maintenance mode'} successfully!`, type: 'success' });
-        } catch (e2) {
-          setMessage({ text: 'Error updating settings document.', type: 'error' });
-        }
-      } else {
-        setMessage({ text: 'Error updating settings. Please check Firestore rules.', type: 'error' });
-      }
+      console.error('Error toggling launch:', e);
+      setMessage({ text: 'Error updating launch status.', type: 'error' });
     } finally {
+      setTimeout(() => setMessage({text: '', type: ''}), 3000);
+      setUploading(false);
+    }
+  };
+
+  const handleTogglePermanent = async () => {
+    const newPerm = !siteSettings.launchPermanent;
+    setUploading(true);
+    try {
+      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, launchPermanent: newPerm });
+      setSiteSettings({ ...siteSettings, launchPermanent: newPerm });
+      setMessage({ text: `Permanent Launch is now ${newPerm ? 'Enabled' : 'Disabled'}`, type: 'success' });
+    } catch (e) {
+      console.error('Error toggling permanent config:', e);
+      setMessage({ text: 'Error updating permanent status.', type: 'error' });
+    } finally {
+      setTimeout(() => setMessage({text: '', type: ''}), 3000);
       setUploading(false);
     }
   };

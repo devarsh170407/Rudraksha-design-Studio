@@ -11,28 +11,35 @@ import Projects from './pages/Projects';
 import ProjectDetails from './pages/ProjectDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import LaunchingSoon from './pages/LaunchingSoon';
+import Maintenance from './pages/Maintenance';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 
 function AppContent() {
   const { user, isAdmin, loading: authLoading } = useAuth();
-  const [isLaunched, setIsLaunched] = useState(null);
+  const [siteStatus, setSiteStatus] = useState('launching_soon'); // 'live', 'maintenance', 'launching_soon'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Listen to site settings in Firestore
     const unsub = onSnapshot(doc(db, 'settings', 'site'), (doc) => {
       if (doc.exists()) {
-        setIsLaunched(doc.data().isLaunched);
+        const data = doc.data();
+        if (data.status) {
+          setSiteStatus(data.status);
+        } else if (data.isLaunched !== undefined) {
+          setSiteStatus(data.isLaunched ? 'live' : 'launching_soon');
+        } else {
+          setSiteStatus('launching_soon');
+        }
       } else {
-        // Default to not launched if document doesn't exist
-        setIsLaunched(false);
+        setSiteStatus('launching_soon');
       }
       setLoading(false);
     }, (error) => {
       console.error("Error fetching launch status:", error);
-      setIsLaunched(true); // Fallback to launched if error
+      setSiteStatus('live'); // Fallback to launched if error
       setLoading(false);
     });
 
@@ -47,20 +54,23 @@ function AppContent() {
     );
   }
 
-  // Show LaunchingSoon if not launched AND user is not an admin
+  // Show Splash screen (LaunchingSoon or Maintenance) if not launched AND user is not an admin
   // We allow admins to see the site even if not launched
-  // We also allow the login page to be accessible
-  const showMaintenance = !isLaunched && !isAdmin;
+  const showSplash = siteStatus !== 'live' && !isAdmin;
 
   return (
     <Router>
       <ScrollToTop />
-      {!showMaintenance && <Navbar />}
+      {!showSplash && <Navbar />}
       <main style={{ minHeight: '80vh' }}>
         <Routes>
-          {showMaintenance ? (
+          {showSplash ? (
             <>
-              <Route path="/" element={<LaunchingSoon />} />
+              {siteStatus === 'maintenance' ? (
+                <Route path="/" element={<Maintenance />} />
+              ) : (
+                <Route path="/" element={<LaunchingSoon />} />
+              )}
               <Route path="/login" element={<Login />} />
               <Route path="*" element={<Navigate to="/" />} />
             </>
@@ -97,7 +107,7 @@ function AppContent() {
           )}
         </Routes>
       </main>
-      {!showMaintenance && <Footer />}
+      {!showSplash && <Footer />}
     </Router>
   );
 }
