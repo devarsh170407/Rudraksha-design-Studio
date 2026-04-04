@@ -183,18 +183,18 @@ export default function Home() {
             {[...Array(2)].map((_, i) => (
               <React.Fragment key={i}>
                 {[
-                  { icon: <Sparkles size={32} />, label: "Modern Aesthetics", color: "#ffdf00" },
-                  { icon: <Clock size={32} />, label: "Timely Delivery", color: "#ff007f" },
-                  { icon: <Layers size={32} />, label: "3D Visuals", color: "#bf00ff" },
-                  { icon: <Paintbrush size={32} />, label: "Expert Execution", color: "#00f5ff" },
-                  { icon: <CheckCircle size={32} />, label: "Genuine Care", color: "#ff8c00" },
-                  { icon: <Heart size={32} />, label: "Personalized Design", color: "#ff0040" },
-                  { icon: <Sofa size={32} />, label: "Custom Furniture", color: "#ff6b6b" },
-                  { icon: <Shield size={32} />, label: "Quality Materials", color: "#007fff" },
-                  { icon: <Compass size={32} />, label: "Vastu Compliant", color: "#4ecdc4" },
-                  { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#00ff00" },
-                  { icon: <Zap size={32} />, label: "Smart Home", color: "#ffe66d" },
-                  { icon: <Grid size={32} />, label: "Detailed Planning", color: "#1a535c" }
+                  { icon: <Sparkles size={44} />, label: "Modern Aesthetics", color: "#ffdf00" },
+                  { icon: <Clock size={44} />, label: "Timely Delivery", color: "#ff007f" },
+                  { icon: <Layers size={44} />, label: "3D Visuals", color: "#bf00ff" },
+                  { icon: <Paintbrush size={44} />, label: "Expert Execution", color: "#00f5ff" },
+                  { icon: <CheckCircle size={44} />, label: "Genuine Care", color: "#ff8c00" },
+                  { icon: <Heart size={44} />, label: "Personalized Design", color: "#ff0040" },
+                  { icon: <Sofa size={44} />, label: "Custom Furniture", color: "#ff6b6b" },
+                  { icon: <Shield size={44} />, label: "Quality Materials", color: "#007fff" },
+                  { icon: <Compass size={44} />, label: "Vastu Compliant", color: "#4ecdc4" },
+                  { icon: <IndianRupee size={44} />, label: "Honest Pricing", color: "#00ff00" },
+                  { icon: <Zap size={44} />, label: "Smart Home", color: "#ffe66d" },
+                  { icon: <Grid size={44} />, label: "Detailed Planning", color: "#1a535c" }
                 ].map((item, idx) => (
                   <div key={`${i}-${idx}`} className="feature-item">
                     <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>
