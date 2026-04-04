@@ -119,10 +119,12 @@ export default function AdminDashboard() {
   const toggleLaunch = async () => {
     const newStatus = !siteSettings.isLaunched;
     setUploading(true);
+    const offlineStatus = siteSettings.launchPermanent ? 'maintenance' : 'launching_soon';
+    const finalStatus = newStatus ? 'live' : offlineStatus;
     try {
-      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: newStatus, status: newStatus ? 'live' : 'maintenance' });
-      setSiteSettings({ ...siteSettings, isLaunched: newStatus, status: newStatus ? 'live' : 'maintenance' });
-      setMessage({ text: `Site is now ${newStatus ? 'LIVE' : 'UNDER MAINTENANCE'}`, type: 'success' });
+      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: newStatus, status: finalStatus });
+      setSiteSettings({ ...siteSettings, isLaunched: newStatus, status: finalStatus });
+      setMessage({ text: `Site is now ${finalStatus === 'live' ? 'LIVE' : (finalStatus === 'maintenance' ? 'UNDER MAINTENANCE' : 'LAUNCHING SOON')}`, type: 'success' });
     } catch (e) {
       console.error('Error toggling launch:', e);
       setMessage({ text: 'Error updating launch status.', type: 'error' });
@@ -982,6 +984,12 @@ export default function AdminDashboard() {
                           ? 'Your website is completely public. Visitors can browse all projects, submit leads, and view interior plans seamlessly without restrictions.' 
                           : `The public website is locked down. Only administrators can bypass the "${siteSettings.launchPermanent ? 'Under Maintenance' : 'Launching Soon'}" screen.`}
                       </p>
+                      <button 
+                        onClick={async () => await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: false, status: 'launching_soon', launchPermanent: false })}
+                        style={{ marginTop: '1rem', background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', display: 'inline-block' }}
+                      >
+                        Dev Reset: Revert to "Launching Soon"
+                      </button>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flexShrink: 0 }}>
