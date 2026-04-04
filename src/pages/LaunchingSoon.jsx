@@ -19,6 +19,10 @@ const LaunchingSoon = () => {
         <div className="contact-info">
             <p>WhatsApp: +91 98983 84133</p>
         </div>
+
+        <div className="admin-access">
+          <a href="/login">Admin Login</a>
+        </div>
       </div>
       
       <style jsx>{`
@@ -119,6 +123,23 @@ const LaunchingSoon = () => {
             margin-top: 2rem;
             color: #64748b;
             font-size: 0.9rem;
+        }
+
+        .admin-access {
+            margin-top: 4rem;
+        }
+
+        .admin-access a {
+            color: rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            transition: all 0.3s;
+        }
+
+        .admin-access a:hover {
+            color: rgba(255, 255, 255, 0.6);
         }
 
         @keyframes fadeIn {

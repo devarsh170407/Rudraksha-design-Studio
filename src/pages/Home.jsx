@@ -173,18 +173,7 @@ export default function Home() {
             At Rudraksha Design Studio, we are a fresh team of designers fueled by passion and a commitment to excellence. We believe that your home should be a direct reflection of your personality and aspirations.
           </p>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem' }}>
-            <div className="reveal" style={{ animationDelay: '0.2s' }}>
-              <div style={{ color: 'var(--color-accent-primary)', fontSize: '2rem', marginBottom: '1rem' }}><Sparkles /></div>
-              <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.8rem', fontSize: '1.2rem' }}>Exquisite Detail</h4>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>Every corner is curated with precision and premium materials.</p>
-            </div>
-            <div className="reveal" style={{ animationDelay: '0.4s' }}>
-              <div style={{ color: 'var(--color-accent-primary)', fontSize: '2rem', marginBottom: '1rem' }}><Clock /></div>
-              <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.8rem', fontSize: '1.2rem' }}>Timely Delivery</h4>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>Your dream space, completed on schedule, without compromises.</p>
-            </div>
-          </div>
+
         </div>
       </section>
 

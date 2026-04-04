@@ -258,6 +258,66 @@ export default function AdminDashboard() {
     return `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${path}/${fileName}`;
   };
 
+  const deleteGithubFileByURL = async (fileUrl) => {
+    if (!fileUrl || !fileUrl.includes('raw.githubusercontent.com')) return;
+    
+    const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+    const GITHUB_USER = import.meta.env.VITE_GITHUB_USER;
+    const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO;
+    
+    try {
+      const prefix = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/`;
+      if (!fileUrl.startsWith(prefix)) return;
+      
+      const path = fileUrl.replace(prefix, '');
+      
+      const getUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+      const getRes = await fetch(getUrl, {
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
+      });
+      
+      if (!getRes.ok) return;
+      const fileData = await getRes.json();
+      
+      await fetch(getUrl, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `Delete ${path} via Admin Dashboard`,
+          sha: fileData.sha
+        })
+      });
+    } catch (err) {
+      console.error('Error deleting file from GitHub:', err);
+    }
+  };
+
+  const handleDeleteProject = async (project) => {
+    if (!window.confirm('Delete this project permanently? This will also remove the uploaded files from GitHub storage.')) return;
+    
+    setMessage({ text: 'Deleting project and associated files...', type: '' });
+    try {
+      if (project.images && Array.isArray(project.images)) {
+        for (const url of project.images) {
+          await deleteGithubFileByURL(url);
+        }
+      }
+      if (project.threeDVideo) await deleteGithubFileByURL(project.threeDVideo);
+      if (project.completedVideo) await deleteGithubFileByURL(project.completedVideo);
+      
+      await deleteDoc(doc(db, 'projects', project.id));
+      
+      fetchProjects();
+      setMessage({ text: 'Project and all associated files deleted successfully.', type: 'success' });
+    } catch (e) {
+      console.error('Error deleting project:', e);
+      setMessage({ text: 'Error deleting project.', type: 'error' });
+    }
+  };
+
   const removeImage = (index) => {
     const newImages = images.filter((_, i) => i !== index);
     setImages(newImages);
@@ -837,11 +897,7 @@ export default function AdminDashboard() {
                             </button>
                           </div>
                           <button 
-                            onClick={() => {
-                              if (window.confirm('Delete this project?')) {
-                                deleteDoc(doc(db, 'projects', project.id)).then(() => fetchProjects());
-                              }
-                            }}
+                            onClick={() => handleDeleteProject(project)}
                             style={{
                               background: 'transparent', color: 'rgba(239, 68, 68, 0.6)',
                               border: 'none', cursor: 'pointer', fontSize: '0.75rem', textDecoration: 'underline'
