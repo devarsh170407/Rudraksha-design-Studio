@@ -2,9 +2,10 @@
 
 .admin-layout {
   display: grid;
-  grid-template-columns: minmax(200px, 250px) 1fr;
+  grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
   gap: 2rem;
   align-items: start;
+  width: 100%;
 }
 
 .admin-sidebar {
@@ -12,6 +13,9 @@
   height: fit-content;
   position: sticky;
   top: 100px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-sidebar-list {
@@ -25,6 +29,9 @@
 
 .admin-main-content {
   padding: 3rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-sidebar-btn {
@@ -42,6 +49,8 @@
 .admin-form-row {
   display: flex;
   gap: 1.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .admin-form-group {
@@ -49,6 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .admin-label {
@@ -68,6 +78,7 @@
   font-size: 1rem;
   outline: none;
   transition: all var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .admin-input:focus, .admin-select:focus, .admin-textarea:focus {
@@ -75,11 +86,44 @@
   background: rgba(255, 255, 255, 0.07);
 }
 
+.admin-dropzone-large {
+  border: 2px dashed rgba(168, 85, 247, 0.4);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(168, 85, 247, 0.05);
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-dropzone-small {
+  border: 2px dashed rgba(168, 85, 247, 0.4);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(168, 85, 247, 0.05);
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
 /* Mobile Responsive */
 @media (max-width: 992px) {
   .admin-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
+    width: 100%;
+    margin: 0;
   }
 
   .admin-sidebar {
@@ -87,6 +131,8 @@
     top: 0;
     margin-bottom: 1rem;
     padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .admin-sidebar-list {
@@ -95,8 +141,9 @@
     padding-bottom: 0.5rem;
     scroll-snap-type: x mandatory;
     gap: 1rem;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    width: 100%;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .admin-sidebar-list::-webkit-scrollbar {
@@ -115,6 +162,8 @@
 
   .admin-main-content {
     padding: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .admin-form-row {

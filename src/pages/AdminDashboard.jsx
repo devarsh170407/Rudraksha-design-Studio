@@ -511,7 +511,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
+    <div className="container admin-container" style={{ padding: '2rem 1.5rem', minHeight: '80vh', maxWidth: '100vw', boxSizing: 'border-box', overflowX: 'hidden' }}>
       <h1 className="admin-title" style={{ fontSize: '2.5rem', marginBottom: '2.5rem' }}>Admin Dashboard</h1>
       
       <div className="admin-layout">
