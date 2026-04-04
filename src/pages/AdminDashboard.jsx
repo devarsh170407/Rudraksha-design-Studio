@@ -25,6 +25,7 @@ import {
   ChevronDown,
   Plus
 } from 'lucide-react';
+import './AdminDashboard.css';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', 'leads', or 'settings'
@@ -511,20 +512,19 @@ export default function AdminDashboard() {
 
   return (
     <div className="container" style={{ padding: '2rem 1.5rem', minHeight: '80vh' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '2.5rem' }}>Admin Dashboard</h1>
+      <h1 className="admin-title" style={{ fontSize: '2.5rem', marginBottom: '2.5rem' }}>Admin Dashboard</h1>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) 3fr', gap: '2rem' }}>
+      <div className="admin-layout">
         {/* Sidebar Nav */}
-        <aside className="glass-panel" style={{ padding: '1.5rem', height: 'fit-content', position: 'sticky', top: '100px' }}>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        <aside className="glass-panel admin-sidebar">
+          <ul className="admin-sidebar-list">
             <li>
               <button 
                 onClick={() => setActiveTab('add')}
+                className="admin-sidebar-btn"
                 style={{
-                  width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
                   background: activeTab === 'add' ? 'var(--color-accent-primary)' : 'transparent',
-                  color: activeTab === 'add' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-                  border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
+                  color: activeTab === 'add' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)'
                 }}>
                 + Add New Project
               </button>
@@ -532,11 +532,10 @@ export default function AdminDashboard() {
             <li>
               <button 
                 onClick={() => setActiveTab('manage')}
+                className="admin-sidebar-btn"
                 style={{
-                  width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
                   background: activeTab === 'manage' ? 'var(--color-accent-primary)' : 'transparent',
-                  color: activeTab === 'manage' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-                  border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
+                  color: activeTab === 'manage' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)'
                 }}>
                 📁 Manage Existing Designs
               </button>
@@ -544,11 +543,10 @@ export default function AdminDashboard() {
             <li>
               <button 
                 onClick={() => setActiveTab('leads')}
+                className="admin-sidebar-btn"
                 style={{
-                  width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
                   background: activeTab === 'leads' ? 'var(--color-accent-primary)' : 'transparent',
-                  color: activeTab === 'leads' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-                  border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
+                  color: activeTab === 'leads' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)'
                 }}>
                 📊 Business Leads
               </button>
@@ -556,11 +554,10 @@ export default function AdminDashboard() {
             <li>
               <button 
                 onClick={() => setActiveTab('settings')}
+                className="admin-sidebar-btn"
                 style={{
-                  width: '100%', textAlign: 'left', padding: '0.8rem 1rem', borderRadius: '10px',
                   background: activeTab === 'settings' ? 'var(--color-accent-primary)' : 'transparent',
-                  color: activeTab === 'settings' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-                  border: 'none', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s'
+                  color: activeTab === 'settings' ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)'
                 }}>
                 ⚙️ Site Settings
               </button>
@@ -569,7 +566,7 @@ export default function AdminDashboard() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="glass-panel" style={{ padding: '3rem' }}>
+        <main className="glass-panel admin-main-content">
           {message.text && (
             <div style={{ 
               padding: '1rem', 
