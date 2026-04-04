@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight, Sofa, Compass, Zap, Grid } from 'lucide-react';
 import './Home.css';
 
 const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
@@ -189,8 +189,12 @@ export default function Home() {
                   { icon: <Paintbrush size={32} />, label: "Expert Execution", color: "#00f5ff" },
                   { icon: <CheckCircle size={32} />, label: "Genuine Care", color: "#ff8c00" },
                   { icon: <Heart size={32} />, label: "Personalized Design", color: "#ff0040" },
+                  { icon: <Sofa size={32} />, label: "Custom Furniture", color: "#ff6b6b" },
                   { icon: <Shield size={32} />, label: "Quality Materials", color: "#007fff" },
-                  { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#00ff00" }
+                  { icon: <Compass size={32} />, label: "Vastu Compliant", color: "#4ecdc4" },
+                  { icon: <IndianRupee size={32} />, label: "Honest Pricing", color: "#00ff00" },
+                  { icon: <Zap size={32} />, label: "Smart Home", color: "#ffe66d" },
+                  { icon: <Grid size={32} />, label: "Detailed Planning", color: "#1a535c" }
                 ].map((item, idx) => (
                   <div key={`${i}-${idx}`} className="feature-item">
                     <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>

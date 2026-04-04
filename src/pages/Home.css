@@ -137,12 +137,11 @@
 .feature-icon {
   width: 65px;
   height: 65px;
-  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  transition: transform var(--transition-bounce), background 0.3s ease;
+  background: transparent;
+  transition: transform var(--transition-bounce);
 }
 
 .feature-item:hover .feature-icon {
