@@ -84,6 +84,16 @@ export default function AdminDashboard() {
         ...doc.data()
       }));
       setEstimates(docs);
+
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const uMap = {};
+      usersSnap.docs.forEach(doc => {
+        if (doc.data().phone) {
+          uMap[doc.id] = doc.data().phone;
+        }
+      });
+      setUsersMap(uMap);
+
     } catch (e) {
       console.error('Error fetching leads:', e);
       setMessage({ text: `Failed to load leads: ${e.message}`, type: 'error' });
