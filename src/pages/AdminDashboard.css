@@ -136,28 +136,22 @@
   }
 
   .admin-sidebar-list {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    scroll-snap-type: x mandatory;
-    gap: 1rem;
+    flex-direction: column;
+    overflow-x: visible;
+    gap: 0.5rem;
     width: 100%;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .admin-sidebar-list::-webkit-scrollbar {
-    display: none;
   }
 
   .admin-sidebar-list li {
-    scroll-snap-align: start;
-    flex: 0 0 auto;
+    width: 100%;
   }
 
   .admin-sidebar-btn {
-    white-space: nowrap;
-    padding: 0.6rem 1.2rem;
+    white-space: normal;
+    padding: 0.8rem 1.2rem;
+    text-align: left;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .admin-main-content {
