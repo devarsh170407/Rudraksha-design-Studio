@@ -39,7 +39,7 @@ function AppContent() {
       setLoading(false);
     }, (error) => {
       console.error("Error fetching launch status:", error);
-      setSiteStatus('live'); // Fallback to launched if error
+      setSiteStatus('launching_soon'); // Fallback to safe mode if error
       setLoading(false);
     });
 

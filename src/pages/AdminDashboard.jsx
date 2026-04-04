@@ -950,130 +950,106 @@ export default function AdminDashboard() {
                 <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Site Settings</h2>
               </div>
               
-              {!siteSettings.launchPermanent ? (
-                <div className="glass-panel" style={{ 
-                  padding: '4rem 2rem', 
-                  borderRadius: '24px',
-                  background: 'linear-gradient(145deg, rgba(59, 130, 246, 0.05) 0%, rgba(5, 5, 5, 0.8) 100%)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
-                  boxShadow: '0 10px 40px rgba(59, 130, 246, 0.05)',
-                  textAlign: 'center',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '2rem'
-                }}>
-                  <div style={{ padding: '1.5rem', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '50%', display: 'inline-block', marginBottom: '1rem' }}>
-                    <span style={{ fontSize: '3rem' }}>🌌</span>
-                  </div>
-                  <h3 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    Ready for the World?
-                  </h3>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem', maxWidth: '600px', lineHeight: 1.6 }}>
-                    Your site is currently in "Launching Soon" mode. When you are fully satisfied with your project galleries and ready to reveal your studio to the world, click the button below to initiate the Grand Launch.
-                  </p>
-                  <button 
-                    onClick={async () => {
-                      setIsLaunchingAnim(true);
-                      setTimeout(async () => {
-                        try {
-                          await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: true, status: 'live', launchPermanent: true });
-                          setSiteSettings({ ...siteSettings, isLaunched: true, status: 'live', launchPermanent: true });
-                        } catch(e) { console.error(e); }
-                        setIsLaunchingAnim(false);
-                      }, 4000);
-                    }}
-                    disabled={isLaunchingAnim}
-                    style={{ 
-                      padding: '1.5rem 3rem', fontSize: '1.2rem', borderRadius: '100px', 
-                      background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', border: 'none', 
-                      boxShadow: '0 10px 40px rgba(59, 130, 246, 0.4)', color: 'white',
-                      cursor: 'pointer', transition: 'transform 0.2s', fontWeight: 800, marginTop: '1rem'
-                    }}
-                  >
-                    {isLaunchingAnim ? 'INITIATING...' : '🚀 INITIATE GRAND LAUNCH'}
-                  </button>
-
-                  <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', fontSize: '0.9rem', color: 'var(--color-text-secondary)', maxWidth: '500px' }}>
-                    Note: Once the site is Grand Launched, the "Maintenance Mode" controls will be permanently unlocked here for future use.
-                  </div>
-                </div>
-              ) : (
-                <div className="glass-panel" style={{ 
-                  padding: '3rem', 
-                  borderRadius: '24px',
-                  background: siteSettings.isLaunched 
-                    ? 'linear-gradient(145deg, rgba(34, 197, 94, 0.05) 0%, rgba(5, 5, 5, 0.8) 100%)' 
-                    : 'linear-gradient(145deg, rgba(239, 68, 68, 0.05) 0%, rgba(5, 5, 5, 0.8) 100%)',
-                  border: `1px solid ${siteSettings.isLaunched ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-                  boxShadow: siteSettings.isLaunched ? '0 10px 40px rgba(34, 197, 94, 0.05)' : '0 10px 40px rgba(239, 68, 68, 0.05)',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    position: 'absolute', top: '-50%', right: '-10%', width: '300px', height: '300px', borderRadius: '50%',
-                    background: siteSettings.isLaunched ? 'var(--color-success)' : 'var(--color-error)',
-                    filter: 'blur(100px)', opacity: 0.15, zIndex: 0
-                  }} />
-                  
-                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2.5rem' }}>
-                      <div style={{ flex: 1, minWidth: '280px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 1.2rem', borderRadius: '100px', background: siteSettings.isLaunched ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)', color: siteSettings.isLaunched ? '#4ade80' : '#f87171', border: `1px solid ${siteSettings.isLaunched ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`, fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
-                          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: siteSettings.isLaunched ? '#4ade80' : '#f87171', boxShadow: `0 0 10px ${siteSettings.isLaunched ? '#4ade80' : '#f87171'}` }} />
-                          {siteSettings.isLaunched ? 'System Online' : 'System Offline'}
-                        </div>
-                        <h3 style={{ fontSize: '2.2rem', marginBottom: '0.8rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                          {siteSettings.isLaunched ? 'Global Launch Live' : 'Under Maintenance'}
-                        </h3>
-                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem', maxWidth: '450px', lineHeight: 1.7 }}>
-                          {siteSettings.isLaunched 
-                            ? 'Your website is completely public. Visitors can browse all projects, submit leads, and view interior plans seamlessly without restrictions.' 
-                            : 'The public website is locked down. Only administrators can bypass the maintenance screen to edit content securely in the background.'}
-                        </p>
+              <div className="glass-panel" style={{ 
+                padding: '3rem', 
+                borderRadius: '24px',
+                background: siteSettings.isLaunched 
+                  ? 'linear-gradient(145deg, rgba(34, 197, 94, 0.05) 0%, rgba(5, 5, 5, 0.8) 100%)' 
+                  : 'linear-gradient(145deg, rgba(239, 68, 68, 0.05) 0%, rgba(5, 5, 5, 0.8) 100%)',
+                border: `1px solid ${siteSettings.isLaunched ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                boxShadow: siteSettings.isLaunched ? '0 10px 40px rgba(34, 197, 94, 0.05)' : '0 10px 40px rgba(239, 68, 68, 0.05)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  position: 'absolute', top: '-50%', right: '-10%', width: '300px', height: '300px', borderRadius: '50%',
+                  background: siteSettings.isLaunched ? 'var(--color-success)' : 'var(--color-error)',
+                  filter: 'blur(100px)', opacity: 0.15, zIndex: 0
+                }} />
+                
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2.5rem' }}>
+                    <div style={{ flex: 1, minWidth: '280px' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 1.2rem', borderRadius: '100px', background: siteSettings.isLaunched ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)', color: siteSettings.isLaunched ? '#4ade80' : '#f87171', border: `1px solid ${siteSettings.isLaunched ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`, fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
+                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: siteSettings.isLaunched ? '#4ade80' : '#f87171', boxShadow: `0 0 10px ${siteSettings.isLaunched ? '#4ade80' : '#f87171'}` }} />
+                        {siteSettings.isLaunched ? 'System Online' : 'System Offline'}
                       </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flexShrink: 0 }}>
-                        <button 
-                          onClick={toggleLaunch}
-                          disabled={uploading}
-                          className={siteSettings.isLaunched ? "btn-outline" : "btn-primary"}
-                          style={{
-                            padding: '1.2rem 2.5rem',
-                            borderRadius: '16px',
-                            fontWeight: 800,
-                            fontSize: '1.1rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.8rem',
-                            minWidth: '220px',
-                            border: siteSettings.isLaunched ? '2px solid rgba(239,68,68,0.5)' : undefined,
-                            color: siteSettings.isLaunched ? '#f87171' : undefined,
-                            background: siteSettings.isLaunched ? 'rgba(239,68,68,0.05)' : undefined,
-                            boxShadow: siteSettings.isLaunched ? 'none' : '0 10px 30px rgba(37, 99, 235, 0.5)',
-                            transition: 'all 0.3s ease'
-                          }}
-                        >
-                          {siteSettings.isLaunched ? (
-                             <>⚙️ Enter Maintenance</>
-                          ) : (
-                             <>🚀 Relaunch to Public</>
-                          )}
-                        </button>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', textAlign: 'center', opacity: 0.8 }}>
-                           {siteSettings.isLaunched ? 'Hides site from visitors' : 'Makes site public instantly'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div style={{ padding: '1.5rem', background: 'rgba(59, 130, 246, 0.08)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
-                      <div style={{ background: 'linear-gradient(135deg, #2563eb, #60a5fa)', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'bold', fontSize: '1.1rem' }}>i</div>
-                      <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.9)', margin: 0, lineHeight: 1.6 }}>
-                        <strong style={{ color: '#60a5fa', fontWeight: 700 }}>Administrator Access:</strong> Because you are currently logged in to your Admin portal, you will automatically bypass the maintenance screen. To view the maintenance screen exactly as public visitors see it, open your website in an <strong style={{ color: 'white' }}>Incognito Window</strong> or log out first.
+                      <h3 style={{ fontSize: '2.2rem', marginBottom: '0.8rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                        {siteSettings.isLaunched ? 'Global Launch Live' : (siteSettings.launchPermanent ? 'Under Maintenance' : 'Launching Soon')}
+                      </h3>
+                      <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem', maxWidth: '450px', lineHeight: 1.7 }}>
+                        {siteSettings.isLaunched 
+                          ? 'Your website is completely public. Visitors can browse all projects, submit leads, and view interior plans seamlessly without restrictions.' 
+                          : `The public website is locked down. Only administrators can bypass the "${siteSettings.launchPermanent ? 'Under Maintenance' : 'Launching Soon'}" screen.`}
                       </p>
                     </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flexShrink: 0 }}>
+                      <button 
+                        onClick={toggleLaunch}
+                        disabled={uploading}
+                        className={siteSettings.isLaunched ? "btn-outline" : "btn-primary"}
+                        style={{
+                          padding: '1.2rem 2.5rem',
+                          borderRadius: '16px',
+                          fontWeight: 800,
+                          fontSize: '1.1rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.8rem',
+                          minWidth: '220px',
+                          border: siteSettings.isLaunched ? '2px solid rgba(239,68,68,0.5)' : undefined,
+                          color: siteSettings.isLaunched ? '#f87171' : undefined,
+                          background: siteSettings.isLaunched ? 'rgba(239,68,68,0.05)' : undefined,
+                          boxShadow: siteSettings.isLaunched ? 'none' : '0 10px 30px rgba(37, 99, 235, 0.5)',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        {siteSettings.isLaunched ? (
+                           <>⚙️ Enter Maintenance</>
+                        ) : (
+                           <>⚡ Launch to Public</>
+                        )}
+                      </button>
+                    </div>
                   </div>
+
+                  <div style={{ padding: '1.5rem', background: 'rgba(59, 130, 246, 0.08)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #2563eb, #60a5fa)', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'bold', fontSize: '1.1rem' }}>i</div>
+                    <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.9)', margin: 0, lineHeight: 1.6 }}>
+                      <strong style={{ color: '#60a5fa', fontWeight: 700 }}>Administrator Access:</strong> Because you are logged in, you bypass the maintenance screen. To view what the visitors see, open an <strong style={{ color: 'white' }}>Incognito Window</strong>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {!siteSettings.launchPermanent && (
+                <div style={{ marginTop: '2rem', padding: '2rem', background: 'rgba(139, 92, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(139, 92, 246, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                   <div style={{ flex: 1, minWidth: '300px' }}>
+                     <h4 style={{ margin: 0, fontSize: '1.2rem', marginBottom: '0.5rem', color: '#a78bfa' }}>Permanent Launch</h4>
+                     <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.95rem', maxWidth: '600px', lineHeight: 1.5 }}>
+                       Ready to officially announce your agency? Clicking this will permanently lock your site into production mode. 
+                       Turning the site offline afterwards will accurately display a "Maintenance" poster instead of a "Launching Soon" poster!
+                     </p>
+                   </div>
+                   <button 
+                     onClick={async () => {
+                       setIsLaunchingAnim(true);
+                       setTimeout(async () => {
+                         try {
+                           await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: true, status: 'live', launchPermanent: true });
+                           setSiteSettings({ ...siteSettings, isLaunched: true, status: 'live', launchPermanent: true });
+                         } catch(e) { console.error(e); }
+                         setIsLaunchingAnim(false);
+                       }, 4000);
+                     }}
+                     disabled={isLaunchingAnim}
+                     className="btn-primary" 
+                     style={{ background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', border: 'none', padding: '1.2rem 2.5rem', fontWeight: 800, fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(139, 92, 246, 0.3)' }}
+                   >
+                     🚀 INITIATE PERMANENT LAUNCH
+                   </button>
                 </div>
               )}
             </div>
