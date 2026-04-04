@@ -68,15 +68,18 @@
 
 /* About Section */
 .about-section {
-  padding: 10rem 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10rem 2rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 6rem;
   align-items: center;
 }
 
 .about-image-container {
   position: relative;
+  width: 100%;
 }
 
 .about-image {
@@ -296,7 +299,8 @@
 @media (max-width: 1024px) {
   .about-section {
     grid-template-columns: 1fr;
-    gap: 4rem;
+    gap: 5rem;
+    padding: 8rem 2rem;
   }
   .hero-section {
     padding-top: 5rem;
