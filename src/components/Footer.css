@@ -230,4 +230,13 @@
   .estimate-section {
     padding: 5rem 1.5rem;
   }
+  .float-btn {
+    width: 48px;
+    height: 48px;
+  }
+  .floating-actions {
+    bottom: 1.2rem;
+    right: 1.2rem;
+    gap: 1rem;
+  }
 }

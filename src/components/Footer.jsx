@@ -216,8 +216,8 @@ export default function Footer() {
             </p>
             <div className="footer-social-links">
               <a href="https://www.instagram.com/rudraksha_design_studio?igsh=MXFhNmdubHU2NW0zOA==" target="_blank" rel="noopener noreferrer" className="footer-social-icon"><Instagram size={20} /></a>
+              <a href="https://wa.me/919898384133" target="_blank" rel="noopener noreferrer" className="footer-social-icon"><WhatsAppLogoFull size={20} /></a>
               <a href="#" className="footer-social-icon"><Facebook size={20} /></a>
-              <a href="#" className="footer-social-icon"><Twitter size={20} /></a>
             </div>
           </div>
 
