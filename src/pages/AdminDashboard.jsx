@@ -118,13 +118,35 @@ export default function AdminDashboard() {
 
   const toggleLaunch = async () => {
     const newStatus = !siteSettings.isLaunched;
+
+    if (newStatus === true) {
+      // 🚀 Grand Launch Sequence
+      setIsLaunchingAnim(true);
+      setTimeout(async () => {
+        setUploading(true);
+        try {
+          await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: true, status: 'live' });
+          setSiteSettings({ ...siteSettings, isLaunched: true, status: 'live' });
+          setMessage({ text: 'Site is now LIVE', type: 'success' });
+        } catch (e) {
+          console.error('Error toggling launch:', e);
+          setMessage({ text: 'Error updating launch status.', type: 'error' });
+        } finally {
+          setTimeout(() => setMessage({text: '', type: ''}), 3000);
+          setUploading(false);
+          setIsLaunchingAnim(false);
+        }
+      }, 12000); // 12 Seconds Cinematic Delay
+      return;
+    }
+
+    // ⚙️ Normal Offline Toggle
     setUploading(true);
     const offlineStatus = siteSettings.launchPermanent ? 'maintenance' : 'launching_soon';
-    const finalStatus = newStatus ? 'live' : offlineStatus;
     try {
-      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: newStatus, status: finalStatus });
-      setSiteSettings({ ...siteSettings, isLaunched: newStatus, status: finalStatus });
-      setMessage({ text: `Site is now ${finalStatus === 'live' ? 'LIVE' : (finalStatus === 'maintenance' ? 'UNDER MAINTENANCE' : 'LAUNCHING SOON')}`, type: 'success' });
+      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, isLaunched: false, status: offlineStatus });
+      setSiteSettings({ ...siteSettings, isLaunched: false, status: offlineStatus });
+      setMessage({ text: `Site is now ${offlineStatus === 'maintenance' ? 'UNDER MAINTENANCE' : 'LAUNCHING SOON'}`, type: 'success' });
     } catch (e) {
       console.error('Error toggling launch:', e);
       setMessage({ text: 'Error updating launch status.', type: 'error' });
@@ -1198,6 +1220,156 @@ export default function AdminDashboard() {
               0%, 100% { opacity: 1; }
               50% { opacity: 0.7; }
             }
+          `}</style>
+        </div>
+      )}
+
+      {/* ── MASSIVE CURTAIN LAUNCH ANIMATION OVERLAY ── */}
+      {isLaunchingAnim && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          zIndex: 100000, 
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          background: '#050505',
+          overflow: 'hidden',
+          fontFamily: "'Inter', sans-serif"
+        }}>
+          {/* THE CURTAINS */}
+          <div className="curtain left-curtain" />
+          <div className="curtain right-curtain" />
+          
+          {/* SPOTLIGHTS & DUST */}
+          <div className="spotlight spot-left" />
+          <div className="spotlight spot-right" />
+          <div className="dust-particles" />
+
+          {/* INNER CONTENT - STAGE */}
+          <div className="stage-content" style={{ position: 'relative', zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="launch-rocket-container">
+               <span className="rocket-emoji" style={{ display: 'inline-block', filter: 'drop-shadow(0 20px 30px rgba(239,68,68,0.6))' }}>🚀</span>
+            </div>
+
+            <h1 className="grand-launch-title">READY TO INSPIRE</h1>
+            <p className="grand-launch-subtitle">Deploying Rudraksha Design Studio to global servers</p>
+            
+            <div className="system-log" style={{ width: '400px', height: '100px', margin: '3rem auto 0', textAlign: 'left', color: '#34d399', fontFamily: 'monospace', fontSize: '0.9rem', position: 'relative' }}>
+               <div className="log-line line1">{'>'} Connecting to mainframe... [OK]</div>
+               <div className="log-line line2">{'>'} Bypassing firewalls... [OK]</div>
+               <div className="log-line line3">{'>'} Uploading ultra-HD galleries... [OK]</div>
+               <div className="log-line line4">{'>'} Initializing global CDN nodes... [OK]</div>
+               <div className="log-line line5">{'>'} LAUNCH SEQUENCE INITIATED...</div>
+            </div>
+
+            <div style={{ width: '400px', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', marginTop: '2rem', overflow: 'hidden' }}>
+               <div style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, transparent, #eab308, #ef4444)', animation: 'grandProgress 12s cubic-bezier(0.1, 0.7, 1.0, 0.1) forwards' }} />
+            </div>
+          </div>
+
+          <style>{`
+            .curtain {
+              position: absolute;
+              top: 0;
+              width: 50vw;
+              height: 100vh;
+              background: linear-gradient(90deg, #500 0%, #a00 20%, #700 40%, #c00 60%, #800 80%, #400 100%);
+              background-size: 100px 100%;
+              box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+              z-index: 50;
+            }
+            .left-curtain {
+              left: 0;
+              transform-origin: left top;
+              border-right: 5px solid #200;
+              animation: pullCurtainLeft 12s forwards cubic-bezier(0.8, 0, 0.2, 1);
+            }
+            .right-curtain {
+              right: 0;
+              transform-origin: right top;
+              border-left: 5px solid #200;
+              animation: pullCurtainRight 12s forwards cubic-bezier(0.8, 0, 0.2, 1);
+            }
+
+            @keyframes pullCurtainLeft {
+              0%, 15% { transform: scaleX(1); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+              45% { transform: scaleX(0.1); box-shadow: 50px 0 30px rgba(0,0,0,0.5); }
+              90%, 100% { transform: scaleX(0); opacity: 0; }
+            }
+            @keyframes pullCurtainRight {
+              0%, 15% { transform: scaleX(1); box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+              45% { transform: scaleX(0.1); box-shadow: -50px 0 30px rgba(0,0,0,0.5); }
+              90%, 100% { transform: scaleX(0); opacity: 0; }
+            }
+
+            .spotlight {
+              position: absolute;
+              top: -50px;
+              width: 300px;
+              height: 120vh;
+              background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+              clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+              z-index: 5;
+              opacity: 0;
+            }
+            .spot-left { left: 10%; transform-origin: top center; animation: spotlightsOn 1s 2s forwards, sweepLeft 8s infinite alternate ease-in-out; }
+            .spot-right { right: 10%; transform-origin: top center; animation: spotlightsOn 1s 2s forwards, sweepRight 8s infinite alternate ease-in-out; }
+
+            @keyframes spotlightsOn { to { opacity: 1; } }
+            @keyframes sweepLeft { 0% { transform: rotate(15deg); } 100% { transform: rotate(35deg); } }
+            @keyframes sweepRight { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-35deg); } }
+
+            .launch-rocket-container {
+              position: relative;
+              margin-bottom: 3rem;
+              opacity: 0;
+              animation: rocketEntry 2s 3s forwards cubic-bezier(0.1, 0.8, 0.2, 1);
+            }
+            .rocket-emoji {
+              font-size: 8rem;
+              animation: rocketShake 0.1s 7s infinite, rocketBlastOff 3s 9s forwards cubic-bezier(0.6, -0.28, 0.735, 0.045);
+            }
+
+            @keyframes rocketEntry { from { transform: translateY(100px) scale(0.5); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+            @keyframes rocketShake { 0% { transform: translate(1px, 1px) rotate(0deg); } 50% { transform: translate(-1px, -2px) rotate(-1deg); } 100% { transform: translate(-3px, 0px) rotate(1deg); } }
+            @keyframes rocketBlastOff { 
+              0% { transform: translateY(0) scale(1); }
+              30% { transform: translateY(50px) scale(0.9); }
+              100% { transform: translateY(-2000px) scale(2); opacity: 0; }
+            }
+
+            .grand-launch-title {
+              font-size: 4rem;
+              background: linear-gradient(to right, #ffd700, #ff8c00);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              margin: 0;
+              opacity: 0;
+              animation: fadeInScale 2s 3.5s forwards;
+              letter-spacing: 0.2em;
+              text-transform: uppercase;
+              text-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+            }
+            .grand-launch-subtitle {
+              color: #cbd5e1;
+              font-size: 1.4rem;
+              margin-top: 1rem;
+              opacity: 0;
+              animation: fadeInScale 2s 4s forwards;
+              font-weight: 300;
+            }
+
+            @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+            .log-line { opacity: 0; margin-bottom: 0.5rem; }
+            .line1 { animation: typeLine 0.5s 4.5s forwards; }
+            .line2 { animation: typeLine 0.5s 5.2s forwards; }
+            .line3 { animation: typeLine 0.5s 6.0s forwards; }
+            .line4 { animation: typeLine 0.5s 6.8s forwards; }
+            .line5 { animation: typeLine 0.5s 7.5s forwards, flashWarning 0.5s 8s infinite alternate; color: #ef4444; font-weight: bold; }
+
+            @keyframes typeLine { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+            @keyframes flashWarning { to { opacity: 0.5; text-shadow: 0 0 20px red; } }
+
+            @keyframes grandProgress { 0% { width: 0%; } 85% { width: 90%; } 100% { width: 100%; } }
           `}</style>
         </div>
       )}
