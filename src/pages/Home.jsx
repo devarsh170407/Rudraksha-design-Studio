@@ -266,7 +266,7 @@ export default function Home() {
         )}
       </div>
       {/* ── FAST LAUNCH WIDGET (ADMIN ONLY) ── */}
-      {isAdmin && siteSettings && !siteSettings.launchPermanent && siteSettings.status !== 'live' && (
+      {isAdmin && siteSettings && !siteSettings.launchPermanent && (
         <div className="reveal" style={{
            position: 'fixed', bottom: '2rem', left: '2rem', zIndex: 9999,
            background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)',
@@ -274,10 +274,12 @@ export default function Home() {
            boxShadow: '0 10px 40px rgba(0,0,0,0.5)', maxWidth: '300px'
         }}>
            <h4 style={{ margin: 0, marginBottom: '0.5rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-             <AlertTriangle size={18} /> Hidden from Public
+             <AlertTriangle size={18} /> Launch Control
            </h4>
            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1.2rem', lineHeight: '1.4' }}>
-             Your site is currently in {siteSettings.status === 'maintenance' ? 'maintenance' : 'launching soon'} mode.
+             Your site is currently: <strong style={{color: 'white'}}>{siteSettings.status === 'live' ? 'LIVE' : (siteSettings.status === 'maintenance' ? 'MAINTENANCE' : 'LAUNCHING SOON')}</strong>.
+             <br/><br/>
+             You can launch the site from here, or hide this widget permanently in Admin Settings.
            </p>
            <button 
              onClick={handleQuickLaunch}
