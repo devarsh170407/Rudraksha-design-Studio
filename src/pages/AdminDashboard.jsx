@@ -74,6 +74,24 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchLeads = async () => {
+    setFetching(true);
+    try {
+      const q = query(collection(db, 'estimates'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const docs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEstimates(docs);
+    } catch (e) {
+      console.error('Error fetching leads:', e);
+      setMessage({ text: `Failed to load leads: ${e.message}`, type: 'error' });
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const fetchSettings = async () => {
     try {
       const siteDoc = await getDocs(query(collection(db, 'settings')));
