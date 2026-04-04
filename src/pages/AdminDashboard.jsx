@@ -138,9 +138,13 @@ export default function AdminDashboard() {
     const newPerm = !siteSettings.launchPermanent;
     setUploading(true);
     try {
-      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, launchPermanent: newPerm });
-      setSiteSettings({ ...siteSettings, launchPermanent: newPerm });
-      setMessage({ text: `Permanent Launch is now ${newPerm ? 'Enabled' : 'Disabled'}`, type: 'success' });
+      const updates = { launchPermanent: newPerm };
+      if (!siteSettings.isLaunched) {
+        updates.status = newPerm ? 'maintenance' : 'launching_soon';
+      }
+      await setDoc(doc(db, 'settings', 'site'), { ...siteSettings, ...updates });
+      setSiteSettings({ ...siteSettings, ...updates });
+      setMessage({ text: `Under Maintenance function ${newPerm ? 'Enabled' : 'Disabled'}`, type: 'success' });
     } catch (e) {
       console.error('Error toggling permanent config:', e);
       setMessage({ text: 'Error updating permanent status.', type: 'error' });
