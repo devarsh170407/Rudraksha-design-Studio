@@ -15,27 +15,35 @@ import Maintenance from './pages/Maintenance';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import GlobalLaunchOverlay from './components/GlobalLaunchOverlay';
 
 function AppContent() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const [siteStatus, setSiteStatus] = useState('launching_soon'); // 'live', 'maintenance', 'launching_soon'
   const [loading, setLoading] = useState(true);
+  const [isGlobalLaunching, setIsGlobalLaunching] = useState(false);
+  const prevStatusRef = React.useRef('loading');
 
   useEffect(() => {
     // Listen to site settings in Firestore
     const unsub = onSnapshot(doc(db, 'settings', 'site'), (doc) => {
+      let currentFirebaseStatus = 'launching_soon';
       if (doc.exists()) {
         const data = doc.data();
         if (data.status) {
-          setSiteStatus(data.status);
+          currentFirebaseStatus = data.status;
         } else if (data.isLaunched !== undefined) {
-          setSiteStatus(data.isLaunched ? 'live' : 'launching_soon');
-        } else {
-          setSiteStatus('launching_soon');
+          currentFirebaseStatus = data.isLaunched ? 'live' : 'launching_soon';
         }
-      } else {
-        setSiteStatus('launching_soon');
       }
+
+      // If transition from launching_soon/maintenance -> live
+      if (prevStatusRef.current !== 'loading' && prevStatusRef.current !== 'live' && currentFirebaseStatus === 'live') {
+         setIsGlobalLaunching(true);
+      }
+      
+      prevStatusRef.current = currentFirebaseStatus;
+      setSiteStatus(currentFirebaseStatus);
       setLoading(false);
     }, (error) => {
       console.error("Error fetching launch status:", error);
@@ -61,6 +69,7 @@ function AppContent() {
   return (
     <Router>
       <ScrollToTop />
+      {isGlobalLaunching && <GlobalLaunchOverlay onComplete={() => setIsGlobalLaunching(false)} />}
       {!showSplash && <Navbar />}
       <main style={{ minHeight: '80vh' }}>
         <Routes>
