@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
-import { Home, Compass, User as UserIcon, LogOut, Settings, Menu, X } from 'lucide-react';
+import { Home, LogOut, Shield, Map, LayoutGrid, User as UserIcon, Menu, X } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar() {
   const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -23,7 +24,7 @@ export default function Navbar() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <nav className="navbar glass-panel">
+    <nav className={`navbar ${isMenuOpen ? 'menu-open' : ''}`}>
       <div className="navbar-logo-container">
         <Link to="/" className="navbar-logo-link">
           <img src="/logomain.png" alt="Rudraksha Logo" className="navbar-logo-image" />
@@ -36,7 +37,7 @@ export default function Navbar() {
       <div className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
         <Link 
           to="/" 
-          className="navbar-link" 
+          className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`} 
           onClick={() => setIsMenuOpen(false)}
         >
           <Home size={18} /> Home
@@ -44,7 +45,7 @@ export default function Navbar() {
         <button 
           onClick={() => {
             setIsMenuOpen(false);
-            if (window.location.pathname !== '/') {
+            if (location.pathname !== '/') {
               navigate('/?scroll=about');
             } else {
               const el = document.getElementById('about');
@@ -53,36 +54,25 @@ export default function Navbar() {
           }} 
           className="navbar-link"
         >
-          <Compass size={18} style={{ transform: 'rotate(90deg)' }} /> About
+          <Map size={18} /> About
         </button>
-        <button 
-          onClick={() => {
-            setIsMenuOpen(false);
-            if (window.location.pathname !== '/') {
-              navigate('/projects');
-            } else {
-              const el = document.getElementById('explore-gallery');
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-              } else {
-                navigate('/projects');
-              }
-            }
-          }} 
-          className="navbar-link"
+        <Link 
+          to="/projects" 
+          className={`navbar-link ${location.pathname === '/projects' ? 'active' : ''}`} 
+          onClick={() => setIsMenuOpen(false)}
         >
-          <Compass size={18} /> Explore
-        </button>
+          <LayoutGrid size={18} /> Explore
+        </Link>
         
         {currentUser ? (
           <>
             {isAdmin && (
               <Link 
                 to="/admin" 
-                className="navbar-link"
+                className={`navbar-link ${location.pathname === '/admin' ? 'active' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Settings size={18} /> Admin
+                <Shield size={18} /> Admin
               </Link>
             )}
             <button 
@@ -92,13 +82,13 @@ export default function Navbar() {
               }} 
               className="navbar-link logout-btn"
             >
-              <LogOut size={16} /> Logout
+              <LogOut size={18} /> Logout
             </button>
           </>
         ) : (
           <Link 
             to="/login" 
-            className="btn-primary"
+            className="navbar-link login-link"
             onClick={() => setIsMenuOpen(false)}
           >
             <UserIcon size={18} /> Login

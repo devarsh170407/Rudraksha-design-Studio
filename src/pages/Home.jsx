@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
-import { collection, getDocs, query, orderBy, doc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight, Sofa, Compass, Zap, Grid, AlertTriangle } from 'lucide-react';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { Clock, Shield, IndianRupee, Paintbrush, Heart, Sparkles, Layers, CheckCircle, ChevronLeft, ChevronRight, Sofa, Compass, Zap, Grid } from 'lucide-react';
 import './Home.css';
 
 const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
@@ -16,15 +17,23 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
   };
 
   return (
-    <section key={category} className="category-row reveal">
+    <motion.section 
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false, amount: 0.1 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="category-row"
+    >
       <div className="category-header">
         <h3 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{category} <span className="gold-text">Designs</span></h3>
-        <button
+        <motion.button
+          whileHover={{ x: 5 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => onSeeAll(category)}
           className="see-all-btn"
         >
           See All →
-        </button>
+        </motion.button>
       </div>
       
       <div className="carousel-container">
@@ -37,28 +46,41 @@ const CategoryRow = ({ category, catProjects, onProjectClick, onSeeAll }) => {
 
         <div ref={scrollRef} className="carousel-track hide-scrollbar">
           {catProjects.map((project, i) => (
-            <div key={project.id} onClick={() => onProjectClick(project.id)} className="project-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+            <motion.div 
+              key={project.id} 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ delay: i * 0.05 }}
+              whileHover={{ y: -10, transition: { duration: 0.3 } }}
+              onClick={() => onProjectClick(project.id)} 
+              className="project-card"
+            >
               <div className="project-card-image" style={{ backgroundImage: `url(${project.displayThumbnail || 'https://via.placeholder.com/400x300?text=No+Image'})` }} />
               <div className="project-card-overlay">
                 <h4 className="project-card-name">{project.title}</h4>
                 <p className="project-card-tag">{project.style}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
 export default function Home() {
   const [projects, setProjects]       = useState([]);
   const [loading, setLoading]         = useState(true);
-  const { currentUser, isAdmin }      = useAuth();
+  const { currentUser }               = useAuth();
   const navigate                      = useNavigate();
   const [searchParams]                = useSearchParams();
   const [filterRoom,  setFilterRoom]  = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
+
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const opacityHero = useTransform(scrollY, [0, 300], [1, 0]);
 
   useEffect(() => {
     const cat = searchParams.get('category');
@@ -104,62 +126,123 @@ export default function Home() {
     else navigate(`/project/${id}`);
   };
 
+  const featureItems = [
+    { icon: <Sparkles size={44} />, label: "Modern Aesthetics", color: "#ffdf00" },
+    { icon: <Clock size={44} />, label: "Timely Delivery", color: "#ff007f" },
+    { icon: <Layers size={44} />, label: "3D Visuals", color: "#bf00ff" },
+    { icon: <Paintbrush size={44} />, label: "Expert Execution", color: "#00f5ff" },
+    { icon: <CheckCircle size={44} />, label: "Genuine Care", color: "#ff8c00" },
+    { icon: <Heart size={44} />, label: "Personalized Design", color: "#ff0040" },
+    { icon: <Sofa size={44} />, label: "Custom Furniture", color: "#ff6b6b" },
+    { icon: <Shield size={44} />, label: "Quality Materials", color: "#007fff" },
+    { icon: <Compass size={44} />, label: "Vastu Compliant", color: "#4ecdc4" },
+    { icon: <IndianRupee size={44} />, label: "Honest Pricing", color: "#00ff00" },
+    { icon: <Zap size={44} />, label: "Smart Home", color: "#ffe66d" },
+    { icon: <Grid size={44} />, label: "Detailed Planning", color: "#1a535c" }
+  ];
+
   return (
     <div className="home-container">
       {/* ── HERO BANNER ── */}
       <section className="hero-section">
-        <div className="hero-bg" />
+        <motion.div 
+          style={{ y: y1 }}
+          className="hero-bg" 
+        />
         <div className="hero-overlay" />
         
-        <div className="hero-content slide-right">
-          <div className="hero-badge">
+        <motion.div style={{ opacity: opacityHero }} className="hero-content">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="hero-badge"
+          >
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
             Premium Interior Design Studio
-          </div>
+          </motion.div>
           
-          <h1 className="hero-title">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="hero-title"
+          >
             Interiors you'll<br />
             <span className="gold-text">absolutely love.</span>
-          </h1>
+          </motion.h1>
           
-          <p className="hero-description">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="hero-description"
+          >
             From modular kitchens to luxury living rooms — we craft bespoke spaces that reflect your unique lifestyle.
-          </p>
+          </motion.p>
           
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-            <button
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               className="btn-primary"
               onClick={() => { const el = document.getElementById('about'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
             >
               Start Your Journey
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               className="btn-gold"
               onClick={() => navigate(currentUser ? '/projects' : '/login')}
             >
               {currentUser ? 'Explore Gallery' : 'Consult Now'}
-            </button>
-          </div>
-        </div>
-
-
+            </motion.button>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ── ABOUT US SECTION ── */}
       <section id="about" className="about-section">
-        <div className="about-image-container reveal">
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 0.8 }}
+          className="about-image-container"
+        >
           <img 
             src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
             alt="Studio Interior" 
             className="about-image"
           />
-          <div className="glass-panel about-floating-card reveal" style={{ animationDelay: '0.3s' }}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="glass-panel about-floating-card"
+          >
             <h3 className="gold-text" style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>100+</h3>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Dreams Realized</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="slide-right">
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 0.8 }}
+        >
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
             <div style={{ width: '50px', height: '2px', background: 'var(--color-accent-primary)' }} />
             <span style={{ color: 'var(--color-accent-primary)', fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase' }}>Our Vision</span>
@@ -172,54 +255,43 @@ export default function Home() {
           <p className="hero-description">
             At Rudraksha Design Studio, we are a fresh team of designers fueled by passion and a commitment to excellence. We believe that your home should be a direct reflection of your personality and aspirations.
           </p>
-          
+        </motion.div>
+      </section>
 
+      {/* ── WHY CHOOSE US ── */}
+      <section className="why-choose-section">
+        <div className="section-header-centered">
+          <div className="hero-badge" style={{ margin: '0 auto 1.5rem' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
+            The Rudraksha Advantage
+          </div>
+          <h2 className="section-title-large">
+            Why Choose <span className="gold-text">Rudraksha?</span>
+          </h2>
+          <p className="section-subtitle">
+            We don't just design rooms; we engineer lifestyles with a focus on quality, transparency, and your unique story.
+          </p>
         </div>
       </section>
-        {/* ── WHY CHOOSE US ── */}
-        <section className="why-choose-section reveal">
-          <div className="section-header-centered">
-            <div className="hero-badge" style={{ margin: '0 auto 1.5rem' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
-              The Rudraksha Advantage
-            </div>
-            <h2 className="section-title-large">
-              Why Choose <span className="gold-text">Rudraksha?</span>
-            </h2>
-            <p className="section-subtitle">
-              We don't just design rooms; we engineer lifestyles with a focus on quality, transparency, and your unique story.
-            </p>
-          </div>
-        </section>
 
-        <div className="features-scroller">
-          <div className="features-track">
-            {/* Double the list for seamless infinite scroll */}
-            {[...Array(2)].map((_, i) => (
-              <React.Fragment key={i}>
-                {[
-                  { icon: <Sparkles size={44} />, label: "Modern Aesthetics", color: "#ffdf00" },
-                  { icon: <Clock size={44} />, label: "Timely Delivery", color: "#ff007f" },
-                  { icon: <Layers size={44} />, label: "3D Visuals", color: "#bf00ff" },
-                  { icon: <Paintbrush size={44} />, label: "Expert Execution", color: "#00f5ff" },
-                  { icon: <CheckCircle size={44} />, label: "Genuine Care", color: "#ff8c00" },
-                  { icon: <Heart size={44} />, label: "Personalized Design", color: "#ff0040" },
-                  { icon: <Sofa size={44} />, label: "Custom Furniture", color: "#ff6b6b" },
-                  { icon: <Shield size={44} />, label: "Quality Materials", color: "#007fff" },
-                  { icon: <Compass size={44} />, label: "Vastu Compliant", color: "#4ecdc4" },
-                  { icon: <IndianRupee size={44} />, label: "Honest Pricing", color: "#00ff00" },
-                  { icon: <Zap size={44} />, label: "Smart Home", color: "#ffe66d" },
-                  { icon: <Grid size={44} />, label: "Detailed Planning", color: "#1a535c" }
-                ].map((item, idx) => (
-                  <div key={`${i}-${idx}`} className="feature-item">
-                    <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>
-                    <span className="feature-label">{item.label}</span>
-                  </div>
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
+      <div className="features-scroller">
+        <div className="features-track">
+          {[...Array(2)].map((_, i) => (
+            <React.Fragment key={i}>
+              {featureItems.map((item, idx) => (
+                <motion.div 
+                  key={`${i}-${idx}`} 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="feature-item"
+                >
+                  <div className="feature-icon" style={{ borderColor: item.color, color: item.color }}>{item.icon}</div>
+                  <span className="feature-label">{item.label}</span>
+                </motion.div>
+              ))}
+            </React.Fragment>
+          ))}
         </div>
+      </div>
 
       {/* ── GALLERY SECTION ── */}
       <div id="explore-gallery" style={{ padding: '8rem 5% 4rem', minHeight: '60vh' }}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../firebase';
 import { 
   collection, 
@@ -552,8 +553,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="container admin-container" style={{ padding: '2rem 1.5rem', minHeight: '80vh', maxWidth: '100vw', boxSizing: 'border-box', overflowX: 'hidden' }}>
-      <h1 className="admin-title" style={{ fontSize: '2.5rem', marginBottom: '2.5rem' }}>Admin Dashboard</h1>
+    <div className="container admin-container" style={{ padding: '0 1.5rem 2rem', minHeight: '80vh', maxWidth: '100vw', boxSizing: 'border-box', overflowX: 'hidden' }}>
+      <h1 className="admin-title" style={{ fontSize: '2.2rem', marginBottom: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>Admin Dashboard</h1>
       
       <div className="admin-layout">
         {/* Sidebar Nav */}
@@ -608,22 +609,34 @@ export default function AdminDashboard() {
 
         {/* Main Content Area */}
         <main className="glass-panel admin-main-content">
-          {message.text && (
-            <div style={{ 
-              padding: '1rem', 
-              marginBottom: '2rem', 
-              borderRadius: '8px', 
-              background: message.type === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-              color: message.type === 'error' ? 'var(--color-error)' : 'var(--color-success)',
-              border: `1px solid ${message.type === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}`
-            }}>
-              {message.text}
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {message.text && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                style={{ 
+                  padding: '1rem', 
+                  marginBottom: '2rem', 
+                  borderRadius: '12px', 
+                  background: message.type === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                  color: message.type === 'error' ? 'var(--color-error)' : 'var(--color-success)',
+                  border: `1px solid ${message.type === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}`,
+                  fontWeight: 600, textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                }}
+              >
+                {message.text}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {activeTab === 'add' ? (
-            <>
-              <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>Publish New Design</h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 style={{ marginBottom: '2rem', fontSize: '1.8rem', fontWeight: 700 }}>Publish New Design</h2>
               <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 <div className="admin-form-group">
                   <label className="admin-label">Project Title</label>
@@ -755,7 +768,7 @@ export default function AdminDashboard() {
                   {uploading ? `Uploading... ${Math.round(progress)}%` : 'Publish Project to Cloud'}
                 </button>
               </form>
-            </>
+            </motion.div>
           ) : activeTab === 'manage' ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -921,24 +934,37 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {allProjects.map((project) => (
-                    <div key={project.id} className="glass-panel" style={{ 
-                      padding: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)'
-                    }}>
-                      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                  {allProjects.map((project, idx) => (
+                    <motion.div 
+                      key={project.id} 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="glass-panel" 
+                      style={{ 
+                        padding: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
+                        marginBottom: '1rem'
+                      }}
+                    >
+                      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flex: 1 }}>
                         {project.images && project.images[project.thumbnailIndex] && (
-                          <div style={{
-                            width: '80px', height: '60px', borderRadius: '6px',
-                            backgroundImage: `url(${project.images[project.thumbnailIndex]})`,
-                            backgroundSize: 'cover', backgroundPosition: 'center'
-                          }} />
+                          <motion.div 
+                            whileHover={{ scale: 1.1 }}
+                            style={{
+                              width: '80px', height: '60px', borderRadius: '12px',
+                              backgroundImage: `url(${project.images[project.thumbnailIndex]})`,
+                              backgroundSize: 'cover', backgroundPosition: 'center',
+                              border: '1px solid rgba(255,255,255,0.1)'
+                            }} 
+                          />
                         )}
                         <div>
-                          <h3 style={{ fontSize: '1.1rem', marginBottom: '0.2rem' }}>{project.title}</h3>
+                          <h3 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', fontWeight: 700 }}>{project.title}</h3>
                           <div style={{ display: 'flex', gap: '0.8rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-                            <span>🏷️ {project.category}</span>
-                            <span>🎨 {project.style}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>🏷️ {project.category}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>🎨 {project.style}</span>
                           </div>
                         </div>
                       </div>
@@ -946,40 +972,46 @@ export default function AdminDashboard() {
                       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <button 
+                            <motion.button 
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() => handleEditInit(project)}
                                 style={{
                                     background: 'rgba(37, 99, 235, 0.1)', color: '#2563eb',
                                     border: '1px solid rgba(37, 99, 235, 0.2)',
-                                    padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                    padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
                                 }}
                             >
                                 Edit Details
-                            </button>
-                            <button 
+                            </motion.button>
+                            <motion.button 
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() => handleToggleProjectStatus(project)}
                                 style={{
                                 background: project.projectStatus === 'Completed' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
                                 color: project.projectStatus === 'Completed' ? '#22c55e' : '#eab308',
                                 border: `1px solid ${project.projectStatus === 'Completed' ? 'rgba(34,197,94,0.2)' : 'rgba(234,179,8,0.2)'}`,
-                                padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
+                                padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
                                 }}
                             >
                                 {project.projectStatus || 'Completed'}
-                            </button>
+                            </motion.button>
                           </div>
-                          <button 
+                          <motion.button 
+                            whileHover={{ color: '#ef4444' }}
                             onClick={() => handleDeleteProject(project)}
                             style={{
                               background: 'transparent', color: 'rgba(239, 68, 68, 0.6)',
-                              border: 'none', cursor: 'pointer', fontSize: '0.75rem', textDecoration: 'underline'
+                              border: 'none', cursor: 'pointer', fontSize: '0.75rem', textDecoration: 'underline',
+                              transition: 'color 0.2s'
                             }}
                           >
                             Delete Permanent
-                          </button>
+                          </motion.button>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               )}

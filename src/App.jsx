@@ -73,7 +73,7 @@ function AppContent() {
       <ScrollToTop />
       {isGlobalLaunching && <GlobalLaunchOverlay onComplete={() => setIsGlobalLaunching(false)} />}
       {!showSplash && <Navbar />}
-      <main style={{ minHeight: '80vh' }}>
+      <main style={{ minHeight: '80vh', paddingTop: showSplash ? 0 : '90px' }}>
         <Routes>
           {showSplash ? (
             <>

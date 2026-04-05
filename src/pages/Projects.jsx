@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Heart, Play, ArrowLeft, Filter, Sparkles } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Heart, Play, ArrowLeft, Filter, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import './Projects.css';
-
-
 
 const STYLES = ['All', 'Modern', 'Classic', 'Minimalist', 'Luxury'];
 
@@ -19,17 +18,13 @@ export default function Projects() {
   const [filterRoom,  setFilterRoom]  = useState(searchParams.get('category') || 'All');
   const [filterStyle, setFilterStyle] = useState('All');
 
+  const { scrollY } = useScroll();
+  const yHero = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacityHero = useTransform(scrollY, [0, 300], [1, 0]);
+
   useEffect(() => {
     const cat = searchParams.get('category');
     if (cat) setFilterRoom(cat);
-
-    const scrollVal = searchParams.get('scroll');
-    if (scrollVal) {
-      setTimeout(() => {
-        const el = document.getElementById(scrollVal);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 500);
-    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -67,28 +62,55 @@ export default function Projects() {
     <div className="projects-container">
       {/* ── PROJECTS HERO ── */}
       <section className="projects-hero">
-        <div className="projects-hero-bg" />
+        <motion.div 
+          style={{ y: yHero }}
+          className="projects-hero-bg" 
+        />
         <div className="projects-hero-overlay" />
         
-        <div className="hero-content slide-right">
-          <div className="hero-badge">
+        <motion.div style={{ opacity: opacityHero }} className="hero-content">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8 }}
+            className="hero-badge"
+          >
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
             Our Portfolio
-          </div>
+          </motion.div>
           
-          <h1 className="hero-title">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="hero-title"
+          >
             Curated Design<br />
             <span className="gold-text">Masterpieces.</span>
-          </h1>
+          </motion.h1>
           
-          <p className="hero-description">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="hero-description"
+          >
             Explore our collection of premium interior designs, from concept to completion.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </section>
 
       {/* ── FILTERS SECTION ── */}
-      <section className="filters-section">
+      <motion.section 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.6 }}
+        className="filters-section"
+      >
         <div className="filters-wrapper">
           <div className="filter-group">
             <label className="filter-label"><Filter size={14} style={{ marginRight: '8px' }} /> Category</label>
@@ -143,7 +165,7 @@ export default function Projects() {
             {filteredProjects.length} Projects found
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ── PROJECTS GALLERY ── */}
       <section className="projects-gallery" id="explore-gallery">
@@ -153,18 +175,27 @@ export default function Projects() {
             <p style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>Loading breathtaking designs...</p>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '6rem', background: 'var(--color-bg-secondary)', borderRadius: '30px', border: '1px dashed var(--glass-border)' }}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="empty-state"
+            style={{ textAlign: 'center', padding: '6rem', background: 'var(--color-bg-secondary)', borderRadius: '30px', border: '1px dashed var(--glass-border)' }}
+          >
              <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>No projects found</h3>
              <p style={{ color: 'var(--color-text-secondary)' }}>Try adjusting your filters to see more designs.</p>
-             <button onClick={() => { setFilterRoom('All'); setFilterStyle('All'); }} className="btn-outline" style={{ marginTop: '2rem' }}>Reset Filters</button>
-          </div>
+             <button onClick={() => { setFilterRoom('All'); setFilterStyle('All'); }} className="btn-gold" style={{ marginTop: '2rem' }}>Reset Filters</button>
+          </motion.div>
         ) : (
           <div className="projects-grid">
             {filteredProjects.map((project, i) => (
-              <div 
+              <motion.div 
                 key={project.id} 
-                className="project-card-v2 reveal" 
-                style={{ animationDelay: `${i * 0.1}s` }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ delay: (i % 3) * 0.1, duration: 0.6 }}
+                whileHover={{ y: -10 }}
+                className="project-card-v2" 
                 onClick={() => handleProjectClick(project.id)}
               >
                 <div 
@@ -187,7 +218,9 @@ export default function Projects() {
                     <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', fontWeight: 600 }}>{project.style} • {project.category}</p>
                   </div>
                   
-                  <button 
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className="btn-gold" 
                     style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', borderRadius: '8px' }}
                     onClick={(e) => {
@@ -197,9 +230,9 @@ export default function Projects() {
                     }}
                   >
                     Discuss Project
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
