@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { db } from './firebase';
@@ -23,6 +23,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [isGlobalLaunching, setIsGlobalLaunching] = useState(false);
   const prevStatusRef = React.useRef('loading');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Listen to site settings in Firestore
@@ -40,6 +41,7 @@ function AppContent() {
       // If transition from launching_soon/maintenance -> live
       if (prevStatusRef.current !== 'loading' && prevStatusRef.current !== 'live' && currentFirebaseStatus === 'live') {
          setIsGlobalLaunching(true);
+         navigate('/');
       }
       
       prevStatusRef.current = currentFirebaseStatus;
@@ -67,7 +69,7 @@ function AppContent() {
   const showSplash = siteStatus !== 'live' && !isAdmin;
 
   return (
-    <Router>
+    <>
       <ScrollToTop />
       {isGlobalLaunching && <GlobalLaunchOverlay onComplete={() => setIsGlobalLaunching(false)} />}
       {!showSplash && <Navbar />}
@@ -117,15 +119,17 @@ function AppContent() {
         </Routes>
       </main>
       {!showSplash && <Footer />}
-    </Router>
+    </>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </Router>
   );
 }
 
