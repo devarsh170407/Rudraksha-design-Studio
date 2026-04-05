@@ -6,17 +6,7 @@ import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import './Projects.css';
 
-const CATEGORIES = [
-  { name: 'All',                    image: '' },
-  { name: 'Home Interiors',         image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Modular Kitchen',        image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Living Room',            image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Bedroom',                image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Wardrobe',               image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Space Saving Furniture', image: 'https://images.unsplash.com/photo-1583847268964-b28e2023d537?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Home Office',            image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-  { name: 'Bathroom',               image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=75' },
-];
+
 
 const STYLES = ['All', 'Modern', 'Classic', 'Minimalist', 'Luxury'];
 
@@ -108,9 +98,31 @@ export default function Projects() {
               className="filter-select"
             >
               <option value="All">All Categories</option>
-              {CATEGORIES.filter(c => c.name !== 'All').map(cat => (
-                <option key={cat.name} value={cat.name}>{cat.name}</option>
-              ))}
+              <optgroup label="🏠 Residential Interior Design (Home)">
+                <option value="Living Room">Living Room</option>
+                <option value="Bedroom">Bedroom</option>
+                <option value="Kids Room">Kids Room</option>
+                <option value="Guest Room">Guest Room</option>
+                <option value="Kitchen">Kitchen</option>
+                <option value="Bathroom">Bathroom</option>
+                <option value="Dining Room">Dining Room</option>
+                <option value="Study Room / Home Office">Study Room / Home Office</option>
+                <option value="Utility / Laundry Area">Utility / Laundry Area</option>
+                <option value="Balcony / Terrace">Balcony / Terrace</option>
+                <option value="Entrance / Foyer">Entrance / Foyer</option>
+                <option value="Pooja Room (important in Indian homes)">Pooja Room (important in Indian homes)</option>
+                <option value="Walk-in Closet / Wardrobe">Walk-in Closet / Wardrobe</option>
+              </optgroup>
+              <optgroup label="🏢 Commercial Interior Design">
+                <option value="Office">Office</option>
+                <option value="Retail Store / Showroom">Retail Store / Showroom</option>
+                <option value="Restaurant / Café">Restaurant / Café</option>
+                <option value="Hotel / Resort">Hotel / Resort</option>
+                <option value="Hospital / Clinic">Hospital / Clinic</option>
+                <option value="Educational Spaces (Schools, Colleges, Libraries)">Educational Spaces (Schools, Colleges, Libraries)</option>
+                <option value="Co-working Spaces">Co-working Spaces</option>
+                <option value="Salons / Spa">Salons / Spa</option>
+              </optgroup>
             </select>
           </div>
 
