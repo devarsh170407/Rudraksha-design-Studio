@@ -37,7 +37,7 @@ export default function AdminDashboard() {
   const [siteSettings, setSiteSettings] = useState({ isLaunched: true });
   const [formData, setFormData] = useState({
     title: '',
-    category: 'Home Interiors',
+    category: 'Living Room',
     style: 'Modern',
     projectStatus: 'Completed',
     description: ''
@@ -421,7 +421,7 @@ export default function AdminDashboard() {
       // 3. Save to Firestore (Sanitized to avoid undefined fields)
       const newProject = {
         title: formData.title || 'Untitled Project',
-        category: formData.category || 'Home Interiors',
+        category: formData.category || 'Living Room',
         style: formData.style || 'Modern',
         images: imageUrls, 
         thumbnailIndex: thumbnailIndex,
@@ -440,7 +440,7 @@ export default function AdminDashboard() {
       // Reset
       setTimeout(() => {
         setFormData({ 
-          title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: ''
+          title: '', category: 'Living Room', style: 'Modern', projectStatus: 'Completed', description: ''
         });
         setImages([]);
         setThumbnailIndex(0);
@@ -518,7 +518,7 @@ export default function AdminDashboard() {
 
       const updatedProject = {
         title: formData.title || editingProject.title || 'Untitled Project',
-        category: formData.category || editingProject.category || 'Home Interiors',
+        category: formData.category || editingProject.category || 'Living Room',
         style: formData.style || editingProject.style || 'Modern',
         projectStatus: formData.projectStatus || editingProject.projectStatus || 'Completed',
         description: formData.description || '',
@@ -536,7 +536,7 @@ export default function AdminDashboard() {
       // Reset
       setTimeout(() => {
         setFormData({ 
-          title: '', category: 'Home Interiors', style: 'Modern', projectStatus: 'Completed', description: ''
+          title: '', category: 'Living Room', style: 'Modern', projectStatus: 'Completed', description: ''
         });
         setImages([]);
         setThumbnailIndex(0);
@@ -633,14 +633,31 @@ export default function AdminDashboard() {
                 <div className="admin-form-row dropdown-row">
                   <div className="admin-select-wrapper">
                     <select name="category" className="admin-select" value={formData.category} onChange={handleChange}>
-                      <option>Home Interiors</option>
-                      <option>Modular Kitchen</option>
-                      <option>Living Room</option>
-                      <option>Bedroom</option>
-                      <option>Wardrobe</option>
-                      <option>Space Saving Furniture</option>
-                      <option>Home Office</option>
-                      <option>Bathroom</option>
+                      <optgroup label="🏠 Residential Interior Design (Home)">
+                        <option>Living Room</option>
+                        <option>Bedroom</option>
+                        <option>Kids Room</option>
+                        <option>Guest Room</option>
+                        <option>Kitchen</option>
+                        <option>Bathroom</option>
+                        <option>Dining Room</option>
+                        <option>Study Room / Home Office</option>
+                        <option>Utility / Laundry Area</option>
+                        <option>Balcony / Terrace</option>
+                        <option>Entrance / Foyer</option>
+                        <option>Pooja Room (important in Indian homes)</option>
+                        <option>Walk-in Closet / Wardrobe</option>
+                      </optgroup>
+                      <optgroup label="🏢 Commercial Interior Design">
+                        <option>Office</option>
+                        <option>Retail Store / Showroom</option>
+                        <option>Restaurant / Café</option>
+                        <option>Hotel / Resort</option>
+                        <option>Hospital / Clinic</option>
+                        <option>Educational Spaces (Schools, Colleges, Libraries)</option>
+                        <option>Co-working Spaces</option>
+                        <option>Salons / Spa</option>
+                      </optgroup>
                     </select>
                     <ChevronDown className="select-icon" size={18} />
                   </div>
@@ -784,14 +801,31 @@ export default function AdminDashboard() {
                       <div>
                         <label style={styles.label}>Category</label>
                         <select name="category" className="input-field" value={formData.category} onChange={handleChange}>
-                          <option>Home Interiors</option>
-                          <option>Modular Kitchen</option>
-                          <option>Living Room</option>
-                          <option>Bedroom</option>
-                          <option>Wardrobe</option>
-                          <option>Space Saving Furniture</option>
-                          <option>Home Office</option>
-                          <option>Bathroom</option>
+                          <optgroup label="🏠 Residential Interior Design (Home)">
+                            <option>Living Room</option>
+                            <option>Bedroom</option>
+                            <option>Kids Room</option>
+                            <option>Guest Room</option>
+                            <option>Kitchen</option>
+                            <option>Bathroom</option>
+                            <option>Dining Room</option>
+                            <option>Study Room / Home Office</option>
+                            <option>Utility / Laundry Area</option>
+                            <option>Balcony / Terrace</option>
+                            <option>Entrance / Foyer</option>
+                            <option>Pooja Room (important in Indian homes)</option>
+                            <option>Walk-in Closet / Wardrobe</option>
+                          </optgroup>
+                          <optgroup label="🏢 Commercial Interior Design">
+                            <option>Office</option>
+                            <option>Retail Store / Showroom</option>
+                            <option>Restaurant / Café</option>
+                            <option>Hotel / Resort</option>
+                            <option>Hospital / Clinic</option>
+                            <option>Educational Spaces (Schools, Colleges, Libraries)</option>
+                            <option>Co-working Spaces</option>
+                            <option>Salons / Spa</option>
+                          </optgroup>
                         </select>
                       </div>
                       <div>
