@@ -634,29 +634,29 @@ export default function AdminDashboard() {
                   <div className="admin-select-wrapper">
                     <select name="category" className="admin-select" value={formData.category} onChange={handleChange}>
                       <optgroup label="🏠 Residential Interior Design (Home)">
-                        <option>Living Room</option>
-                        <option>Bedroom</option>
-                        <option>Kids Room</option>
-                        <option>Guest Room</option>
-                        <option>Kitchen</option>
-                        <option>Bathroom</option>
-                        <option>Dining Room</option>
-                        <option>Study Room / Home Office</option>
-                        <option>Utility / Laundry Area</option>
-                        <option>Balcony / Terrace</option>
-                        <option>Entrance / Foyer</option>
-                        <option>Pooja Room (important in Indian homes)</option>
-                        <option>Walk-in Closet / Wardrobe</option>
+                        <option value="Living Room">Living Room</option>
+                        <option value="Bedroom">Bedroom</option>
+                        <option value="Kids Room">Kids Room</option>
+                        <option value="Guest Room">Guest Room</option>
+                        <option value="Kitchen">Kitchen</option>
+                        <option value="Bathroom">Bathroom</option>
+                        <option value="Dining Room">Dining Room</option>
+                        <option value="Study Room / Home Office">Study Room / Home Office</option>
+                        <option value="Utility / Laundry Area">Utility / Laundry Area</option>
+                        <option value="Balcony / Terrace">Balcony / Terrace</option>
+                        <option value="Entrance / Foyer">Entrance / Foyer</option>
+                        <option value="Pooja Room (important in Indian homes)">Pooja Room (important in Indian homes)</option>
+                        <option value="Walk-in Closet / Wardrobe">Walk-in Closet / Wardrobe</option>
                       </optgroup>
                       <optgroup label="🏢 Commercial Interior Design">
-                        <option>Office</option>
-                        <option>Retail Store / Showroom</option>
-                        <option>Restaurant / Café</option>
-                        <option>Hotel / Resort</option>
-                        <option>Hospital / Clinic</option>
-                        <option>Educational Spaces (Schools, Colleges, Libraries)</option>
-                        <option>Co-working Spaces</option>
-                        <option>Salons / Spa</option>
+                        <option value="Office">Office</option>
+                        <option value="Retail Store / Showroom">Retail Store / Showroom</option>
+                        <option value="Restaurant / Café">Restaurant / Café</option>
+                        <option value="Hotel / Resort">Hotel / Resort</option>
+                        <option value="Hospital / Clinic">Hospital / Clinic</option>
+                        <option value="Educational Spaces (Schools, Colleges, Libraries)">Educational Spaces (Schools, Colleges, Libraries)</option>
+                        <option value="Co-working Spaces">Co-working Spaces</option>
+                        <option value="Salons / Spa">Salons / Spa</option>
                       </optgroup>
                     </select>
                     <ChevronDown className="select-icon" size={18} />
@@ -802,29 +802,29 @@ export default function AdminDashboard() {
                         <label style={styles.label}>Category</label>
                         <select name="category" className="input-field" value={formData.category} onChange={handleChange}>
                           <optgroup label="🏠 Residential Interior Design (Home)">
-                            <option>Living Room</option>
-                            <option>Bedroom</option>
-                            <option>Kids Room</option>
-                            <option>Guest Room</option>
-                            <option>Kitchen</option>
-                            <option>Bathroom</option>
-                            <option>Dining Room</option>
-                            <option>Study Room / Home Office</option>
-                            <option>Utility / Laundry Area</option>
-                            <option>Balcony / Terrace</option>
-                            <option>Entrance / Foyer</option>
-                            <option>Pooja Room (important in Indian homes)</option>
-                            <option>Walk-in Closet / Wardrobe</option>
+                            <option value="Living Room">Living Room</option>
+                            <option value="Bedroom">Bedroom</option>
+                            <option value="Kids Room">Kids Room</option>
+                            <option value="Guest Room">Guest Room</option>
+                            <option value="Kitchen">Kitchen</option>
+                            <option value="Bathroom">Bathroom</option>
+                            <option value="Dining Room">Dining Room</option>
+                            <option value="Study Room / Home Office">Study Room / Home Office</option>
+                            <option value="Utility / Laundry Area">Utility / Laundry Area</option>
+                            <option value="Balcony / Terrace">Balcony / Terrace</option>
+                            <option value="Entrance / Foyer">Entrance / Foyer</option>
+                            <option value="Pooja Room (important in Indian homes)">Pooja Room (important in Indian homes)</option>
+                            <option value="Walk-in Closet / Wardrobe">Walk-in Closet / Wardrobe</option>
                           </optgroup>
                           <optgroup label="🏢 Commercial Interior Design">
-                            <option>Office</option>
-                            <option>Retail Store / Showroom</option>
-                            <option>Restaurant / Café</option>
-                            <option>Hotel / Resort</option>
-                            <option>Hospital / Clinic</option>
-                            <option>Educational Spaces (Schools, Colleges, Libraries)</option>
-                            <option>Co-working Spaces</option>
-                            <option>Salons / Spa</option>
+                            <option value="Office">Office</option>
+                            <option value="Retail Store / Showroom">Retail Store / Showroom</option>
+                            <option value="Restaurant / Café">Restaurant / Café</option>
+                            <option value="Hotel / Resort">Hotel / Resort</option>
+                            <option value="Hospital / Clinic">Hospital / Clinic</option>
+                            <option value="Educational Spaces (Schools, Colleges, Libraries)">Educational Spaces (Schools, Colleges, Libraries)</option>
+                            <option value="Co-working Spaces">Co-working Spaces</option>
+                            <option value="Salons / Spa">Salons / Spa</option>
                           </optgroup>
                         </select>
                       </div>
