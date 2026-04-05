@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "firebase": "^12.10.0",
+    "firebase-admin": "^13.1.0",
     "framer-motion": "^12.38.0",
     "idb-keyval": "^6.2.2",
     "lucide-react": "^0.577.0",

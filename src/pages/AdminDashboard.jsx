@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   collection, 
   addDoc, 
@@ -29,6 +30,7 @@ import {
 import './AdminDashboard.css';
 
 export default function AdminDashboard() {
+  const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('add'); // 'add', 'manage', 'leads', or 'settings'
   const [allProjects, setAllProjects] = useState([]);
   const [estimates, setEstimates] = useState([]);
@@ -263,80 +265,69 @@ export default function AdminDashboard() {
   };
 
   const handlegithubUpload = async (file, path) => {
-    const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
-    const GITHUB_USER = import.meta.env.VITE_GITHUB_USER;
-    const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO;
+    if (!currentUser) throw new Error('You must be logged in to upload files.');
     
-    if (!GITHUB_TOKEN || !GITHUB_USER || !GITHUB_REPO) {
-      throw new Error('GitHub configuration missing in .env');
-    }
+    // Get fresh ID token
+    const token = await currentUser.getIdToken();
 
     // Filenames are now prefixed with a unique timestamp + random string
-    // to guarantee no collisions even with rapid clicks
     const uniqueId = Math.random().toString(36).substring(2, 10);
     const fileName = `${Date.now()}_${uniqueId}_${file.name.replace(/\s+/g, '_')}`;
-    const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}/${fileName}`;
     
     const base64Content = await fileToBase64(file);
 
-    const response = await fetch(url, {
-      method: 'PUT',
+    const response = await fetch('/api/upload', {
+      method: 'POST',
       headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: `Upload ${fileName} via Admin Dashboard`,
-        content: base64Content
+        fileName,
+        content: base64Content,
+        path
       }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      // If we get a conflict (409), it means the file somehow already exists.
-      // But with our naming convention, this shouldn't happen.
-      throw new Error(error.message || `GitHub upload failed (${response.status})`);
+      throw new Error(error.message || `Upload failed (${response.status})`);
     }
 
-    return `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${path}/${fileName}`;
+    const data = await response.json();
+    return data.url;
   };
+
 
   const deleteGithubFileByURL = async (fileUrl) => {
     if (!fileUrl || !fileUrl.includes('raw.githubusercontent.com')) return;
-    
-    const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
-    const GITHUB_USER = import.meta.env.VITE_GITHUB_USER;
-    const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO;
-    
+    if (!currentUser) return;
+
     try {
-      const prefix = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/`;
-      if (!fileUrl.startsWith(prefix)) return;
+      // Extract path from URL (Assuming standard GitHub Raw URL)
+      // https://raw.githubusercontent.com/USER/REPO/main/path/to/file
+      const parts = fileUrl.split('/main/');
+      if (parts.length < 2) return;
+      const path = parts[1];
+
+      const token = await currentUser.getIdToken();
       
-      const path = fileUrl.replace(prefix, '');
-      
-      const getUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
-      const getRes = await fetch(getUrl, {
-        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
-      });
-      
-      if (!getRes.ok) return;
-      const fileData = await getRes.json();
-      
-      await fetch(getUrl, {
+      const response = await fetch(`/api/upload?path=${encodeURIComponent(path)}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `Delete ${path} via Admin Dashboard`,
-          sha: fileData.sha
-        })
+          'Authorization': `Bearer ${token}`
+        }
       });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Delete error:', error.message);
+      }
     } catch (err) {
-      console.error('Error deleting file from GitHub:', err);
+      console.error('Error calling delete API:', err);
     }
   };
+
 
   const handleDeleteProject = async (project) => {
     if (!window.confirm('Delete this project permanently? This will also remove the uploaded files from GitHub storage.')) return;
@@ -436,7 +427,7 @@ export default function AdminDashboard() {
       
       await addDoc(collection(db, 'projects'), newProject);
 
-      setMessage({ text: 'Project published! Images compressed and files saved to GitHub (Direct).', type: 'success' });
+      setMessage({ text: 'Project published!', type: 'success' });
       
       // Reset
       setTimeout(() => {
