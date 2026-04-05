@@ -176,6 +176,21 @@ export default function Home() {
 
         </div>
       </section>
+        {/* ── WHY CHOOSE US ── */}
+        <section className="why-choose-section reveal">
+          <div className="section-header-centered">
+            <div className="hero-badge" style={{ margin: '0 auto 1.5rem' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent-primary)', boxShadow: '0 0 10px var(--color-accent-primary)' }} />
+              The Rudraksha Advantage
+            </div>
+            <h2 className="section-title-large">
+              Why Choose <span className="gold-text">Rudraksha?</span>
+            </h2>
+            <p className="section-subtitle">
+              We don't just design rooms; we engineer lifestyles with a focus on quality, transparency, and your unique story.
+            </p>
+          </div>
+        </section>
 
         <div className="features-scroller">
           <div className="features-track">

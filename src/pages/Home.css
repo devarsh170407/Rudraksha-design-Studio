@@ -101,6 +101,33 @@
   text-align: center;
 }
 
+/* Why Choose Us Section */
+.why-choose-section {
+  padding: 6rem 5% 4rem;
+  text-align: center;
+  background: var(--color-bg-primary);
+}
+
+.section-header-centered {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.section-title-large {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 /* Features Scroller */
 .features-section {
   padding: 4rem 0;
