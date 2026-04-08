@@ -29,9 +29,9 @@ export default async function handler(req, res) {
   }
 
   // 2. Handle Methods
-  const GITHUB_TOKEN = process.env.VITE_GITHUB_TOKEN;
-  const GITHUB_USER = process.env.VITE_GITHUB_USER;
-  const GITHUB_REPO = process.env.VITE_GITHUB_REPO;
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  const GITHUB_USER = process.env.GITHUB_USER;
+  const GITHUB_REPO = process.env.GITHUB_REPO;
 
   if (!GITHUB_TOKEN || !GITHUB_USER || !GITHUB_REPO) {
     return res.status(500).json({ message: 'GitHub configuration missing' });
