@@ -215,7 +215,8 @@ export default function ProjectDetails() {
       </AnimatePresence>
 
       <style>{`
-        .carousel-btn-float { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); color: white; border: 1px solid rgba(255,255,255,0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; alignItems: center; justifyContent: center; cursor: pointer; z-index: 10; }
+        .carousel-btn-float { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); backdrop-filter: blur(15px); color: white; border: 1px solid rgba(255,255,255,0.2); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: background 0.25s, border-color 0.25s, transform 0.25s; }
+        .carousel-btn-float:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.5); transform: translateY(-50%) scale(1.1); }
         .spin-animation { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .cta-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s; }
